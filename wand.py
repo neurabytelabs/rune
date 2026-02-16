@@ -61,8 +61,8 @@ CONFIG_PATH = Path.home() / ".rune" / "config.toml"
 # ──────────────────────────────────────────────
 DEFAULT_CONFIG: Dict[str, Any] = {
     "model": "gemini-3-pro",
-    "api_url": "http://127.0.0.1:8045/v1/chat/completions",
-    "api_key": "sk-f741397b2b564a1eaac8e714034eec2f",
+    "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
+    "api_key": os.getenv("RUNE_API_KEY", ""),
     "template_version": "v4.3",
     "spinoza_threshold": 0.6,
     "output_dir": str(OUTPUT_DIR),

@@ -21,8 +21,8 @@ DEFAULTS: dict[str, Any] = {
         "locale": "auto",
     },
     "llm": {
-        "api_url": "http://127.0.0.1:8045/v1/chat/completions",
-        "api_key": "sk-f741397b2b564a1eaac8e714034eec2f",
+        "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
+        "api_key": os.getenv("RUNE_API_KEY", ""),
         "default_model": "gemini-3-pro",
         "timeout": 120,
         "max_tokens": 8000,
