@@ -40,6 +40,18 @@ The result: outputs that are structured, reproducible, and dramatically higher q
 
 </div>
 
+### RUNE is for Everyone
+
+<div align="center">
+
+![RUNE for Everyone](docs/rune_for_everyone.jpeg)
+
+*Students · Parents · Teachers · Entrepreneurs · Creators — Your words, supercharged.*
+
+</div>
+
+You don't need to be a developer. You don't need to understand AI. RUNE teaches your AI assistant how to truly help you — like giving clear instructions instead of vague requests. The result? Better answers, faster work, happier you.
+
 ### Why RUNE?
 
 | Traditional Prompting | RUNE |
