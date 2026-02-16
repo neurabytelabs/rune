@@ -6,13 +6,14 @@ Cross-Model v4.3 Test — Direct HTTP (no SDK, no hang)
 
 import json
 import os
+import os
 import sys
 import time
 import datetime
 import requests
 
-API_URL = "http://127.0.0.1:8045/v1/chat/completions"
-API_KEY = "REDACTED"
+API_URL = os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions")
+API_KEY = os.getenv("RUNE_API_KEY", "")
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {API_KEY}",
