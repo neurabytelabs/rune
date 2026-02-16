@@ -46,7 +46,7 @@ except ImportError:
 # ──────────────────────────────────────────────
 # Version
 # ──────────────────────────────────────────────
-__version__ = "1.0.0"
+__version__ = "1.5.0"
 
 # ──────────────────────────────────────────────
 # Paths
@@ -59,6 +59,21 @@ CONFIG_PATH = Path.home() / ".rune" / "config.toml"
 # ──────────────────────────────────────────────
 # Default config
 # ──────────────────────────────────────────────
+# ──────────────────────────────────────────────
+# Cost Tracker (lazy init)
+# ──────────────────────────────────────────────
+_cost_tracker = None
+
+def get_cost_tracker():
+    global _cost_tracker
+    if _cost_tracker is None:
+        try:
+            from rune.analytics.tracker import CostTracker
+            _cost_tracker = CostTracker()
+        except Exception:
+            pass
+    return _cost_tracker
+
 DEFAULT_CONFIG: Dict[str, Any] = {
     "model": "gemini-3-pro",
     "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
@@ -241,7 +256,7 @@ def section(title: str) -> None:
 # ──────────────────────────────────────────────
 # LLM Integration
 # ──────────────────────────────────────────────
-def llm_call(prompt: str, model: str, stream: bool = False, system: Optional[str] = None) -> str:
+def llm_call(prompt: str, model: str, stream: bool = False, system: Optional[str] = None, track: bool = True) -> str:
     """Send prompt to Antigravity proxy. Returns full response text."""
     messages = []
     if system:
@@ -293,10 +308,27 @@ def llm_call(prompt: str, model: str, stream: bool = False, system: Optional[str
             except json.JSONDecodeError:
                 continue
         print()  # newline after streaming
-        return "".join(full)
+        result_text = "".join(full)
+        # Estimate tokens for streaming (no usage data available)
+        if track:
+            tracker = get_cost_tracker()
+            if tracker:
+                est_in = len(prompt) // 4
+                est_out = len(result_text) // 4
+                tracker.track(model, est_in, est_out)
+        return result_text
     else:
         data = resp.json()
-        return data["choices"][0]["message"]["content"]
+        content = data["choices"][0]["message"]["content"]
+        # Track cost from usage data
+        if track:
+            tracker = get_cost_tracker()
+            if tracker:
+                usage = data.get("usage", {})
+                in_tok = usage.get("prompt_tokens", len(prompt) // 4)
+                out_tok = usage.get("completion_tokens", len(content) // 4)
+                tracker.track(model, in_tok, out_tok)
+        return content
 
 
 # ──────────────────────────────────────────────
@@ -434,6 +466,28 @@ def cmd_cast(args: argparse.Namespace) -> None:
         print_spinoza_report(report)
     except Exception as e:
         print_warn(f"Spinoza validation skipped: {e}")
+
+    # Save to memory (evolution tracking)
+    overall_score = report.get("overall", 0.0) if isinstance(report, dict) else 0.0
+    try:
+        from rune.memory.store import MemoryStore
+        store = MemoryStore(db_path=CONFIG.get("history_db", "~/.rune/history.db"))
+        store.track_evolution(
+            original=prompt,
+            enhanced=enhanced if not args.raw else prompt,
+            model=model,
+            score=overall_score,
+        )
+        store.log_enhancement(
+            original=prompt,
+            enhanced=enhanced if not args.raw else prompt,
+            model=model,
+            spinoza_score=overall_score,
+        )
+        store.close()
+        print_success("Saved to memory 🧠")
+    except Exception as e:
+        print_warn(f"Memory save failed: {e}")
 
     # Save
     data = {
@@ -692,14 +746,52 @@ Language: Match user's language.
 
 
 def cmd_stats(args: argparse.Namespace) -> None:
-    """Show usage statistics."""
+    """Show usage statistics from memory store."""
     print_banner()
+
+    # Try memory store first
+    try:
+        from rune.memory.store import MemoryStore
+        store = MemoryStore(db_path=CONFIG.get("history_db", "~/.rune/history.db"))
+        stats = store.get_stats()
+        evo_stats = store.get_evolution_stats()
+        store.close()
+
+        section("📈 WAND Statistics (from Memory 🧠)")
+        print(store.format_stats(stats))
+
+        # Evolution stats
+        section("🧬 Evolution Stats")
+        print(f"  {C.BOLD}Total evolutions:{C.RESET}    {C.CYAN}{evo_stats['total_evolutions']}{C.RESET}")
+        print(f"  {C.BOLD}Unique prompts:{C.RESET}      {C.CYAN}{evo_stats['unique_prompts']}{C.RESET}")
+        print(f"  {C.BOLD}Avg score:{C.RESET}            {C.GREEN}{evo_stats['avg_score']:.4f}{C.RESET}")
+        print(f"  {C.BOLD}Best score:{C.RESET}           {C.GREEN}{evo_stats['best_score']:.2f}{C.RESET}")
+        print(f"  {C.BOLD}Top model:{C.RESET}            {C.CYAN}{evo_stats['top_model']}{C.RESET}")
+
+        if evo_stats['models_used']:
+            print(f"\n  {C.BOLD}Models (evolutions):{C.RESET}")
+            for m, count in sorted(evo_stats['models_used'].items(), key=lambda x: -x[1]):
+                print(f"    {C.CYAN}{m:<25}{C.RESET} {count} evolutions")
+
+        # Show top 5 best prompts
+        best = store.get_best(5) if hasattr(store, 'get_best') else []
+        if best:
+            section("🏆 Top 5 Best Prompts")
+            for i, r in enumerate(best, 1):
+                orig = r['original_text'][:60] + "..." if len(r['original_text']) > 60 else r['original_text']
+                print(f"  {C.BOLD}{i}.{C.RESET} {C.GREEN}{r['spinoza_score']:.2f}{C.RESET} | {C.CYAN}{r['model']}{C.RESET} | {orig}")
+
+        return
+    except Exception as e:
+        print_warn(f"Memory store unavailable ({e}), falling back to file scan...")
+
+    # Fallback: scan output files
     out_dir = Path(CONFIG["output_dir"])
     if not out_dir.exists():
         print_info("No output data yet. Run some spells first!")
         return
 
-    section("📈 WAND Statistics")
+    section("📈 WAND Statistics (file scan)")
 
     total = 0
     models_used: Dict[str, int] = {}
@@ -714,12 +806,10 @@ def cmd_stats(args: argparse.Namespace) -> None:
                 total += 1
                 model = data.get("model", "unknown")
                 models_used[model] = models_used.get(model, 0) + 1
-                # Extract spinoza scores
                 for key in ("spinoza", "enhanced_spinoza"):
                     sp = data.get(key, {})
                     if isinstance(sp, dict) and "overall" in sp:
                         spinoza_scores.append(sp["overall"])
-                # Test results
                 for r in data.get("results", []):
                     if isinstance(r, dict):
                         models_used[r.get("model", "?")] = models_used.get(r.get("model", "?"), 0) + 1
@@ -740,6 +830,116 @@ def cmd_stats(args: argparse.Namespace) -> None:
         print(f"\n  {C.BOLD}Models Used:{C.RESET}")
         for m, count in sorted(models_used.items(), key=lambda x: -x[1]):
             print(f"    {C.CYAN}{m:<25}{C.RESET} {count} runs")
+
+    # Cost info from tracker
+    tracker = get_cost_tracker()
+    if tracker:
+        total_cost = tracker.get_total_cost()
+        if total_cost > 0:
+            print(f"\n  {C.BOLD}💰 Total API Cost:{C.RESET}  {C.YELLOW}${total_cost:.4f}{C.RESET}")
+            breakdown = tracker.get_breakdown()
+            for m, info in breakdown.items():
+                print(f"    {C.CYAN}{m:<25}{C.RESET} ${info['cost_usd']:.4f} ({info['calls']} calls)")
+
+
+def cmd_fuse(args: argparse.Namespace) -> None:
+    """Fuse multiple prompts into one mega-prompt."""
+    print_banner()
+    strategy = args.strategy or "layered"
+
+    # Collect prompts from files or stdin
+    prompts: List[str] = []
+    if args.files:
+        for fp in args.files:
+            p = Path(fp)
+            if not p.exists():
+                print_error(f"File not found: {fp}")
+                return
+            prompts.append(p.read_text(encoding="utf-8").strip())
+    elif not sys.stdin.isatty():
+        raw = sys.stdin.read().strip()
+        # Split on --- or empty lines for multiple prompts
+        parts = re.split(r"\n---\n|\n\n\n+", raw)
+        prompts = [p.strip() for p in parts if p.strip()]
+    else:
+        print_error("Provide prompt files as arguments or pipe via stdin.")
+        print_info("Usage: wand fuse prompt1.txt prompt2.txt --strategy layered")
+        print_info("  or:  cat prompts.txt | wand fuse --strategy merged")
+        return
+
+    if not prompts:
+        print_error("No prompts found.")
+        return
+
+    print_info(f"🔮 Fusing {len(prompts)} prompts | Strategy: {strategy}")
+    for i, p in enumerate(prompts, 1):
+        preview = p[:80].replace("\n", " ")
+        print(f"  {C.GRAY}#{i}: {preview}{'…' if len(p) > 80 else ''}{C.RESET}")
+
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from rune.synthesis.engine import SynthesisEngine
+        engine = SynthesisEngine()
+        result = engine.fuse(prompts, strategy=strategy, validate=True)
+    except Exception as e:
+        print_error(f"Fusion failed: {e}")
+        return
+
+    section("🔮 Fused Prompt")
+    print(f"{C.CYAN}{result.text}{C.RESET}")
+
+    # Spinoza report
+    if result.spinoza_report:
+        try:
+            from rune.core.validator import SpinozaValidator
+            v = SpinozaValidator()
+            print(f"\n{v.format_report(result.spinoza_report)}")
+        except ImportError:
+            if result.spinoza_score is not None:
+                color = C.GREEN if result.spinoza_score >= 0.6 else C.YELLOW
+                print(f"\n  {C.BOLD}Spinoza Score: {color}{result.spinoza_score:.2f}{C.RESET}")
+
+    if args.output:
+        Path(args.output).write_text(result.text, encoding="utf-8")
+        print_success(f"Output written to {args.output}")
+
+    if args.json:
+        data = {
+            "strategy": result.strategy,
+            "prompt_count": result.prompt_count,
+            "spinoza_score": result.spinoza_score,
+            "fused_prompt": result.text,
+        }
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+
+
+def cmd_cost(args: argparse.Namespace) -> None:
+    """Show detailed cost report."""
+    print_banner()
+    tracker = get_cost_tracker()
+    if not tracker:
+        print_error("Cost tracker not available.")
+        return
+
+    total = tracker.get_total_cost()
+    if total == 0:
+        print_info("No usage recorded yet. Run some spells first!")
+        return
+
+    # Daily report
+    print(tracker.get_daily_report())
+
+    # Full breakdown
+    section("💰 All-Time Cost Breakdown")
+    breakdown = tracker.get_breakdown()
+    print(f"  {C.BOLD}{'Model':<30} {'Calls':>6} {'In Tokens':>12} {'Out Tokens':>12} {'Cost':>10}{C.RESET}")
+    print(f"  {'─'*30} {'─'*6} {'─'*12} {'─'*12} {'─'*10}")
+    for m, info in breakdown.items():
+        print(f"  {C.CYAN}{m:<30}{C.RESET} {info['calls']:>6} {info['input_tokens']:>12,} {info['output_tokens']:>12,} {C.YELLOW}${info['cost_usd']:>9.4f}{C.RESET}")
+    print(f"\n  {C.BOLD}Total: {C.YELLOW}${total:.4f}{C.RESET}")
+
+    if args.json:
+        print(json.dumps({"total_cost": total, "breakdown": breakdown}, indent=2))
 
 
 def cmd_config(args: argparse.Namespace) -> None:
@@ -820,8 +1020,18 @@ def build_parser() -> argparse.ArgumentParser:
     # stats
     sub.add_parser("stats", help="Show usage statistics")
 
+    # cost
+    p = sub.add_parser("cost", help="Detailed cost report")
+    p.add_argument("--json", action="store_true", help="Output as JSON")
+
     # config
     sub.add_parser("config", help="Show current configuration")
+
+    # fuse
+    p = sub.add_parser("fuse", help="Fuse multiple prompts into one mega-prompt")
+    p.add_argument("files", nargs="*", help="Prompt files to fuse")
+    p.add_argument("--strategy", "-s", choices=["layered", "merged", "chain"],
+                   default="layered", help="Fusion strategy (default: layered)")
 
     # version
     sub.add_parser("version", help="Show version info")
@@ -855,7 +1065,9 @@ def main() -> None:
         "validate": cmd_validate,
         "forge": cmd_forge,
         "stats": cmd_stats,
+        "cost": cmd_cost,
         "config": cmd_config,
+        "fuse": cmd_fuse,
         "version": cmd_version,
     }
 

@@ -86,6 +86,18 @@ class MemoryStore:
                 last_used TEXT NOT NULL,
                 avg_score REAL NOT NULL DEFAULT 0.0
             );
+
+            CREATE TABLE IF NOT EXISTS evolutions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                original_hash TEXT NOT NULL,
+                original_text TEXT NOT NULL,
+                enhanced_text TEXT NOT NULL,
+                model TEXT NOT NULL,
+                spinoza_score REAL NOT NULL DEFAULT 0.0,
+                timestamp TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_evolutions_hash ON evolutions(original_hash);
+            CREATE INDEX IF NOT EXISTS idx_evolutions_score ON evolutions(spinoza_score DESC);
         """)
         self._conn.commit()
 
@@ -233,6 +245,58 @@ class MemoryStore:
             last_used=row["last_used"],
             avg_score=row["avg_score"],
         )
+
+    # ── Evolution tracking ────────────────────────────────────────────
+
+    def track_evolution(self, original: str, enhanced: str, model: str, score: float) -> int:
+        """Track a prompt's evolution. Returns the new record id."""
+        original_hash = hashlib.sha256(original.encode()).hexdigest()[:16]
+        ts = datetime.now().isoformat()
+        cur = self._conn.execute(
+            """INSERT INTO evolutions (original_hash, original_text, enhanced_text, model, spinoza_score, timestamp)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (original_hash, original, enhanced, model, score, ts),
+        )
+        self._conn.commit()
+        return cur.lastrowid  # type: ignore[return-value]
+
+    def get_evolution_history(self, prompt_hash: str) -> list[dict]:
+        """Get full evolution history for a prompt hash."""
+        rows = self._conn.execute(
+            "SELECT * FROM evolutions WHERE original_hash = ? ORDER BY timestamp ASC",
+            (prompt_hash,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    def get_best(self, n: int = 10) -> list[dict]:
+        """Get top N highest-scoring evolved prompts."""
+        rows = self._conn.execute(
+            "SELECT * FROM evolutions ORDER BY spinoza_score DESC LIMIT ?", (n,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    def get_evolution_stats(self) -> dict:
+        """Aggregate evolution statistics."""
+        row = self._conn.execute(
+            """SELECT COUNT(*) as total, COALESCE(AVG(spinoza_score),0) as avg_score,
+                      COALESCE(MAX(spinoza_score),0) as best_score,
+                      COALESCE(MIN(spinoza_score),0) as worst_score,
+                      COUNT(DISTINCT original_hash) as unique_prompts
+               FROM evolutions"""
+        ).fetchone()
+        models: dict[str, int] = {}
+        for m in self._conn.execute("SELECT model, COUNT(*) as c FROM evolutions GROUP BY model"):
+            models[m["model"]] = m["c"]
+        top_model = max(models, key=models.get, default="—") if models else "—"  # type: ignore[arg-type]
+        return {
+            "total_evolutions": row["total"],
+            "unique_prompts": row["unique_prompts"],
+            "avg_score": round(row["avg_score"], 4),
+            "best_score": row["best_score"],
+            "worst_score": row["worst_score"],
+            "models_used": models,
+            "top_model": top_model,
+        }
 
     # ── Preferences ──────────────────────────────────────────────────
 
