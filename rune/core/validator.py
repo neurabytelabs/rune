@@ -137,7 +137,7 @@ class SpinozaValidator:
     }
 
     # Scaling factor so typical good text scores 0.6–0.8 on keywords alone
-    _KEYWORD_SCALE: float = 12.0
+    _KEYWORD_SCALE: float = 25.0
 
     def __init__(
         self,
@@ -258,16 +258,19 @@ class SpinozaValidator:
         found: list[str] = []
         match_count = 0
         for kw in keywords:
-            # Match whole word boundaries
-            pattern = rf"\b{re.escape(kw)}\b"
+            # Match keyword as prefix (grow matches growth/growing/grows)
+            pattern = rf"\b{re.escape(kw)}\w*\b"
             hits = len(re.findall(pattern, lower))
             if hits:
                 found.append(kw)
                 match_count += hits
 
         density = match_count / total
-        score = min(1.0, density * self._KEYWORD_SCALE)
-        return score, sorted(set(found))
+        # Combine density score with keyword diversity (unique matches / total keywords)
+        density_score = min(1.0, density * self._KEYWORD_SCALE)
+        diversity_score = min(1.0, len(found) / max(len(keywords) * 0.15, 1))
+        score = 0.6 * density_score + 0.4 * diversity_score
+        return min(1.0, score), sorted(set(found))
 
     def _structural_analysis(self, text: str) -> float:
         """Heuristic structural quality score for RATIO.

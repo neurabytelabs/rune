@@ -583,11 +583,10 @@ def cmd_test(args: argparse.Namespace) -> None:
 
 
 def cmd_validate(args: argparse.Namespace) -> None:
-    """Run Spinoza validation on text."""
+    """Run Spinoza validation on text using local validator (no LLM needed)."""
     print_banner()
     text = " ".join(args.text)
     if not text:
-        # Try reading from stdin
         if not sys.stdin.isatty():
             text = sys.stdin.read()
         else:
@@ -595,11 +594,21 @@ def cmd_validate(args: argparse.Namespace) -> None:
             return
 
     print_meta(f"Validating {len(text)} characters...")
-    report = spinoza_validate(text)
-    print_spinoza_report(report)
-
-    if args.json:
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from rune.core.validator import SpinozaValidator
+        v = SpinozaValidator()
+        report = v.validate(text)
+        print(v.format_report(report))
+        if args.json:
+            from dataclasses import asdict
+            print(json.dumps(asdict(report), ensure_ascii=False, indent=2, default=str))
+    except ImportError:
+        print_warn("Local validator not found, falling back to LLM-based validation...")
+        report = spinoza_validate(text)
+        print_spinoza_report(report)
+        if args.json:
+            print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 def cmd_forge(args: argparse.Namespace) -> None:
