@@ -34,6 +34,12 @@ RUNE wraps your intent in **8 semantic layers** — from identity and constraint
 
 The result: outputs that are structured, reproducible, and dramatically higher quality across any frontier model.
 
+<div align="center">
+
+![Before & After RUNE](docs/rune_before_after.jpeg)
+
+</div>
+
 ### Why RUNE?
 
 | Traditional Prompting | RUNE |
