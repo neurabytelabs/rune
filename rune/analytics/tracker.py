@@ -15,20 +15,31 @@ MODEL_PRICES: Dict[str, tuple[float, float]] = {
     "grok-4-fast": (0.20, 0.50),
     "grok-3": (3.00, 15.00),
     "grok-3-mini": (0.30, 0.50),
-    # Google — per 1K prices converted to per M
+    # Google
     "gemini-3-pro": (1.25, 10.00),
-    "gemini-3-pro-high": (1.25, 10.00),
-    "gemini-3-flash": (0.10, 0.40),
+    "gemini-3-pro-high": (2.50, 20.00),
+    "gemini-3-flash": (0.15, 0.60),
     "gemini-3-pro-image": (1.25, 10.00),
     # Anthropic
     "claude-opus-4": (15.00, 75.00),
+    "claude-opus-4-6": (15.00, 75.00),
     "claude-opus-4-6-thinking": (15.00, 75.00),
     "claude-sonnet-4-5": (3.00, 15.00),
     "claude-sonnet-4-5-thinking": (3.00, 15.00),
     "claude-haiku-4": (0.80, 4.00),
     # OpenAI
+    "gpt-5.2": (5.00, 15.00),
+    "gpt-5.2-codex": (5.00, 15.00),
+    "gpt-5.2-pro": (20.00, 80.00),
+    "gpt-5.1": (3.00, 12.00),
+    "gpt-5.1-codex": (3.00, 12.00),
+    "gpt-5": (5.00, 15.00),
+    "gpt-5-pro": (20.00, 80.00),
     "gpt-4o": (5.00, 15.00),
     "gpt-4o-mini": (0.15, 0.60),
+    "o3": (10.00, 40.00),
+    "o3-mini": (1.10, 4.40),
+    "o4-mini": (1.10, 4.40),
 }
 
 
