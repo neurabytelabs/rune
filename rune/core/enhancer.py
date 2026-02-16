@@ -81,12 +81,17 @@ class EnhancedPrompt:
 
 _COMPLEXITY_KEYWORDS: dict[str, list[str]] = {
     "L4": ["architect", "design system", "multi-agent", "pipeline", "orchestrat",
-            "framework", "full-stack", "end-to-end", "microservice"],
+            "framework", "full-stack", "end-to-end", "microservice",
+            "mimari", "sistem tasarla", "çoklu ajan", "orkestra"],
     "L3": ["refactor", "optimize", "integrate", "migrate", "analyz", "compar",
-            "review", "debug", "evaluate"],
+            "review", "debug", "evaluate",
+            "refaktör", "optimize et", "entegre", "analiz", "karşılaştır",
+            "incele", "değerlendir", "hata ayıkla"],
     "L2": ["implement", "create", "build", "write", "generate", "convert",
-            "translate", "explain"],
-    "L1": ["list", "summarize", "define", "what is", "hello", "thanks"],
+            "translate", "explain",
+            "oluştur", "yaz", "üret", "dönüştür", "çevir", "açıkla", "geliştir"],
+    "L1": ["list", "summarize", "define", "what is", "hello", "thanks",
+            "listele", "özetle", "tanımla", "nedir", "merhaba", "teşekkür"],
 }
 
 
@@ -268,6 +273,11 @@ class Enhancer:
         self.template_version = template_version
         self.layers = self._load_layers()
 
+    @property
+    def LAYERS(self) -> list[Layer]:
+        """Public access to the canonical 8 RUNE layers."""
+        return self.layers
+
     # -- public API ---------------------------------------------------------
 
     def enhance(self, prompt: str, context: Optional[dict] = None) -> EnhancedPrompt:
@@ -282,6 +292,14 @@ class Enhancer:
             An ``EnhancedPrompt`` with the full XML-structured output.
         """
         ctx = context or {}
+        # Auto-detect Turkish input
+        if "locale" not in ctx:
+            _tr_signals = ["bir", "için", "ile", "olan", "nasıl", "nedir", "oluştur",
+                           "yaz", "listele", "açıkla", "analiz", "karşılaştır", "değerlendir",
+                           "ğ", "ş", "ç", "ı", "ö", "ü"]
+            lower = prompt.lower()
+            if sum(1 for s in _tr_signals if s in lower) >= 2:
+                ctx["locale"] = "tr"
         complexity = _classify_complexity(prompt)
         active_layers = _layers_for_complexity(complexity)
 

@@ -42,26 +42,68 @@ PRINCIPLE_KEYWORDS: dict[SpinozaPrinciple, list[str]] = {
         "develop", "build", "achieve", "persist", "sustain", "advance",
         "progress", "empower", "enable", "strengthen", "cultivate", "flourish",
         "thrive",
+        # Turkish
+        "geliştir", "evrim", "büyü", "güçlen", "ilerle", "başar", "sürdür",
+        "yarat", "kur", "inşa", "öğren", "koruma", "ilerleme", "güçlendir",
+        "gelişim", "potansiyel", "hedef", "azim", "kararlılık", "motivasyon",
     ],
     SpinozaPrinciple.RATIO: [
         "therefore", "because", "thus", "consequently", "logically", "hence",
         "reasoning", "analysis", "evidence", "proof", "consistent", "coherent",
         "structured", "systematic", "rational", "deductive", "conclusion",
         "premise", "valid", "sound",
+        # Turkish
+        "çünkü", "dolayısıyla", "analiz", "mantık", "yapı", "sıra", "liste",
+        "adım", "strateji", "plan", "sonuç", "neden", "kanıt", "tutarlı",
+        "sistematik", "öncelikle", "ardından", "bundan dolayı", "mantıklı",
+        "yapısal",
     ],
     SpinozaPrinciple.LAETITIA: [
         "hope", "inspire", "achieve", "joy", "delight", "satisfaction",
         "fulfillment", "clarity", "insight", "discovery", "breakthrough",
         "elegant", "beautiful", "harmonious", "enlighten", "illuminate",
         "uplift", "transcend", "wonder", "gratitude",
+        # Turkish
+        "mutluluk", "başarı", "harika", "mükemmel", "güzel", "ışık", "ilham",
+        "keşif", "neşe", "pozitif", "umut", "sevgi", "tatmin", "heyecan",
+        "muhteşem", "olağanüstü", "keyif", "huzur", "coşku", "şükran",
     ],
     SpinozaPrinciple.NATURA: [
         "balance", "harmony", "natural", "organic", "flow", "ecosystem",
         "symbiosis", "equilibrium", "integrate", "holistic", "unified",
         "connected", "sustainable", "resilient", "adaptive", "emergent",
         "synergy", "wholeness", "complement", "align",
+        # Turkish
+        "doğal", "tutarlı", "uyumlu", "akıcı", "bağlam", "bütün", "sistem",
+        "ekosistem", "denge", "organik", "sürdürülebilir", "bütünsel",
+        "entegre", "birleşik", "uyum", "akış", "dayanıklı", "adaptif",
+        "sinerji", "tamamlayıcı",
     ],
 }
+
+# Turkish positive/negative words for sentiment analysis
+_POSITIVE_WORDS_TR = frozenset([
+    "iyi", "harika", "mükemmel", "muhteşem", "güzel", "başarılı", "etkili",
+    "verimli", "güçlü", "açık", "basit", "yararlı", "faydalı", "olumlu",
+    "ideal", "hoş", "olağanüstü", "süper", "pozitif", "sevgi", "mutlu",
+    "keyifli", "huzurlu", "ilham", "umut", "neşe", "coşku", "tatmin",
+])
+
+_NEGATIVE_WORDS_TR = frozenset([
+    "kötü", "berbat", "korkunç", "rezalet", "çirkin", "başarısız", "hata",
+    "sorun", "problem", "zor", "karmaşık", "kafa karıştırıcı", "belirsiz",
+    "dağınık", "kaos", "acı", "sinir", "can sıkıcı", "işe yaramaz", "zayıf",
+    "olumsuz", "sıkıntı", "mutsuz", "üzücü",
+])
+
+# Turkish connectives for coherence analysis
+_CONNECTIVES_TR = frozenset([
+    "ancak", "ayrıca", "bunun yanı sıra", "ek olarak", "dolayısıyla",
+    "sonuç olarak", "böylece", "bu nedenle", "bu yüzden", "öte yandan",
+    "bununla birlikte", "benzer şekilde", "aynı zamanda", "aksine",
+    "özellikle", "önemli olarak", "son olarak", "ilk olarak", "ikinci olarak",
+    "ardından", "daha sonra", "aynı şekilde", "dahası", "üstelik", "öncelikle",
+])
 
 # Simple sentiment word lists for LAETITIA analysis
 _POSITIVE_WORDS = frozenset([
@@ -247,26 +289,35 @@ class SpinozaValidator:
 
     # ── Private Helpers ──────────────────────────────────────────────────
 
+    @staticmethod
+    def _casefold_turkish(text: str) -> str:
+        """Turkish-aware case folding: I→ı, İ→i (standard casefold mishandles these)."""
+        text = text.replace("I", "ı").replace("İ", "i")
+        return text.casefold()
+
     def _calculate_keyword_score(
         self, text: str, keywords: list[str]
     ) -> tuple[float, list[str]]:
         """Score based on keyword presence and density."""
-        lower = text.lower()
+        lower = self._casefold_turkish(text)
         words = lower.split()
         total = max(len(words), 1)
 
         found: list[str] = []
         match_count = 0
         for kw in keywords:
-            # Match keyword as prefix (grow matches growth/growing/grows)
-            pattern = rf"\b{re.escape(kw)}\w*\b"
-            hits = len(re.findall(pattern, lower))
+            kw_lower = self._casefold_turkish(kw)
+            # Use unicode-aware word boundary; for multi-word keywords use simple 'in'
+            if " " in kw_lower:
+                hits = lower.count(kw_lower)
+            else:
+                pattern = rf"(?<!\w){re.escape(kw_lower)}[\w]*(?!\w)"
+                hits = len(re.findall(pattern, lower, re.UNICODE))
             if hits:
                 found.append(kw)
                 match_count += hits
 
         density = match_count / total
-        # Combine density score with keyword diversity (unique matches / total keywords)
         density_score = min(1.0, density * self._KEYWORD_SCALE)
         diversity_score = min(1.0, len(found) / max(len(keywords) * 0.15, 1))
         score = 0.6 * density_score + 0.4 * diversity_score
@@ -307,20 +358,24 @@ class SpinozaValidator:
         return min(1.0, score)
 
     def _sentiment_analysis(self, text: str) -> float:
-        """Simple positive/negative word ratio for LAETITIA."""
-        words = re.findall(r"\b[a-z]+\b", text.lower())
+        """Simple positive/negative word ratio for LAETITIA (EN + TR)."""
+        lower = self._casefold_turkish(text)
+        words = re.findall(r"\b\w+\b", lower, re.UNICODE)
         if not words:
             return 0.5
 
-        pos = sum(1 for w in words if w in _POSITIVE_WORDS)
-        neg = sum(1 for w in words if w in _NEGATIVE_WORDS)
+        pos = sum(1 for w in words if w in _POSITIVE_WORDS or w in _POSITIVE_WORDS_TR)
+        neg = sum(1 for w in words if w in _NEGATIVE_WORDS or w in _NEGATIVE_WORDS_TR)
+
+        # Also check for positive Turkish sentences (exclamation, emoji-like patterns)
+        pos_sentence_bonus = len(re.findall(r"[!]+", text)) * 0.02
+
         total = pos + neg
         if total == 0:
-            return 0.5
+            return min(1.0, 0.5 + pos_sentence_bonus)
 
-        ratio = pos / total  # 0 = all negative, 1 = all positive
-        # Scale so neutral=0.4, fully positive=1.0
-        return min(1.0, 0.4 + 0.6 * ratio)
+        ratio = pos / total
+        return min(1.0, 0.4 + 0.6 * ratio + pos_sentence_bonus)
 
     def _coherence_check(self, text: str) -> float:
         """Check coherence for NATURA: sentence connectivity & flow."""
