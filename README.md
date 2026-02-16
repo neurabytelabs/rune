@@ -11,10 +11,16 @@ A structured 8-layer prompt engineering framework with philosophical validation,
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.5-magenta.svg)](docs/CHANGELOG.md)
-[![Models](https://img.shields.io/badge/models-Grok_4.1_|_Gemini_3_|_Claude_Opus_|_GPT--4o-purple.svg)](#-supported-models)
+[![Models](https://img.shields.io/badge/models-Gemini_3_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6_|_o4-purple.svg)](#-supported-models)
 [![Prompts](https://img.shields.io/badge/grimoire-40+_runes-cyan.svg)](#-prompt-library-grimoire)
 
 [Quick Start](#-quick-start) · [Architecture](#-architecture) · [New in v1.5](#-whats-new-in-v15) · [Models](#-supported-models) · [Grimoire](#-prompt-library-grimoire) · [Benchmarks](#-benchmarks) · [Roadmap](#-roadmap) · [Contributing](CONTRIBUTING.md)
+
+<br>
+
+![RUNE v1.5 Status](docs/rune_v15_status.jpeg)
+
+*11 Modules · 40+ Runes · 5 Providers · 6K+ Lines of Code*
 
 </div>
 
@@ -152,6 +158,14 @@ Use `--model` flag or set `default_model` in config.
 ---
 
 ## 🏗 Architecture
+
+<div align="center">
+
+![RUNE Architecture](docs/rune_architecture.jpeg)
+
+*The 8-layer enhancement engine with orchestrator wizard conducting energy flows*
+
+</div>
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -305,6 +319,14 @@ wand version                          # Version + config info
 ---
 
 ## 🗺️ Roadmap
+
+<div align="center">
+
+![RUNE Roadmap](docs/rune_roadmap.jpeg)
+
+*The wizard's journey from v1.0 to v2.0 — each rune stone activates new powers*
+
+</div>
 
 ### v1.5 ✅ (Current)
 - [x] SYNTHESIS — Multi-prompt fusion
