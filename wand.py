@@ -137,10 +137,14 @@ def load_config() -> Dict[str, Any]:
     if CONFIG_PATH.exists():
         try:
             text = CONFIG_PATH.read_text()
-            # Minimal TOML parser for flat key=value
+            # Section-aware minimal TOML parser
+            section = ""
             for line in text.splitlines():
                 line = line.strip()
-                if not line or line.startswith("#") or line.startswith("["):
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("["):
+                    section = line.strip("[]").strip()
                     continue
                 if "=" in line:
                     k, v = line.split("=", 1)
@@ -155,7 +159,19 @@ def load_config() -> Dict[str, Any]:
                             v = float(v) if "." in v else int(v)
                         except ValueError:
                             pass
-                    cfg[k] = v
+                    # Map [llm] keys to flat config
+                    if section == "llm":
+                        if k == "default_model":
+                            cfg["model"] = v
+                        else:
+                            cfg[k] = v
+                    elif section == "spinoza":
+                        if k == "threshold":
+                            cfg["spinoza_threshold"] = v
+                    elif section == "general":
+                        cfg[k] = v
+                    else:
+                        cfg[k] = v
         except Exception:
             pass
     return cfg
@@ -225,7 +241,7 @@ def section(title: str) -> None:
 # ──────────────────────────────────────────────
 # LLM Integration
 # ──────────────────────────────────────────────
-def llm_call(prompt: str, model: str, stream: bool = True, system: Optional[str] = None) -> str:
+def llm_call(prompt: str, model: str, stream: bool = False, system: Optional[str] = None) -> str:
     """Send prompt to Antigravity proxy. Returns full response text."""
     messages = []
     if system:
@@ -252,8 +268,8 @@ def llm_call(prompt: str, model: str, stream: bool = True, system: Optional[str]
         )
         resp.raise_for_status()
     except requests.ConnectionError:
-        print_error("Cannot connect to Antigravity proxy at " + CONFIG["api_url"])
-        print_info("Make sure the proxy is running: antigravity start")
+        print_error("Cannot connect to LLM API at " + CONFIG["api_url"])
+        print_info("Check your API endpoint and network connection.")
         sys.exit(1)
     except requests.HTTPError as e:
         print_error(f"API error: {e}")
@@ -397,7 +413,7 @@ def cmd_cast(args: argparse.Namespace) -> None:
     print_banner()
     prompt = " ".join(args.prompt)
     model = args.model or CONFIG["model"]
-    print_meta(f"Model: {model} | Template: {CONFIG['template_version']}")
+    print_info(f"🧙 Model: {model} | Template: {CONFIG['template_version']}")
 
     if args.raw:
         # Skip enhancement, run raw
@@ -411,9 +427,13 @@ def cmd_cast(args: argparse.Namespace) -> None:
         output = llm_call(enhanced, model=model)
 
     # Spinoza validation
-    print_meta("\n🔍 Running Spinoza validation...")
-    report = spinoza_validate(output, model="gemini-3-flash")
-    print_spinoza_report(report)
+    report = {}
+    try:
+        print_meta("\n🔍 Running Spinoza validation...")
+        report = spinoza_validate(output, model="gemini-3-flash")
+        print_spinoza_report(report)
+    except Exception as e:
+        print_warn(f"Spinoza validation skipped: {e}")
 
     # Save
     data = {
@@ -722,6 +742,20 @@ def cmd_stats(args: argparse.Namespace) -> None:
             print(f"    {C.CYAN}{m:<25}{C.RESET} {count} runs")
 
 
+def cmd_config(args: argparse.Namespace) -> None:
+    """Show current configuration."""
+    print_banner()
+    section("⚙️  Current Configuration")
+    print(f"  {C.BOLD}Config file:{C.RESET}  {CONFIG_PATH}{' ✓' if CONFIG_PATH.exists() else ' (not found, using defaults)'}")
+    print()
+    for k, v in CONFIG.items():
+        if k == "api_key":
+            display = v[:8] + "..." if v and len(v) > 8 else "(not set)" if not v else v
+        else:
+            display = v
+        print(f"  {C.CYAN}{k:<22}{C.RESET} {display}")
+
+
 def cmd_version(args: argparse.Namespace) -> None:
     """Show version info."""
     print_banner()
@@ -731,6 +765,7 @@ def cmd_version(args: argparse.Namespace) -> None:
     print(f"  {C.BOLD}API{C.RESET}      {CONFIG['api_url']}")
     print(f"  {C.BOLD}Prompts{C.RESET}  {PROMPTS_DIR}")
     print(f"  {C.BOLD}Outputs{C.RESET}  {CONFIG['output_dir']}")
+    print(f"  {C.BOLD}Config{C.RESET}   {CONFIG_PATH}{' ✓' if CONFIG_PATH.exists() else ' (not found)'}")
 
 
 # ──────────────────────────────────────────────
@@ -785,6 +820,9 @@ def build_parser() -> argparse.ArgumentParser:
     # stats
     sub.add_parser("stats", help="Show usage statistics")
 
+    # config
+    sub.add_parser("config", help="Show current configuration")
+
     # version
     sub.add_parser("version", help="Show version info")
 
@@ -817,6 +855,7 @@ def main() -> None:
         "validate": cmd_validate,
         "forge": cmd_forge,
         "stats": cmd_stats,
+        "config": cmd_config,
         "version": cmd_version,
     }
 

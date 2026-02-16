@@ -1,6 +1,9 @@
 # Outputs
 outputs/
 
+# RUNE config
+.rune/
+
 # Python
 __pycache__/
 *.py[cod]
