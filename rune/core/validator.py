@@ -350,6 +350,14 @@ class SpinozaValidator:
         if "```" in text or re.search(r"^    \S", text, re.MULTILINE):
             score += 0.15
 
+        # Turkish structural keywords that imply logical ordering
+        lower = self._casefold_turkish(text)
+        tr_ordering = ["adım", "öncelikle", "ardından", "son olarak", "ilk olarak",
+                        "ikinci olarak", "sonuç olarak", "sırasıyla"]
+        tr_hits = sum(1 for kw in tr_ordering if kw in lower)
+        if tr_hits >= 2:
+            score += 0.2
+
         # Length bonus
         word_count = len(text.split())
         if word_count >= 50:
@@ -378,25 +386,30 @@ class SpinozaValidator:
         return min(1.0, 0.4 + 0.6 * ratio + pos_sentence_bonus)
 
     def _coherence_check(self, text: str) -> float:
-        """Check coherence for NATURA: sentence connectivity & flow."""
+        """Check coherence for NATURA: sentence connectivity & flow (EN + TR)."""
         sentences = re.split(r"[.!?]+", text)
         sentences = [s.strip() for s in sentences if len(s.strip()) > 10]
         if len(sentences) < 2:
             return 0.4
 
         score = 0.0
+        lower = self._casefold_turkish(text)
 
-        # Connective usage
-        words = re.findall(r"\b[a-z]+\b", text.lower())
-        conn_count = sum(1 for w in words if w in _CONNECTIVES)
+        # Connective usage (EN + TR)
+        words = re.findall(r"\b\w+\b", lower, re.UNICODE)
+        conn_count = sum(1 for w in words if w in _CONNECTIVES or w in _CONNECTIVES_TR)
+        # Also check multi-word Turkish connectives
+        for conn in _CONNECTIVES_TR:
+            if " " in conn and conn in lower:
+                conn_count += 1
         conn_ratio = conn_count / max(len(words), 1)
         score += min(0.4, conn_ratio * 8)
 
         # Vocabulary overlap between adjacent sentences (topic consistency)
         overlaps = 0
         for i in range(len(sentences) - 1):
-            w1 = set(re.findall(r"\b[a-z]{3,}\b", sentences[i].lower()))
-            w2 = set(re.findall(r"\b[a-z]{3,}\b", sentences[i + 1].lower()))
+            w1 = set(re.findall(r"\b\w{3,}\b", self._casefold_turkish(sentences[i]), re.UNICODE))
+            w2 = set(re.findall(r"\b\w{3,}\b", self._casefold_turkish(sentences[i + 1]), re.UNICODE))
             if w1 & w2:
                 overlaps += 1
         if sentences:
