@@ -179,7 +179,7 @@ Use `--model` flag or set `default_model` in config.
 
 <div align="center">
 
-![RUNE Architecture](docs/rune_architecture.jpeg)
+![RUNE Architecture](docs/rune_architecture_v2.jpeg)
 
 *The 8-layer enhancement engine with orchestrator wizard conducting energy flows*
 
