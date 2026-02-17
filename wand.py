@@ -75,7 +75,7 @@ def get_cost_tracker():
     return _cost_tracker
 
 DEFAULT_CONFIG: Dict[str, Any] = {
-    "model": "gemini-3-pro",
+    "model": "gemini-3-flash-preview",
     "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
     "api_key": os.getenv("RUNE_API_KEY", ""),
     "template_version": "v4.3",
@@ -267,28 +267,38 @@ def llm_call(prompt: str, model: str, stream: bool = False, system: Optional[str
         "model": model,
         "messages": messages,
         "stream": stream,
+        "max_tokens": CONFIG.get("max_tokens", 8000),
+        "temperature": CONFIG.get("temperature", 0.7),
     }
     headers = {
         "Authorization": f"Bearer {CONFIG['api_key']}",
         "Content-Type": "application/json",
     }
 
-    try:
-        resp = requests.post(
-            CONFIG["api_url"],
-            json=payload,
-            headers=headers,
-            stream=stream,
-            timeout=120,
-        )
-        resp.raise_for_status()
-    except requests.ConnectionError:
-        print_error("Cannot connect to LLM API at " + CONFIG["api_url"])
-        print_info("Check your API endpoint and network connection.")
-        sys.exit(1)
-    except requests.HTTPError as e:
-        print_error(f"API error: {e}")
-        sys.exit(1)
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            resp = requests.post(
+                CONFIG["api_url"],
+                json=payload,
+                headers=headers,
+                stream=stream,
+                timeout=CONFIG.get("timeout", 180),
+            )
+            resp.raise_for_status()
+            break
+        except requests.ConnectionError:
+            if attempt == max_retries - 1:
+                print_error("Cannot connect to LLM API at " + CONFIG["api_url"])
+                print_info("Check your API endpoint and network connection.")
+                sys.exit(1)
+            import time; time.sleep(2 * (attempt + 1))
+        except requests.HTTPError as e:
+            if resp.status_code in (429, 503) and attempt < max_retries - 1:
+                import time; time.sleep(5 * (attempt + 1))
+                continue
+            print_error(f"API error: {e}")
+            sys.exit(1)
 
     if stream:
         full = []
@@ -378,7 +388,7 @@ SPINOZA_CRITERIA = [
 ]
 
 
-def spinoza_validate(text: str, model: str = "gemini-3-flash") -> Dict[str, Any]:
+def spinoza_validate(text: str, model: str = "gemini-3-flash-preview") -> Dict[str, Any]:
     """Run Spinoza validation on text. Returns scores dict."""
     criteria_text = "\n".join(f"- {name}: {desc}" for name, desc in SPINOZA_CRITERIA)
     prompt = f"""You are SpinozaValidator v1.0. Evaluate the following text on these criteria.
@@ -462,7 +472,7 @@ def cmd_cast(args: argparse.Namespace) -> None:
     report = {}
     try:
         print_meta("\n🔍 Running Spinoza validation...")
-        report = spinoza_validate(output, model="gemini-3-flash")
+        report = spinoza_validate(output, model="gemini-3-flash-preview")
         print_spinoza_report(report)
     except Exception as e:
         print_warn(f"Spinoza validation skipped: {e}")
@@ -617,7 +627,7 @@ def cmd_test(args: argparse.Namespace) -> None:
     """Cross-model benchmark."""
     print_banner()
     prompt = " ".join(args.prompt)
-    models = ["gemini-3-pro", "gemini-3-flash", "gpt-4o", "claude-sonnet-4-5", "claude-haiku-4"]
+    models = ["gemini-3-pro-preview", "gemini-3-flash-preview", "gpt-4o", "claude-sonnet-4-5", "claude-haiku-4"]
     if args.model:
         models = [args.model]
 
