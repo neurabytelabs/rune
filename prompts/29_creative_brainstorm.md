@@ -2,7 +2,7 @@
 
 ## Category: CREATIVE
 ## Complexity: L2
-## Description: SCAMPER ve lateral thinking teknikleriyle yapılandırılmış beyin fırtınası yöneten prompt.
+## Description: Facilitates structured brainstorming sessions using SCAMPER and lateral thinking techniques.
 
 ## Template
 

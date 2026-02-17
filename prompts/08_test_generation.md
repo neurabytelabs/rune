@@ -1,10 +1,10 @@
 # 🧪 Test Scenario Generation
 
-Unit, integration ve e2e test senaryoları üreten prompt. Edge case ve error path odaklı.
+Generates unit, integration, and e2e test scenarios. Focused on edge cases and error paths.
 
-## Kullanım
+## Usage
 
-Kodunuz var ama testleri yok (veya yetersiz). Bu prompt ile kapsamlı test senaryoları üretin. Framework-agnostic ama somut örneklerle gelir.
+You have code but no tests (or insufficient ones). Use this prompt to generate comprehensive test scenarios. Framework-agnostic but comes with concrete examples.
 
 ## Template
 
@@ -95,11 +95,11 @@ Kodunuz var ama testleri yok (veya yetersiz). Bu prompt ile kapsamlı test senar
 </system>
 ```
 
-## Örnek Kullanım
+## Example Usage
 
 `{{TEST_FW}}` → "Vitest"
 `{{TARGET}}` → "90%"
-`{{CODE}}` → Auth service veya API handler kodunuz
+`{{CODE}}` → Your auth service or API handler code
 `{{KNOWN_BUGS}}` → "Login fails silently when email has trailing space"
 
 ---

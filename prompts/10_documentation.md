@@ -1,10 +1,10 @@
 # 📚 Technical Documentation Generator
 
-README, API docs ve mimari dokümanlar üreten prompt. Farklı hedef kitleler için uyarlanır.
+Generates README, API docs, and architecture documentation. Adapts to different target audiences.
 
-## Kullanım
+## Usage
 
-Projenizin dokümantasyonu eksik veya güncel değil. Bu prompt ile farklı seviyelerde (junior/senior/CTO) teknik doküman üretin. Kod örnekleri dahildir.
+Your project's documentation is missing or outdated. Use this prompt to generate technical docs at different levels (junior/senior/CTO). Includes code examples.
 
 ## Template
 
@@ -96,12 +96,12 @@ Projenizin dokümantasyonu eksik veya güncel değil. Bu prompt ile farklı sevi
 </system>
 ```
 
-## Örnek Kullanım
+## Example Usage
 
 `{{AUDIENCE}}` → "all"
 `{{TYPE}}` → "all"
 `{{PROJECT_NAME}}` → "MasterPrompt v4.3"
-`{{CODE}}` → Ana kaynak dosyalarınız
+`{{CODE}}` → Your main source files
 `{{TECH_STACK}}` → "TypeScript, Node.js, React"
 
 ---

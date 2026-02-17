@@ -1,7 +1,6 @@
 # RUNE.md - The Universal Prompt Enhancer
 
-> **KULLANIM (USAGE):** Bu dosyayı ChatGPT, Claude veya Gemini sohbetinize yükleyin veya yapıştırın. Ardından "RUNE Actif" diyerek onaylayın. Bundan sonra yazdığınız her şey, otomatik olarak RUNE mimarisiyle işlenip optimize edilecektir.
-> **HOW TO USE:** Upload or paste this file into your chat. Confirm with "RUNE Active". From then on, every prompt you write is automatically processed and optimized through the RUNE architecture.
+> **HOW TO USE:** Upload or paste this file into your ChatGPT, Claude, or Gemini chat. Confirm with "RUNE Active". From then on, every prompt you write is automatically processed and optimized through the RUNE architecture.
 
 ---
 
