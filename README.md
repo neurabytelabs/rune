@@ -18,9 +18,9 @@ A structured 8-layer prompt engineering framework with philosophical validation,
 
 <br>
 
-![RUNE v1.5 Status](docs/rune_v15_status.jpeg)
+![RUNE v1.5 Status](docs/rune_hero.jpeg)
 
-*11 Modules · 40+ Runes · 5 Providers · 6K+ Lines of Code*
+*Every Prompt Is A Spell — Triple RUNE Enhanced · Gemini 3 Pro Image*
 
 </div>
 
