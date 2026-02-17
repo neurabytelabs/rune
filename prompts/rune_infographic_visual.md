@@ -1,7 +1,7 @@
 # RUNE Infographic Visual Prompt
 # Model: gemini-3-pro-image (via Antigravity Gateway)
 # Date: 2026-02-16
-# Result: Mustafa'yı çok etkiledi — "muazzam" dedi
+# Result: Impressive output — received great feedback
 
 Create a stunning dark-themed technical infographic showing the RUNE prompt engineering framework. Style: cyberpunk meets ancient magic, dark background with magenta-to-cyan gradients.
 

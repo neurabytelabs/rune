@@ -1,10 +1,10 @@
 # ⚡ Performance Optimization Audit
 
-Kodunuzu 60fps hedefine göre analiz eden ve öncelikli düzeltme listesi üreten prompt.
+Analyzes your code against a 60fps target and produces a prioritized fix list.
 
-## Kullanım
+## Usage
 
-Uygulamanız yavaş, takılıyor veya bellek sızıntısı var. Bu prompt ile sistematik performans analizi yapın. Çıktı olarak effort/impact matrisi alırsınız.
+Your application is slow, stuttering, or has memory leaks. Use this prompt for systematic performance analysis. You'll get an effort/impact matrix as output.
 
 ## Template
 
@@ -94,11 +94,11 @@ Uygulamanız yavaş, takılıyor veya bellek sızıntısı var. Bu prompt ile si
 </system>
 ```
 
-## Örnek Kullanım
+## Example Usage
 
 `{{FRAMEWORK}}` → "Three.js"
 `{{SYMPTOMS}}` → "Scene drops to 15fps when more than 50 objects visible"
-`{{CODE}}` → Render loop ve scene setup kodunuz
+`{{CODE}}` → Your render loop and scene setup code
 
 ---
 *MP v4.3 Template — Performance Optimization Audit*

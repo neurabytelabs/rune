@@ -2,7 +2,7 @@
 
 ## Category: AI_ML
 ## Complexity: L5
-## Description: Tool-kullanımlı, otonom AI agent mimarisi tasarlayan prompt.
+## Description: Designs tool-using, autonomous AI agent architectures.
 
 ## Template
 

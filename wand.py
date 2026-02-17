@@ -108,29 +108,29 @@ class C:
 # ──────────────────────────────────────────────
 # Meta Prompt (RUNE Architect v1.0 — based on v4.3)
 # ──────────────────────────────────────────────
-META_PROMPT = """Sen "RUNE Architect v1.0"sun. Görevin: kullanıcının basit isteğini alıp
-RUNE Framework'ün 8 katmanlı yapısına uygun bir prompt üretmek.
+META_PROMPT = """You are "RUNE Architect v1.0". Your task: take the user's simple request and
+produce a prompt that conforms to the RUNE Framework's 8-layer structure.
 
-RUNE KATMANLARI:
-L0 — System Core: Rol, persona, temel davranış kuralları
-L1 — Context Identity: Domain bilgisi, bağlam, hedef kitle
-L2 — Intent Scope: Görev tanımı, beklenen çıktı formatı
-L3 — Governance: Kısıtlamalar, etik kurallar, sınırlar
-L4 — Cognitive Engine: Düşünme stratejisi (CoT, ToT, vb.)
-L5 — Capabilities Domain: Araçlar, entegrasyonlar, yetenekler
-L6 — QA: Doğrulama kriterleri, kalite kontrol
-L7 — Output Meta: Format, stil, uzunluk, dil
+RUNE LAYERS:
+L0 — System Core: Role, persona, core behavioral rules
+L1 — Context Identity: Domain knowledge, context, target audience
+L2 — Intent Scope: Task definition, expected output format
+L3 — Governance: Constraints, ethical rules, boundaries
+L4 — Cognitive Engine: Thinking strategy (CoT, ToT, etc.)
+L5 — Capabilities Domain: Tools, integrations, capabilities
+L6 — QA: Validation criteria, quality control
+L7 — Output Meta: Format, style, length, language
 
-KURALLAR:
-1. v4.3 XML yapısını koru (L0-L7).
-2. {{variable}} alanlarını göreve göre doldur.
-3. Domain Preset seç: CODING / WRITING / ANALYSIS / CREATIVE / RESEARCH.
-4. Complexity L1-L5 belirle. L1-L2'de gereksiz katmanları atla.
-5. Observability için aktif katmanları belirt.
-6. Kullanıcı Türkçe yazdıysa Türkçe, İngilizce yazdıysa İngilizce üret.
-7. Her katmanın ne yaptığını kısa açıkla (verbose modda gösterilecek).
+RULES:
+1. Preserve the v4.3 XML structure (L0-L7).
+2. Fill {{variable}} fields according to the task.
+3. Select a Domain Preset: CODING / WRITING / ANALYSIS / CREATIVE / RESEARCH.
+4. Determine Complexity L1-L5; skip unnecessary layers for L1-L2.
+5. Specify active layers for Observability.
+6. Detect the user's language and generate the prompt in that language.
+7. Briefly explain what each layer does (shown in verbose mode).
 
-SADECE PROMPT'U VER. Açıklama ekleme."""
+OUTPUT THE PROMPT ONLY. Do not add explanations."""
 
 LAYER_NAMES = [
     "L0 — System Core",
@@ -368,7 +368,7 @@ def enhance_prompt(user_prompt: str, model: str, rune_name: Optional[str] = None
         for layer in LAYER_NAMES:
             print(f"  {C.CYAN}→ {layer}{C.RESET}")
 
-    full_prompt = f"{META_PROMPT}{extra}\n\nKULLANICI İSTEĞİ:\n{user_prompt}"
+    full_prompt = f"{META_PROMPT}{extra}\n\nUSER REQUEST:\n{user_prompt}"
     print_meta("⚡ Enhancing prompt...")
     enhanced = llm_call(full_prompt, model=model, stream=False)
     return enhanced

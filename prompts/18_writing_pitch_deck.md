@@ -2,7 +2,7 @@
 
 ## Category: WRITING
 ## Complexity: L4
-## Description: Yatırımcı sunumu için slide-by-slide pitch deck metni üreten prompt.
+## Description: Generates slide-by-slide pitch deck copy for investor presentations.
 
 ## Template
 

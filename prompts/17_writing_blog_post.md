@@ -2,7 +2,7 @@
 
 ## Category: WRITING
 ## Complexity: L3
-## Description: SEO-optimize edilmiş, derinlikli teknik blog yazısı üreten prompt.
+## Description: Generates in-depth, SEO-optimized technical blog posts.
 
 ## Template
 

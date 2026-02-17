@@ -2,7 +2,7 @@
 
 ## Category: CREATIVE
 ## Complexity: L3
-## Description: Müzik bestesi veya ses tasarımı için detaylı brief ve nota/akor yapısı üreten prompt.
+## Description: Generates detailed briefs with note/chord structures for music composition or sound design.
 
 ## Template
 

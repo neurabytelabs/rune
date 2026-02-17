@@ -121,19 +121,19 @@ def _layers_for_complexity(level: str) -> list[Layer]:
 # ---------------------------------------------------------------------------
 
 _META_PROMPT_TR = """\
-Sen "RUNE Architect v1.0"sün. Görevin: kullanıcının basit isteğini alıp
-RUNE Framework'ün 8 katmanlı yapısına uygun bir prompt üretmek.
+You are "RUNE Architect v1.0". Your task: take the user's simple request and
+produce a prompt that conforms to the RUNE Framework's 8-layer structure.
 
-KURALLAR:
-1. v4.3 XML yapısını koru (<master_prompt_v4.3> wrapper).
-2. Belirsiz alanları [EKSİK: ...] olarak işaretle.
-3. Görev karmaşıklığını L1-L4 sınıfla, gereksiz katmanları atla.
-4. Collaborative Intelligence gerekiyorsa hangi alt-ajanlar çağrılacağını belirt.
-5. Error Taxonomy'den olası hata türlerini önceden tahmin et.
-6. Sadece promptu ver, açıklama ekleme.
-7. Kullanıcı Türkçe yazdıysa Türkçe, İngilizce yazdıysa İngilizce.
+RULES:
+1. Preserve the v4.3 XML structure (<master_prompt_v4.3> wrapper).
+2. Mark ambiguous fields as [MISSING: ...].
+3. Classify task complexity as L1-L4; skip unnecessary layers.
+4. If Collaborative Intelligence is needed, specify which sub-agents to invoke.
+5. Predict possible error types from the Error Taxonomy.
+6. Output the prompt only — do not add explanations.
+7. Detect the user's language and generate the prompt in that language.
 
-GİRDİ: {{USER_PROMPT}}"""
+INPUT: {{USER_PROMPT}}"""
 
 _META_PROMPT_EN = """\
 You are "RUNE Architect v1.0". Your task: take the user's simple request and
