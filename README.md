@@ -281,7 +281,7 @@ Use `--model` flag or set `default_model` in config.
 ### 🎨 Visual & Creative
 | # | Rune | Use Case |
 |---|------|----------|
-| 🖼️ | [RUNE Infographic](prompts/rune_infographic_visual.md) | Framework visualization |
+| 29+ | [🎨 Creative Suite](prompts/) | Music, storytelling, brainstorming |
 
 > Browse all: `wand grimoire` or see [prompts/](prompts/)
 
