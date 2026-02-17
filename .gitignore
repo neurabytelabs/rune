@@ -35,3 +35,9 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# Binary assets (regenerable)
+*.pdf
+
+# Legacy
+legacy/
