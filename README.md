@@ -10,7 +10,7 @@ A structured 8-layer prompt engineering framework with philosophical validation,
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.5-magenta.svg)](docs/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.8-magenta.svg)](docs/CHANGELOG.md)
 [![Models](https://img.shields.io/badge/models-Gemini_3_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6_|_o4-purple.svg)](#-supported-models)
 [![Prompts](https://img.shields.io/badge/grimoire-40+_runes-cyan.svg)](#-prompt-library-grimoire)
 
