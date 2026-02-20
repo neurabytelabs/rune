@@ -164,3 +164,49 @@ For validating generated code, simple regex checks (does it have `<form>`, `loca
 The Spinoza 4-pillar scoring (Conatus/Ratio/Laetitia/Natura) with numeric scores 0-1 creates a measurable feedback loop. When scores drop below threshold, the system can automatically re-generate — turning prompt engineering from art into engineering.
 
 *RUNE v1.7 | Code Generation Patterns | "Specificity is the soul of good prompts."*
+
+---
+
+## 7. ARCHITECTURE CONVERGENCE — IT-15 REFLECTION (v1.8)
+
+> Based on: 15 iterations of MODUS Forge development (2026-02-20)
+
+### The Universal Sensor Pattern
+
+Every context signal (weather, health, music, git, news, location, social, system resources) follows the identical pattern:
+1. **Fetch** — API call or local command
+2. **Classify** — Map raw data to categories
+3. **Mood-map** — Convert categories to prompt-relevant adjectives
+4. **Cache** — TTL-based (weather 30min, news 1h, music 5min, location 1h)
+
+This means **any new context source** can be added in <50 lines by implementing these 4 steps. The pattern is the prompt engineering equivalent of the Strategy pattern in OOP.
+
+### Composability Scales Across Abstraction Layers
+
+The same principle operates at 3 levels:
+- **Sentence level** — Genetic evolution recombines prompt sentences (genes)
+- **Module level** — Recipes chain generation steps with {{output}} interpolation
+- **System level** — Skills are plug-in context providers
+
+When a pattern works at one level, check if it works at others. It usually does.
+
+### Architecture Maturity Signal
+
+When new features only require adding a new sensor/provider/template **without modifying core modules**, the architecture is mature. Forge reached this at IT-10. This is the "open-closed principle" applied to prompt engineering systems — open for extension, closed for modification.
+
+### The CLI Subcommand Pattern for AI Tools
+
+AI-powered tools need more entry points than traditional CLIs:
+- Default action (generate) for quick use
+- `serve` for live preview during iteration
+- `grimoire` for prompt memory
+- `evolve` for automated improvement
+- `analytics` for learning from history
+
+Each subcommand maps to a different phase of the prompt engineering lifecycle: create → iterate → remember → evolve → analyze.
+
+### Provider Count vs Provider Understanding
+
+Having 7+ LLM providers is less valuable than deeply understanding 2-3. The `detectProvider()` routing function and per-provider system instructions are where quality lives. Adding a new provider takes 20 minutes; tuning its system instruction takes days.
+
+*RUNE v1.8 | Architecture Convergence | "The power of a thing is its capacity to persist in being." — Spinoza*
