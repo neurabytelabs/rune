@@ -109,3 +109,58 @@ Apply these specific patterns based on the detected task type:
 
 *RUNE v1.5 | NeuraByte Labs | "Every prompt is a spell."*
 *License: MIT | Created for Advanced Agentic Coding*
+---
+
+## 5. PROMPT AMPLIFICATION (v1.6 — Prompt Repetition)
+
+> Based on: "Prompt Repetition Improves Non-Reasoning LLMs" (Leviathan, Kalman, Matias — Google Research, arXiv:2512.14982)
+
+### Principle
+Repeating the prompt enables each token to attend to every other token, creating a bidirectional attention effect in causal LLMs. 47/70 wins, 0 losses across Gemini, GPT, Claude, Deepseek.
+
+### Rule
+- **Non-reasoning mode:** Automatically transform `<QUERY>` → `<QUERY>\n---\n<QUERY>` before sending to LLM
+- **Reasoning mode (CoT/o1/thinking):** BYPASS — reasoning models already repeat internally
+- **Long prompts (>4K tokens):** Repeat only the core question/instruction, not full context
+
+### Implementation
+```
+IF model.reasoning == false:
+  prompt = original_prompt + "\n---\n" + original_prompt
+ELSE:
+  prompt = original_prompt  # bypass
+```
+
+### Impact
+- Zero additional output tokens
+- Zero additional latency (prefill is parallelizable)
+- Drop-in compatible — no format changes
+- Especially effective for: multiple choice, classification, entity extraction
+
+*RUNE v1.6 | Prompt Amplification | "Say it twice, understand it once."*
+
+---
+
+## 6. CODE GENERATION — MODUS FORGE LEARNINGS (v1.7)
+
+> Based on: Practical experience from MODUS Forge Sprint IT-01 (2026-02-20)
+
+### L5 Visual Spec is the Highest-Leverage Layer for Code Gen
+
+When generating complete UI apps, **Layer 5 (Capabilities/Visual)** has the most impact on output quality. Being extremely specific about:
+- **Exact color hex codes** (not "blue" but `#0ff`)
+- **Font stack** with fallbacks (`JetBrains Mono, monospace`)
+- **Vibe description** ("neon glow, dark background, scanlines")
+- **Layout system** ("8px grid, CSS custom properties")
+
+...produces dramatically better results than vague aesthetic instructions.
+
+### Regex Validation Beats LLM-as-Judge for Code
+
+For validating generated code, simple regex checks (does it have `<form>`, `localStorage`, `@media`, `transition`, etc.) catch ~80% of quality signals at zero cost. Reserve LLM-as-judge for semantic quality only.
+
+### Structured Scoring Creates Feedback Loops
+
+The Spinoza 4-pillar scoring (Conatus/Ratio/Laetitia/Natura) with numeric scores 0-1 creates a measurable feedback loop. When scores drop below threshold, the system can automatically re-generate — turning prompt engineering from art into engineering.
+
+*RUNE v1.7 | Code Generation Patterns | "Specificity is the soul of good prompts."*
