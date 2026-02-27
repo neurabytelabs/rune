@@ -42,3 +42,6 @@ Thumbs.db
 # Legacy
 legacy/
 .internal/
+.env
+.env.*
+__pycache__/
