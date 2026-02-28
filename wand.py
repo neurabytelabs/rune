@@ -46,7 +46,7 @@ except ImportError:
 # ──────────────────────────────────────────────
 # Version
 # ──────────────────────────────────────────────
-__version__ = "1.5.0"
+__version__ = "1.8.0"
 
 # ──────────────────────────────────────────────
 # Paths
@@ -78,7 +78,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "model": "gemini-3-flash-preview",
     "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
     "api_key": os.getenv("RUNE_API_KEY", ""),
-    "template_version": "v4.3",
+    "template_version": "v4.4",
     "spinoza_threshold": 0.6,
     "output_dir": str(OUTPUT_DIR),
     "color": True,
@@ -200,7 +200,7 @@ CONFIG = load_config()
 BANNER = f"""{C.MAGENTA}{C.BOLD}╔══════════════════════════════════════╗
 ║  🪄 WAND — Prompt Sorcery Engine    ║
 ║  Every prompt is a spell.            ║
-║  RUNE v1.0 | NeuraByte Labs         ║
+║  RUNE v1.8 | NeuraByte Labs         ║
 ╚══════════════════════════════════════╝{C.RESET}"""
 
 
@@ -1063,7 +1063,7 @@ def main() -> None:
         BANNER = """╔══════════════════════════════════════╗
 ║  🪄 WAND — Prompt Sorcery Engine    ║
 ║  Every prompt is a spell.            ║
-║  RUNE v1.0 | NeuraByte Labs         ║
+║  RUNE v1.8 | NeuraByte Labs         ║
 ╚══════════════════════════════════════╝"""
 
     commands = {
