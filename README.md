@@ -60,34 +60,44 @@ Most prompts are flat text — unstructured, ambiguous, model-dependent. You wri
 
 ## ⚡ Quick Start
 
-```bash
-git clone https://github.com/neurabytelabs/rune.git
-cd rune
-pip install requests   # only dependency
+### 🪄 Zero Setup — Start in 30 seconds
 
-# Configure (xAI recommended — fast, cheap, 2M context)
-mkdir -p ~/.rune
-cat > ~/.rune/config.toml << 'EOF'
-[llm]
-api_url = "https://api.x.ai/v1/chat/completions"
-default_model = "grok-4-1-fast-reasoning"
-EOF
+> No installation. No API key. Works with any AI.
 
-# Set your API key
-echo 'export XAI_API_KEY="your-key"' >> ~/.secrets && source ~/.secrets
+1. Open [RUNE.md](./RUNE.md) → Copy the full content
+2. Paste into **ChatGPT / Claude / Gemini** at the start of your chat
+3. Type: `RUNE Active`
+4. Done. Every prompt you write is now automatically amplified.
+
 ```
+You: [paste RUNE.md content]
+You: RUNE Active
+AI: ✅ RUNE Architect online. All prompts will be processed through the 8-layer pipeline.
+You: Write a landing page for my SaaS
+AI: [delivers a structured, detailed, production-ready response]
+```
+
+> **This is how @0xsarac uses RUNE daily** — paste once per session, get 10x better outputs.
+
+---
 
 ### Three ways to use RUNE:
 
 ```bash
-# 1. WAND — Single prompt enhancement
+# 🥇 RUNE.md — Paste into any AI chat (zero setup, recommended)
+# Copy RUNE.md → paste into ChatGPT/Claude/Gemini → "RUNE Active" → done
+
+# 🔧 WAND — CLI prompt enhancement
+git clone https://github.com/neurabytelabs/rune.git && cd rune
+pip install requests
+echo 'export XAI_API_KEY="your-key"' >> ~/.secrets && source ~/.secrets
 python3 wand.py cast "Build a REST API for a fintech app"
 
-# 2. SWARM — Multi-agent evolution (NEW in v2.0)
+# 🐝 SWARM — Multi-agent evolution (most powerful)
 python3 swarm.py "Design the future of AI interfaces" --agents 5 --rounds 2
 
-# 3. RUNE.md — Paste into any AI chat (zero setup)
-# Upload RUNE.md to ChatGPT/Claude/Gemini → confirm "RUNE Active" → done
+# 🤖 OpenClaw Skill — Agent workflow integration
+npx clawhub@latest install neurabytelabs/rune-skill
 ```
 
 <br>
