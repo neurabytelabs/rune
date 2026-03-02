@@ -10,7 +10,7 @@ A structured 8-layer prompt engineering framework with philosophical validation,
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.8-magenta.svg)](docs/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.9-magenta.svg)](docs/CHANGELOG.md)
 [![Models](https://img.shields.io/badge/models-Gemini_3_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6_|_o4-purple.svg)](#-supported-models)
 [![Prompts](https://img.shields.io/badge/grimoire-40+_runes-cyan.svg)](#-prompt-library-grimoire)
 
@@ -63,6 +63,56 @@ You don't need to be a developer. You don't need to understand AI. RUNE teaches 
 | No idea what it costs | Cost Tracker shows per-model spend in real-time |
 
 > *"A prompt without structure is a spell without a wand."*
+
+---
+
+## 🆕 What's New in v1.9
+
+| Module | Description |
+|--------|-------------|
+| 🔮 **Interactive Q&A (rünle)** | Claude Code-style guided spell crafting — domain-aware questions, multiple choice, confirmation before cast |
+| ⚡ **Quick Mode (rünle!)** | Add `!` to skip Q&A and cast instantly — same as `--quick` flag |
+| 🎯 **Intent Detection** | Auto-detects domain (CODING/WRITING/CREATIVE/ANALYSIS/RESEARCH) and language (TR/EN) |
+| 📋 **Spell Summary** | Review your enriched prompt before execution — cancel or confirm |
+
+### How it works
+
+```
+$ wand cast "Write a blog post about AI agents"
+
+🔮 Spell Analysis
+Domain: WRITING | Lang: EN
+
+📌 Target audience?
+  1) Technical (developers)
+  2) General audience
+  3) Business / C-level
+  4) Custom...
+
+  ▸ 1
+
+🎭 Tone/Style?
+  1) Academic
+  2) Blog / conversational
+  ...
+
+📋 Spell Summary
+  Prompt: Write a blog post about AI agents
+  Domain: WRITING
+  Audience: technical
+  Tone: conversational
+  Length: medium
+
+  8 RUNE layers will be applied ✨
+
+✅ Confirm? [E/h] e
+```
+
+**Quick mode** — skip all questions:
+```bash
+wand cast "Write a blog post about AI!"    # trailing ! = quick mode
+wand cast -q "Write a blog post about AI"   # --quick flag
+```
 
 ---
 
@@ -191,7 +241,7 @@ Use `--model` flag or set `default_model` in config.
 │            "Every prompt is a spell"                 │
 ├──────────────────────────────────────────────────────┤
 │                                                      │
-│  🪄 WAND CLI (12 commands)                           │
+│  🪄 WAND CLI (12 commands + interactive Q&A)         │
 │  cast · inscribe · duel · fuse · grimoire           │
 │  validate · forge · test · stats · cost · config    │
 │                                                      │
@@ -236,6 +286,8 @@ Use `--model` flag or set `default_model` in config.
 
 | | Feature | Description |
 |---|---|---|
+| 🔮 | **Interactive Q&A** | Domain-aware guided spell crafting with confirmation |
+| ⚡ | **Quick Mode** | Trailing  or  to skip Q&A |
 | 🎯 | **8-Layer Structure** | Semantic separation of concerns for prompts |
 | 🔮 | **Spinoza Validator** | 4-pillar philosophical validation (EN + TR) |
 | 🧬 | **SYNTHESIS** | Fuse multiple prompts into one (layered/merged/chain) |
@@ -308,7 +360,9 @@ Cross-model testing with `wand test`:
 
 ```bash
 # Core
-wand cast "prompt"                    # Enhance + execute via LLM
+wand cast "prompt"                    # Interactive Q&A + enhance + execute
+wand cast "prompt!"                   # Quick mode (skip Q&A)
+wand cast -q "prompt"                 # Quick mode (flag)
 wand inscribe "prompt"                # Show enhanced prompt only
 wand duel "prompt"                    # A/B: raw vs enhanced
 
@@ -346,7 +400,14 @@ wand version                          # Version + config info
 
 </div>
 
-### v1.5 ✅ (Current)
+### v1.9 ✅ (Current)
+- [x] Interactive Q&A — domain-aware guided spell crafting
+- [x] Quick Mode — trailing  or  to skip Q&A
+- [x] Intent Detection — auto-detect domain + language
+- [x] Spell Summary — review before execution
+- [x] OpenClaw Skill — 
+
+### v1.5 ✅
 - [x] SYNTHESIS — Multi-prompt fusion
 - [x] MEMORY — Prompt evolution tracking
 - [x] Cost Tracker — Per-model analytics
