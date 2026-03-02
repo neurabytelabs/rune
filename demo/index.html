@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RUNE SWARM — Multi-Agent Prompt Evolution</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a2e;
+    --border: #2a2a3e;
+    --text: #e0e0f0;
+    --dim: #6a6a8a;
+    --accent: #f59e0b;
+    --blue: #3b82f6;
+    --green: #10b981;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --cyan: #06b6d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  }
+
+  .hero-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    border: 1px solid rgba(245,158,11,0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    position: relative;
+    letter-spacing: 0.1em;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    position: relative;
+    background: linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--dim);
+    font-weight: 300;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .hero .tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  /* Flow Diagram */
+  .flow-section {
+    padding: 4rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    max-width: 700px;
+    position: relative;
+  }
+
+  .flow-arrow {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    position: relative;
+  }
+  .flow-arrow::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  .flow-step-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+  }
+
+  .flow-step h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .flow-step p {
+    color: var(--dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Agent Grid */
+  .agents-section {
+    padding: 4rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .agent-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .agent-emoji {
+    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-radius: 12px;
+  }
+
+  .agent-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .agent-desc {
+    color: var(--dim);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .agent-score {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .score-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.5s ease;
+  }
+
+  .score-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* Live Demo */
+  .demo-section {
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .terminal {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .terminal-bar {
+    background: var(--surface);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .terminal-dot.red { background: #ef4444; }
+  .terminal-dot.yellow { background: #f59e0b; }
+  .terminal-dot.green { background: #10b981; }
+
+  .terminal-title {
+    color: var(--dim);
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .term-line {
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .term-prompt { color: var(--green); }
+  .term-cmd { color: #fff; }
+  .term-dim { color: var(--dim); }
+  .term-accent { color: var(--accent); }
+  .term-blue { color: var(--blue); }
+  .term-green { color: var(--green); }
+  .term-red { color: var(--red); }
+  .term-purple { color: var(--purple); }
+  .term-pink { color: var(--pink); }
+  .term-cyan { color: var(--cyan); }
+  .term-bold { font-weight: 700; color: #fff; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Spinoza */
+  .spinoza-section {
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .spinoza-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .pillar-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .pillar-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+  .pillar-latin {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+  .pillar-desc {
+    color: var(--dim);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* Comparison */
+  .compare-section {
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .compare-table th, .compare-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .compare-table td { font-size: 0.9rem; }
+  .compare-table td:first-child { font-weight: 600; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--dim);
+    font-size: 0.85rem;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* CTA */
+  .cta-btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background: linear-gradient(135deg, var(--accent), #ef4444);
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(245,158,11,0.3);
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin: 3rem 0;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    color: var(--dim);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  @media (max-width: 600px) {
+    .spinoza-grid { grid-template-columns: 1fr; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .stats-row { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🧬 NeuraByte Labs — Experimental</div>
+  <h1>RUNE SWARM</h1>
+  <p class="subtitle">Multi-Agent Prompt Evolution Engine</p>
+  <p class="tagline">One prompt enters. The best prompt survives.</p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Agent Strategies</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Spinoza Pillars</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">15s</div>
+      <div class="stat-label">5-Agent Swarm</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">$0</div>
+      <div class="stat-label">Marginal Cost</div>
+    </div>
+  </div>
+
+  <a href="#demo" class="cta-btn">Watch the Demo ↓</a>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="flow-section">
+  <h2 class="section-title">How It Works</h2>
+  <div class="flow">
+
+    <div class="flow-step">
+      <div class="flow-step-label">Phase 1 — Input</div>
+      <h3>📝 Your Prompt</h3>
+      <p>You write one prompt. That's it. SWARM handles the rest.</p>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-label">Phase 2 — Spawn</div>
+      <h3>🐝 Agent Swarm Deploys</h3>
+      <p>3-6 agents spawn in parallel, each with a radically different thinking strategy: Expert, Creative, Devil's Advocate, Synthesizer, Minimalist, Wild Card.</p>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-label">Phase 3 — Compete</div>
+      <h3>⚔️ Spinoza Tournament</h3>
+      <p>Every response is scored on 4 philosophical pillars: Conatus (action), Ratio (logic), Laetitia (tone), Natura (flow). Only the strongest survive.</p>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-label">Phase 4 — Evolve</div>
+      <h3>🧬 Cross-Pollination</h3>
+      <p>In Round 2, agents see the top performers' outputs. They evolve. Scores improve. Darwinian prompt evolution in action.</p>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <div class="flow-step" style="border-color: var(--accent);">
+      <div class="flow-step-label">Phase 5 — Fuse</div>
+      <h3>🔮 Synthesis</h3>
+      <p>Top agents' best insights merge into a single, definitive response. Better than any individual agent could produce alone.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section class="agents-section">
+  <h2 class="section-title">The Swarm</h2>
+  <div class="agents-grid">
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">🎓</div>
+        <div class="agent-name">Expert</div>
+      </div>
+      <div class="agent-desc">World-class domain authority. Precise, structured, data-driven. The professor who wrote the textbook.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:79.6%;background:var(--green)"></div></div>
+        <div class="score-value" style="color:var(--green)">79.6</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">😈</div>
+        <div class="agent-name">Devil's Advocate</div>
+      </div>
+      <div class="agent-desc">Destroys weak ideas first, then builds battle-tested solutions from the rubble. Your toughest critic.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:72.8%;background:var(--blue)"></div></div>
+        <div class="score-value" style="color:var(--blue)">72.8</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">🔬</div>
+        <div class="agent-name">Synthesizer</div>
+      </div>
+      <div class="agent-desc">Cross-domain polymath. Connects science, philosophy, art, and business into unified frameworks.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:69%;background:var(--purple)"></div></div>
+        <div class="score-value" style="color:var(--purple)">69.0</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">🎨</div>
+        <div class="agent-name">Creative</div>
+      </div>
+      <div class="agent-desc">Lateral thinker. Unexpected metaphors, novel connections, the response nobody saw coming.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:64.6%;background:var(--pink)"></div></div>
+        <div class="score-value" style="color:var(--pink)">64.6</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">✂️</div>
+        <div class="agent-name">Minimalist</div>
+      </div>
+      <div class="agent-desc">Radical clarity. Every word earns its place. Maximum impact, minimum noise. Occam's Razor incarnate.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:65.8%;background:var(--cyan)"></div></div>
+        <div class="score-value" style="color:var(--cyan)">65.8</div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-emoji">🃏</div>
+        <div class="agent-name">Wild Card</div>
+      </div>
+      <div class="agent-desc">Part philosopher, part comedian, part strategist. Breaks every convention. The mutation that changes everything.</div>
+      <div class="agent-score">
+        <div class="score-bar-bg"><div class="score-bar" style="width:60%;background:var(--accent)"></div></div>
+        <div class="score-value" style="color:var(--accent)">???</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SPINOZA -->
+<section class="spinoza-section">
+  <h2 class="section-title">Spinoza Validator™</h2>
+  <p style="text-align:center;color:var(--dim);margin-bottom:2rem;">Every response is judged by philosophy, not just metrics.</p>
+  <div class="spinoza-grid">
+
+    <div class="pillar">
+      <div class="pillar-icon">⚡</div>
+      <div class="pillar-name">Agency</div>
+      <div class="pillar-latin">Conatus</div>
+      <div class="pillar-desc">Is it actionable? Does it empower you to DO something? No passive fluff.</div>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon">🧠</div>
+      <div class="pillar-name">Logic</div>
+      <div class="pillar-latin">Ratio</div>
+      <div class="pillar-desc">Internally consistent? Structured? No contradictions, no hand-waving.</div>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon">☀️</div>
+      <div class="pillar-name">Tone</div>
+      <div class="pillar-latin">Laetitia</div>
+      <div class="pillar-desc">Constructive and empowering? No "As an AI..." hedging. Confidence without arrogance.</div>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon">🌊</div>
+      <div class="pillar-name">Flow</div>
+      <div class="pillar-latin">Natura</div>
+      <div class="pillar-desc">Does it sound human? Natural rhythm, varied sentences, genuine voice.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LIVE DEMO -->
+<section class="demo-section" id="demo">
+  <h2 class="section-title">Live Demo</h2>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot red"></div>
+      <div class="terminal-dot yellow"></div>
+      <div class="terminal-dot green"></div>
+      <span class="terminal-title">swarm.py — RUNE SWARM v0.1</span>
+    </div>
+    <div class="terminal-body" id="terminal"></div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="compare-section">
+  <h2 class="section-title">RUNE vs RUNE SWARM</h2>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Raw Prompt</th>
+        <th>RUNE</th>
+        <th>RUNE SWARM</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Perspectives</td>
+        <td>1</td>
+        <td>1 (enhanced)</td>
+        <td><span class="badge badge-green">3-6 parallel</span></td>
+      </tr>
+      <tr>
+        <td>Evolution</td>
+        <td>None</td>
+        <td>8-layer pipeline</td>
+        <td><span class="badge badge-green">Multi-round Darwinian</span></td>
+      </tr>
+      <tr>
+        <td>Quality Score</td>
+        <td><span class="badge badge-red">~45/100</span></td>
+        <td><span class="badge badge-yellow">~65/100</span></td>
+        <td><span class="badge badge-green">~80/100</span></td>
+      </tr>
+      <tr>
+        <td>Blind Spots</td>
+        <td>Many</td>
+        <td>Fewer</td>
+        <td><span class="badge badge-green">Devil's Advocate catches them</span></td>
+      </tr>
+      <tr>
+        <td>Cross-pollination</td>
+        <td>No</td>
+        <td>No</td>
+        <td><span class="badge badge-green">Agents learn from each other</span></td>
+      </tr>
+      <tr>
+        <td>Time</td>
+        <td>~2s</td>
+        <td>~5s</td>
+        <td>~15s (parallel)</td>
+      </tr>
+      <tr>
+        <td>Marginal Cost</td>
+        <td>1 API call</td>
+        <td>1 API call</td>
+        <td>4-15 API calls ($0 w/ subscription)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FOOTER -->
+<section class="footer">
+  <p style="font-size:1.5rem;margin-bottom:1rem;">🐝</p>
+  <p><strong>RUNE SWARM</strong> by <a href="https://neurabytelabs.com">NeuraByte Labs</a></p>
+  <p style="margin-top:0.5rem;">Built with Spinoza's philosophy and Darwinian evolution.</p>
+  <p style="margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--dim);">
+    pip install rune-swarm &nbsp;|&nbsp; github.com/neurabytelabs/rune
+  </p>
+</section>
+
+<script>
+// Terminal animation
+const lines = [
+  { text: '$ ', cls: 'term-prompt', append: true },
+  { text: 'python3 swarm.py "Design the future of AI interfaces" --agents 5 --rounds 2', cls: 'term-cmd', append: true, typewriter: true },
+  { text: '', cls: '' },
+  { text: '🐝 RUNE SWARM v0.1', cls: 'term-bold' },
+  { text: 'One prompt enters. The best prompt survives.', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: 'Prompt:  Design the future of AI interfaces', cls: 'term-bold' },
+  { text: 'Agents:  5  |  Model: grok-4  |  Rounds: 2', cls: 'term-dim' },
+  { text: '──────────────────────────────────────────────────', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: '── Round 1/2 ──', cls: 'term-blue' },
+  { text: '', cls: '' },
+  { text: 'Spawning 5 agents...', cls: 'term-dim' },
+  { text: '  🎓 Expert done (3.2s)', cls: '' },
+  { text: '  🎨 Creative done (4.1s)', cls: '' },
+  { text: '  😈 Devil\'s Advocate done (5.3s)', cls: '' },
+  { text: '  🔬 Synthesizer done (4.8s)', cls: '' },
+  { text: '  ✂️ Minimalist done (2.1s)', cls: '' },
+  { text: '', cls: '' },
+  { text: '📊 Tournament Results (Round 1):', cls: 'term-bold' },
+  { text: '', cls: '' },
+  { text: '🎓 #1 Expert 🏆                    (3.2s, 1360 tok)', cls: 'term-accent' },
+  { text: '   ████████████████████████░░░░░░ 79.6/100', cls: 'term-green' },
+  { text: '   C:22.2  R:19.6  L:16.2  N:17.0', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: '😈 #2 Devil\'s Advocate 🥈          (5.3s, 1258 tok)', cls: 'term-blue' },
+  { text: '   ██████████████████████░░░░░░░░ 72.8/100', cls: 'term-green' },
+  { text: '   C:20.4  R:15.2  L:16.8  N:16.0', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: '🔬 #3 Synthesizer 🥉               (4.8s, 1094 tok)', cls: 'term-purple' },
+  { text: '   █████████████████████░░░░░░░░░ 69.0/100', cls: 'term-green' },
+  { text: '   C:17.2  R:18.4  L:15.0  N:19.0', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: '── Round 2/2 (Cross-Pollination Active) ──', cls: 'term-blue' },
+  { text: '', cls: '' },
+  { text: '🎓 Expert evolved:     75.0 → 79.6  (+6.1%)', cls: 'term-green' },
+  { text: '😈 Devil\'s Adv evolved: 68.4 → 72.8  (+6.4%)', cls: 'term-green' },
+  { text: '🔬 Synthesizer evolved: 65.2 → 69.0  (+5.8%)', cls: 'term-green' },
+  { text: '', cls: '' },
+  { text: 'Fusing top 2 agents...', cls: 'term-dim' },
+  { text: '', cls: '' },
+  { text: '══════════════════════════════════════════════════', cls: 'term-accent' },
+  { text: '🔮 SWARM SYNTHESIS', cls: 'term-bold' },
+  { text: '══════════════════════════════════════════════════', cls: 'term-accent' },
+  { text: '   Score: 77.6/100  (+3.4% vs best single agent)', cls: 'term-green' },
+  { text: '', cls: '' },
+  { text: '   The definitive answer — forged from 5 minds,', cls: 'term-bold' },
+  { text: '   battle-tested by philosophy, evolved through', cls: 'term-bold' },
+  { text: '   competition. Better than any agent alone.', cls: 'term-bold' },
+  { text: '', cls: '' },
+  { text: '📁 Report saved: outputs/swarm/swarm_20260222.json', cls: 'term-dim' },
+];
+
+const terminal = document.getElementById('terminal');
+let lineIdx = 0;
+let charIdx = 0;
+let currentSpan = null;
+
+function addLine() {
+  if (lineIdx >= lines.length) return;
+  const line = lines[lineIdx];
+
+  if (line.typewriter && line.append) {
+    // Find the last span and typewrite into a new one after it
+    if (!currentSpan) {
+      currentSpan = document.createElement('span');
+      currentSpan.className = line.cls;
+      const lastDiv = terminal.lastElementChild;
+      if (lastDiv) lastDiv.appendChild(currentSpan);
+      charIdx = 0;
+    }
+    if (charIdx < line.text.length) {
+      currentSpan.textContent += line.text[charIdx];
+      charIdx++;
+      terminal.scrollTop = terminal.scrollHeight;
+      setTimeout(addLine, 20);
+      return;
+    } else {
+      currentSpan = null;
+      lineIdx++;
+      setTimeout(addLine, 300);
+      return;
+    }
+  }
+
+  const div = document.createElement('div');
+  div.className = 'term-line';
+
+  if (line.append) {
+    // This is a prompt prefix, next line will append
+    const span = document.createElement('span');
+    span.className = line.cls;
+    span.textContent = line.text;
+    div.appendChild(span);
+    terminal.appendChild(div);
+    div.style.animationDelay = '0s';
+    lineIdx++;
+    setTimeout(addLine, 100);
+    return;
+  }
+
+  div.className = `term-line ${line.cls}`;
+  div.textContent = line.text || '\u200B';
+  div.style.animationDelay = '0s';
+  terminal.appendChild(div);
+  terminal.scrollTop = terminal.scrollHeight;
+
+  lineIdx++;
+  const delay = line.text === '' ? 100 : (line.cls === 'term-dim' ? 150 : 250);
+  setTimeout(addLine, delay);
+}
+
+// Start when demo section is visible
+const observer = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    setTimeout(addLine, 500);
+    observer.disconnect();
+  }
+}, { threshold: 0.3 });
+
+observer.observe(document.getElementById('demo'));
+
+// Animate score bars on scroll
+const agentObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.score-bar').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => bar.style.width = w, 100);
+      });
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.agent-card').forEach(c => agentObserver.observe(c));
+</script>
+</body>
+</html>
