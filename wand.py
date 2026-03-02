@@ -476,7 +476,7 @@ def _detect_intent(prompt: str) -> Dict[str, Any]:
 
 
 def _interactive_qa(intent: Dict[str, Any], model: str) -> Dict[str, str]:
-    """Claude Code-style interactive Q&A with multiple choice."""
+    """Claude Code-style interactive Q&A — compact or step-by-step based on complexity."""
     answers: Dict[str, str] = {}
     domain = intent["domain"]
     lang = intent["lang"]
@@ -484,59 +484,32 @@ def _interactive_qa(intent: Dict[str, Any], model: str) -> Dict[str, str]:
 
     questions: Dict[str, List[Dict[str, Any]]] = {
         "WRITING": [
-            {"key": "audience",
-             "label": "\U0001f4cc Hedef kitle kim?" if is_tr else "\U0001f4cc Target audience?",
-             "options": [("Teknik (developer)" if is_tr else "Technical (developers)", "technical"),
-                         ("Genel okuyucu" if is_tr else "General audience", "general"),
-                         ("\u0130\u015f d\u00fcnyas\u0131 / C-level" if is_tr else "Business / C-level", "business")],
-             "custom": True},
-            {"key": "tone",
-             "label": "\U0001f3ad Ton/Stil?" if is_tr else "\U0001f3ad Tone/Style?",
-             "options": [("Akademik" if is_tr else "Academic", "academic"),
-                         ("Blog / sohbet" if is_tr else "Blog / conversational", "conversational"),
-                         ("Manifesto" if is_tr else "Manifesto / provocative", "provocative"),
-                         ("Tutorial / how-to", "tutorial")],
-             "custom": True},
-            {"key": "length",
-             "label": "\U0001f4cf Uzunluk?" if is_tr else "\U0001f4cf Length?",
-             "options": [("~500", "short"), ("~1500", "medium"), ("~3000+", "long")],
-             "custom": False},
+            {"key": "audience", "label": "Hedef kitle?" if is_tr else "Audience?",
+             "options": [("Developer", "technical"), ("Genel", "general"), ("C-level", "business")], "custom": True},
+            {"key": "tone", "label": "Ton?" if is_tr else "Tone?",
+             "options": [("Teknik", "academic"), ("Blog", "conversational"), ("Manifesto", "provocative"), ("Tutorial", "tutorial")], "custom": True},
+            {"key": "length", "label": "Uzunluk?" if is_tr else "Length?",
+             "options": [("~500", "short"), ("~1500", "medium"), ("~3000+", "long")], "custom": False},
         ],
         "CODING": [
-            {"key": "language",
-             "label": "\U0001f4bb Programlama dili?" if is_tr else "\U0001f4bb Programming language?",
-             "options": [("Python", "python"), ("TypeScript", "typescript"),
-                         ("Elixir", "elixir"), ("Rust", "rust")],
-             "custom": True},
-            {"key": "scope",
-             "label": "\U0001f3af Kapsam?" if is_tr else "\U0001f3af Scope?",
-             "options": [("Snippet", "snippet"), ("Module", "module"), ("Project", "project")],
-             "custom": False},
+            {"key": "language", "label": "Dil?" if is_tr else "Language?",
+             "options": [("Python", "python"), ("TypeScript", "typescript"), ("Elixir", "elixir"), ("Rust", "rust")], "custom": True},
+            {"key": "scope", "label": "Kapsam?" if is_tr else "Scope?",
+             "options": [("Snippet", "snippet"), ("Module", "module"), ("Project", "project")], "custom": False},
         ],
         "CREATIVE": [
-            {"key": "style",
-             "label": "\U0001f3a8 Stil?" if is_tr else "\U0001f3a8 Style?",
-             "options": [("Minimalist", "minimalist"), ("Dark fantasy", "dark_fantasy"),
-                         ("Retro / terminal", "retro"), ("Modern", "modern")],
-             "custom": True},
+            {"key": "style", "label": "Stil?" if is_tr else "Style?",
+             "options": [("Minimalist", "minimalist"), ("Dark fantasy", "dark_fantasy"), ("Retro", "retro"), ("Modern", "modern")], "custom": True},
         ],
         "ANALYSIS": [
-            {"key": "depth",
-             "label": "\U0001f52c Derinlik?" if is_tr else "\U0001f52c Depth?",
-             "options": [("Hizli ozet" if is_tr else "Quick summary", "quick"),
-                         ("Detayli" if is_tr else "Detailed", "detailed"),
-                         ("Karsilastirmali" if is_tr else "Comparative", "comparative")],
-             "custom": False},
+            {"key": "depth", "label": "Derinlik?" if is_tr else "Depth?",
+             "options": [("Ozet", "quick"), ("Detayli", "detailed"), ("Karsilastirmali", "comparative")], "custom": False},
         ],
     }
 
     q_set = questions.get(domain, [
-        {"key": "goal",
-         "label": "\U0001f3af Ana hedef?" if is_tr else "\U0001f3af Main goal?",
-         "options": [("Bilgi" if is_tr else "Information", "info"),
-                     ("Karar destegi" if is_tr else "Decision support", "decision"),
-                     ("Yaratici" if is_tr else "Creative", "creative")],
-         "custom": True},
+        {"key": "goal", "label": "Hedef?" if is_tr else "Goal?",
+         "options": [("Bilgi", "info"), ("Karar", "decision"), ("Yaratici", "creative")], "custom": True},
     ])
 
     sep = C.MAGENTA + "\u2500" * 40 + C.RESET
@@ -545,38 +518,91 @@ def _interactive_qa(intent: Dict[str, Any], model: str) -> Dict[str, str]:
     print(C.GRAY + "Domain: " + domain + " | Lang: " + lang.upper() + C.RESET)
     print(sep + "\n")
 
-    for q in q_set:
-        print(C.BOLD + q["label"] + C.RESET)
-        opts = q["options"]
-        for i, (text, _val) in enumerate(opts, 1):
-            print("  " + C.CYAN + str(i) + ")" + C.RESET + " " + text)
-        if q.get("custom"):
-            print("  " + C.CYAN + str(len(opts) + 1) + ")" + C.RESET + " " + ("Ozel..." if is_tr else "Custom..."))
+    # Decide: compact (all questions at once) vs step-by-step
+    is_compact = len(q_set) <= 3
 
+    if is_compact:
+        # Show all questions in one block
+        for i, q in enumerate(q_set, 1):
+            opt_str = "  ".join(chr(96 + j + 1) + ") " + text for j, (text, _) in enumerate(q["options"]))
+            if q.get("custom"):
+                opt_str += "  " + chr(96 + len(q["options"]) + 1) + ") " + ("Ozel..." if is_tr else "Custom...")
+            print(C.BOLD + str(i) + ") " + q["label"] + C.RESET)
+            print("   " + opt_str)
+        example = " ".join(str(i + 1) + "a" for i in range(len(q_set)))
+        print("\n" + C.GRAY + ("Ornek" if is_tr else "Example") + ": " + example + C.RESET)
+
+        # Parse compact answer
         while True:
             try:
-                choice = input("\n  " + C.GREEN + "\u25b8" + C.RESET + " ").strip()
-                if not choice:
-                    answers[q["key"]] = opts[0][1]
-                    print("  " + C.GRAY + "\u2192 " + opts[0][0] + C.RESET)
+                raw = input("\n" + C.GREEN + "\u25b8 " + C.RESET).strip()
+                if not raw:
+                    # Default: first option for everything
+                    for q in q_set:
+                        answers[q["key"]] = q["options"][0][1]
                     break
-                try:
-                    idx = int(choice) - 1
-                except ValueError:
-                    answers[q["key"]] = choice
+
+                # Parse "1a 2b 3c" or "1a, 2b, 3c"
+                import re as _re
+                parts = _re.findall(r"(\d+)\s*([a-z])", raw.lower().replace(",", " "))
+                if parts:
+                    for num_str, letter in parts:
+                        idx = int(num_str) - 1
+                        opt_idx = ord(letter) - ord("a")
+                        if 0 <= idx < len(q_set):
+                            q = q_set[idx]
+                            if 0 <= opt_idx < len(q["options"]):
+                                answers[q["key"]] = q["options"][opt_idx][1]
+                            elif q.get("custom") and opt_idx == len(q["options"]):
+                                custom = input("  " + C.GREEN + "\u25b8 " + q["label"] + " " + C.RESET).strip()
+                                answers[q["key"]] = custom or q["options"][0][1]
+                    # Fill any unanswered with defaults
+                    for q in q_set:
+                        if q["key"] not in answers:
+                            answers[q["key"]] = q["options"][0][1]
                     break
-                if 0 <= idx < len(opts):
-                    answers[q["key"]] = opts[idx][1]
-                    print("  " + C.GRAY + "\u2192 " + opts[idx][0] + C.RESET)
-                    break
-                elif q.get("custom") and idx == len(opts):
-                    custom = input("  " + C.GREEN + "\u25b8 " + ("Yaz: " if is_tr else "Type: ") + C.RESET).strip()
-                    answers[q["key"]] = custom or opts[0][1]
-                    break
+                else:
+                    print(C.RED + ("Ornek: 1a 2b" if is_tr else "Example: 1a 2b") + C.RESET)
             except (EOFError, KeyboardInterrupt):
                 print("\n" + C.YELLOW + "Cancelled." + C.RESET)
                 sys.exit(130)
-        print()
+    else:
+        # Step by step for complex tasks
+        for q in q_set:
+            print(C.BOLD + q["label"] + C.RESET)
+            for i, (text, _) in enumerate(q["options"], 1):
+                print("  " + C.CYAN + str(i) + ")" + C.RESET + " " + text)
+            if q.get("custom"):
+                print("  " + C.CYAN + str(len(q["options"]) + 1) + ")" + C.RESET + " " + ("Ozel..." if is_tr else "Custom..."))
+
+            while True:
+                try:
+                    choice = input("\n  " + C.GREEN + "\u25b8" + C.RESET + " ").strip()
+                    if not choice:
+                        answers[q["key"]] = q["options"][0][1]
+                        print("  " + C.GRAY + "\u2192 " + q["options"][0][0] + C.RESET)
+                        break
+                    try:
+                        idx = int(choice) - 1
+                    except ValueError:
+                        answers[q["key"]] = choice
+                        break
+                    if 0 <= idx < len(q["options"]):
+                        answers[q["key"]] = q["options"][idx][1]
+                        print("  " + C.GRAY + "\u2192 " + q["options"][idx][0] + C.RESET)
+                        break
+                    elif q.get("custom") and idx == len(q["options"]):
+                        custom = input("  " + C.GREEN + "\u25b8 " + ("Yaz: " if is_tr else "Type: ") + C.RESET).strip()
+                        answers[q["key"]] = custom or q["options"][0][1]
+                        break
+                except (EOFError, KeyboardInterrupt):
+                    print("\n" + C.YELLOW + "Cancelled." + C.RESET)
+                    sys.exit(130)
+            print()
+
+    # Show selections
+    print("\n" + C.GREEN + "\u2713" + C.RESET + " ", end="")
+    print(" | ".join(C.GRAY + k.title() + ": " + C.RESET + v for k, v in answers.items()))
 
     return answers
 
