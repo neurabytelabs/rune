@@ -450,19 +450,210 @@ def print_spinoza_report(result: Dict[str, Any], label: str = "Spinoza Report") 
 # Commands
 # ──────────────────────────────────────────────
 
+
+# ──────────────────────────────────────────────
+# Interactive Q&A (rünle)
+# ──────────────────────────────────────────────
+def _detect_intent(prompt: str) -> Dict[str, Any]:
+    """Detect prompt intent for interactive Q&A."""
+    prompt_lower = prompt.lower()
+    domain = "GENERAL"
+    hints = {
+        "CODING": ["code", "function", "api", "bug", "refactor", "script", "implement", "debug", "deploy", "kod"],
+        "WRITING": ["blog", "article", "write", "essay", "story", "content", "post", "draft", "yaz", "makale"],
+        "ANALYSIS": ["analyze", "compare", "evaluate", "review", "assess", "report", "analiz"],
+        "CREATIVE": ["design", "create", "imagine", "visual", "logo", "brand", "tasarla", "gorsel"],
+        "RESEARCH": ["research", "study", "investigate", "explore", "survey", "arastir", "incele"],
+    }
+    for d, kws in hints.items():
+        if any(k in prompt_lower for k in kws):
+            domain = d
+            break
+    tr_detect = any(c in "\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc" for c in prompt)
+    tr_words = any(w in prompt_lower for w in ["yaz", "olustur", "hakkinda", "icin"])
+    lang = "tr" if (tr_detect or tr_words) else "en"
+    return {"domain": domain, "lang": lang, "prompt": prompt}
+
+
+def _interactive_qa(intent: Dict[str, Any], model: str) -> Dict[str, str]:
+    """Claude Code-style interactive Q&A with multiple choice."""
+    answers: Dict[str, str] = {}
+    domain = intent["domain"]
+    lang = intent["lang"]
+    is_tr = (lang == "tr")
+
+    questions: Dict[str, List[Dict[str, Any]]] = {
+        "WRITING": [
+            {"key": "audience",
+             "label": "\U0001f4cc Hedef kitle kim?" if is_tr else "\U0001f4cc Target audience?",
+             "options": [("Teknik (developer)" if is_tr else "Technical (developers)", "technical"),
+                         ("Genel okuyucu" if is_tr else "General audience", "general"),
+                         ("\u0130\u015f d\u00fcnyas\u0131 / C-level" if is_tr else "Business / C-level", "business")],
+             "custom": True},
+            {"key": "tone",
+             "label": "\U0001f3ad Ton/Stil?" if is_tr else "\U0001f3ad Tone/Style?",
+             "options": [("Akademik" if is_tr else "Academic", "academic"),
+                         ("Blog / sohbet" if is_tr else "Blog / conversational", "conversational"),
+                         ("Manifesto" if is_tr else "Manifesto / provocative", "provocative"),
+                         ("Tutorial / how-to", "tutorial")],
+             "custom": True},
+            {"key": "length",
+             "label": "\U0001f4cf Uzunluk?" if is_tr else "\U0001f4cf Length?",
+             "options": [("~500", "short"), ("~1500", "medium"), ("~3000+", "long")],
+             "custom": False},
+        ],
+        "CODING": [
+            {"key": "language",
+             "label": "\U0001f4bb Programlama dili?" if is_tr else "\U0001f4bb Programming language?",
+             "options": [("Python", "python"), ("TypeScript", "typescript"),
+                         ("Elixir", "elixir"), ("Rust", "rust")],
+             "custom": True},
+            {"key": "scope",
+             "label": "\U0001f3af Kapsam?" if is_tr else "\U0001f3af Scope?",
+             "options": [("Snippet", "snippet"), ("Module", "module"), ("Project", "project")],
+             "custom": False},
+        ],
+        "CREATIVE": [
+            {"key": "style",
+             "label": "\U0001f3a8 Stil?" if is_tr else "\U0001f3a8 Style?",
+             "options": [("Minimalist", "minimalist"), ("Dark fantasy", "dark_fantasy"),
+                         ("Retro / terminal", "retro"), ("Modern", "modern")],
+             "custom": True},
+        ],
+        "ANALYSIS": [
+            {"key": "depth",
+             "label": "\U0001f52c Derinlik?" if is_tr else "\U0001f52c Depth?",
+             "options": [("Hizli ozet" if is_tr else "Quick summary", "quick"),
+                         ("Detayli" if is_tr else "Detailed", "detailed"),
+                         ("Karsilastirmali" if is_tr else "Comparative", "comparative")],
+             "custom": False},
+        ],
+    }
+
+    q_set = questions.get(domain, [
+        {"key": "goal",
+         "label": "\U0001f3af Ana hedef?" if is_tr else "\U0001f3af Main goal?",
+         "options": [("Bilgi" if is_tr else "Information", "info"),
+                     ("Karar destegi" if is_tr else "Decision support", "decision"),
+                     ("Yaratici" if is_tr else "Creative", "creative")],
+         "custom": True},
+    ])
+
+    sep = C.MAGENTA + "\u2500" * 40 + C.RESET
+    print("\n" + sep)
+    print(C.BOLD + "\U0001f52e Spell Analysis" + C.RESET)
+    print(C.GRAY + "Domain: " + domain + " | Lang: " + lang.upper() + C.RESET)
+    print(sep + "\n")
+
+    for q in q_set:
+        print(C.BOLD + q["label"] + C.RESET)
+        opts = q["options"]
+        for i, (text, _val) in enumerate(opts, 1):
+            print("  " + C.CYAN + str(i) + ")" + C.RESET + " " + text)
+        if q.get("custom"):
+            print("  " + C.CYAN + str(len(opts) + 1) + ")" + C.RESET + " " + ("Ozel..." if is_tr else "Custom..."))
+
+        while True:
+            try:
+                choice = input("\n  " + C.GREEN + "\u25b8" + C.RESET + " ").strip()
+                if not choice:
+                    answers[q["key"]] = opts[0][1]
+                    print("  " + C.GRAY + "\u2192 " + opts[0][0] + C.RESET)
+                    break
+                try:
+                    idx = int(choice) - 1
+                except ValueError:
+                    answers[q["key"]] = choice
+                    break
+                if 0 <= idx < len(opts):
+                    answers[q["key"]] = opts[idx][1]
+                    print("  " + C.GRAY + "\u2192 " + opts[idx][0] + C.RESET)
+                    break
+                elif q.get("custom") and idx == len(opts):
+                    custom = input("  " + C.GREEN + "\u25b8 " + ("Yaz: " if is_tr else "Type: ") + C.RESET).strip()
+                    answers[q["key"]] = custom or opts[0][1]
+                    break
+            except (EOFError, KeyboardInterrupt):
+                print("\n" + C.YELLOW + "Cancelled." + C.RESET)
+                sys.exit(130)
+        print()
+
+    return answers
+
+
+def _build_enriched_prompt(prompt: str, intent: Dict[str, Any], answers: Dict[str, str]) -> str:
+    """Enrich original prompt with Q&A answers."""
+    parts = [prompt, "", "--- RUNE Context (from interactive Q&A) ---"]
+    labels = {"audience": "Target Audience", "tone": "Tone/Style", "length": "Length",
+              "language": "Programming Language", "scope": "Scope", "style": "Visual Style",
+              "goal": "Main Goal", "depth": "Analysis Depth"}
+    for key, value in answers.items():
+        parts.append(labels.get(key, key.title()) + ": " + value)
+    parts.append("Domain: " + intent["domain"])
+    parts.append("Language: " + intent["lang"].upper())
+    return "\n".join(parts)
+
+
+def _print_summary(prompt: str, intent: Dict[str, Any], answers: Dict[str, str], model: str) -> bool:
+    """Print spell summary and ask for confirmation."""
+    is_tr = (intent["lang"] == "tr")
+    sep = C.MAGENTA + "\u2500" * 40 + C.RESET
+    print("\n" + sep)
+    title = "Buyu Ozeti" if is_tr else "Spell Summary"
+    print(C.BOLD + "\U0001f4cb " + title + C.RESET + "\n")
+    short = prompt[:80] + ("..." if len(prompt) > 80 else "")
+    print("  " + C.GRAY + "Prompt:" + C.RESET + " " + short)
+    print("  " + C.GRAY + "Domain:" + C.RESET + " " + intent["domain"])
+    print("  " + C.GRAY + "Model:" + C.RESET + " " + model)
+    for key, value in answers.items():
+        print("  " + C.GRAY + key.title() + ":" + C.RESET + " " + value)
+    print("\n  " + C.CYAN + "8 RUNE layers will be applied \u2728" + C.RESET)
+    print(sep)
+
+    try:
+        label = "Onayliyor musun" if is_tr else "Confirm"
+        confirm = input("\n" + C.GREEN + "\u2705 " + label + "? [E/h] " + C.RESET).strip().lower()
+        return confirm in ("", "e", "y", "yes", "evet")
+    except (EOFError, KeyboardInterrupt):
+        print("\n" + C.YELLOW + "Cancelled." + C.RESET)
+        return False
+
 def cmd_cast(args: argparse.Namespace) -> None:
     """Enhance + run prompt through LLM."""
     print_banner()
     prompt = " ".join(args.prompt)
     model = args.model or CONFIG["model"]
+    quick_mode = getattr(args, "quick", False) or prompt.rstrip().endswith("!")
+
+    # Strip trailing ! for quick mode
+    if prompt.rstrip().endswith("!"):
+        prompt = prompt.rstrip()[:-1].rstrip()
+
     print_info(f"🧙 Model: {model} | Template: {CONFIG['template_version']}")
 
     if args.raw:
         # Skip enhancement, run raw
         section("🚀 Raw Output")
         output = llm_call(prompt, model=model)
-    else:
+    elif quick_mode:
+        # Quick mode (rünle!) — no Q&A, straight to enhancement
+        print_info("⚡ Quick mode — skipping Q&A")
         enhanced = enhance_prompt(prompt, model, args.rune, args.verbose)
+        section("📋 Enhanced Prompt")
+        print(f"{C.CYAN}{enhanced}{C.RESET}")
+        section("🚀 Output")
+        output = llm_call(enhanced, model=model)
+    else:
+        # Interactive mode (rünle) — Q&A then confirm
+        intent = _detect_intent(prompt)
+        answers = _interactive_qa(intent, model)
+        enriched = _build_enriched_prompt(prompt, intent, answers)
+
+        if not _print_summary(prompt, intent, answers, model):
+            print_info("🚫 Spell cancelled.")
+            return
+
+        enhanced = enhance_prompt(enriched, model, args.rune, args.verbose)
         section("📋 Enhanced Prompt")
         print(f"{C.CYAN}{enhanced}{C.RESET}")
         section("🚀 Output")
@@ -1002,7 +1193,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     # cast
     p = sub.add_parser("cast", help="Enhance + run prompt through LLM")
-    p.add_argument("prompt", nargs="+", help="Your prompt")
+    p.add_argument("prompt", nargs="+", help="Your prompt (add ! at end for quick mode)")
+    p.add_argument("--quick", "-q", action="store_true", help="Skip interactive Q&A (same as trailing !)")
 
     # inscribe
     p = sub.add_parser("inscribe", help="Show enhanced prompt only")
