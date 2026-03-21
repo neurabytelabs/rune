@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 DEFAULTS: dict[str, Any] = {
     "general": {
         "version": "1.0.0",
-        "template_version": "v4.3",
+        "template_version": "v2.0",
         "color": True,
         "verbose": False,
         "locale": "auto",

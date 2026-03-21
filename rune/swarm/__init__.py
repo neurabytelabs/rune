@@ -1,2 +1,1 @@
-"""RUNE SWARM — Multi-Agent Prompt Evolution Engine."""
-__version__ = "0.1.0"
+"""RUNE Swarm — Multi-Agent Prompt Evolution Engine."""

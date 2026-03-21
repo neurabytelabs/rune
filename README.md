@@ -12,7 +12,7 @@
 
 <br>
 
-[![Version](https://img.shields.io/badge/version-1.9-magenta.svg)](docs/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0-magenta.svg)](docs/CHANGELOG.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#-quick-start)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Models](https://img.shields.io/badge/models-Gemini_3_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
@@ -226,7 +226,7 @@ Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tun
 
 ```
 ┌─────────────────────────────────────────────┐
-│              RUNE v1.9                      │
+│              RUNE v2.0                      │
 │         "Every prompt is a spell"           │
 ├─────────────────────────────────────────────┤
 │                                             │
@@ -273,7 +273,7 @@ RUNE operates seamlessly with any OpenAI-compatible endpoint. Bring forth your o
 
 ## 🗺 Roadmap: The Unfolding of Mastery
 
-### v1.9 ✅ Current: The Foundations of Power
+### v1.9 ✅ Complete: The Foundations of Power
 
 - [x] Interactive Q&A with compact answers (`1a 2b 3c`): A streamlined dialogue towards clarity.
 - [x] Quick mode (trailing `!` or `--quick`): Unfettered, immediate command.
@@ -284,7 +284,7 @@ RUNE operates seamlessly with any OpenAI-compatible endpoint. Bring forth your o
 - [x] Spinoza Validator (EN + TR): The objective measure of truth and clarity.
 - [x] Cost tracking + memory evolution: A ledger of your journey towards mastery.
 
-### v2.0 — The Awakening: A New Era of AI Interaction
+### v2.0 ✅ Current — Deus Sive Natura: A New Era of AI Interaction
 
 - [ ] **Oracle** — self-improving prompts via feedback loops: The perpetual refinement of understanding, an evolution towards absolute clarity.
 - [ ] **Prompt DNA** — genetic algorithm prompt evolution: The organic growth of perfect prompts, adapting to the very *natura* of AI.
