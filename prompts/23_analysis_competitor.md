@@ -1,3 +1,8 @@
+---
+domain: analysis
+version: "2.0"
+---
+
 # 🔍 Competitor Analysis Framework
 
 ## Category: ANALYSIS

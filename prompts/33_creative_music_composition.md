@@ -1,3 +1,8 @@
+---
+domain: creative
+version: "2.0"
+---
+
 # 🎵 Music Composition & Sound Design Brief
 
 ## Category: CREATIVE

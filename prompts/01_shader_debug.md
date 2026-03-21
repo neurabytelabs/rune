@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 🔮 Shader Debug & Fix
 
 WebGL/GLSL shader hatalarını sistematik olarak bulan ve düzelten prompt.

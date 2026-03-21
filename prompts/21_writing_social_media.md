@@ -1,3 +1,8 @@
+---
+domain: writing
+version: "2.0"
+---
+
 # 📱 Social Media Content Calendar
 
 ## Category: WRITING

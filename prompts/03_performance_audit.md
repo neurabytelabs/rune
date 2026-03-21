@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # ⚡ Performance Optimization Audit
 
 Analyzes your code against a 60fps target and produces a prioritized fix list.

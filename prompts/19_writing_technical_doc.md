@@ -1,3 +1,8 @@
+---
+domain: writing
+version: "2.0"
+---
+
 # 📚 Developer Documentation Generator
 
 ## Category: WRITING

@@ -1,3 +1,8 @@
+---
+domain: aiml
+version: "2.0"
+---
+
 # 📦 Dataset Curation & Quality Pipeline
 
 ## Category: AI_ML

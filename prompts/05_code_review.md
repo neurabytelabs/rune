@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 🔍 Deep Code Review
 
 Güvenlik, performans ve sürdürülebilirlik odaklı derinlemesine kod inceleme prompt'u.

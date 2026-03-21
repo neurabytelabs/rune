@@ -1,3 +1,8 @@
+---
+domain: creative
+version: "2.0"
+---
+
 # 🏷️ Product & Brand Naming
 
 ## Category: CREATIVE

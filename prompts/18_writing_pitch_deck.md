@@ -1,3 +1,8 @@
+---
+domain: writing
+version: "2.0"
+---
+
 # 🎯 Startup Pitch Deck Script
 
 ## Category: WRITING

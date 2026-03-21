@@ -1,3 +1,8 @@
+---
+domain: aiml
+version: "2.0"
+---
+
 # 🤖 AI Agent Architecture Design
 
 ## Category: AI_ML

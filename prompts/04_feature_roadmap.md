@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 🗺️ Feature Roadmap & Architecture
 
 Yeni özellikleri fazlara ayırarak planlayan, risk analizi ve bağımlılık grafiği üreten prompt.

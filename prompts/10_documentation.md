@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 📚 Technical Documentation Generator
 
 Generates README, API docs, and architecture documentation. Adapts to different target audiences.
