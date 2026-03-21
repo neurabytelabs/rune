@@ -1,5 +1,16 @@
 # 📝 Changelog
 
+## v2.0.0 — Deus Sive Natura (2026-03)
+- **Unified versioning:** Single 2.0.0 across all components
+- **pyproject.toml:** pip-installable package (`rune-wand`)
+- **Modular CLI:** wand.py refactored from 1318-line monolith → rune/cli/ package (helpers, cast, commands, main, swarm_cmd)
+- **SpinozaValidator:** New local heuristic validator (rune/core/validator.py) — no LLM needed
+- **Unified providers:** rune/providers/ with OpenAI-compatible base (works with Gemini, xAI, OpenAI, Anthropic, local)
+- **Swarm integration:** `wand swarm "prompt"` — multi-agent evolution now accessible from main CLI
+- **Swarm modularized:** swarm.py → rune/swarm/ (agents, tournament, orchestrator)
+- **Test suite:** 23 tests covering validator, router, CLI helpers (pytest)
+- **Meta-prompt updated:** RUNE Architect v2.0
+
 ## v4.4 — Hyper-Structured (2026-02)
 - **Polyglot rendering:** Auto-detects input language, responds in kind
 - **Domain presets:** CODING / WRITING / ANALYSIS modes with tailored defaults

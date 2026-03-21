@@ -107,7 +107,7 @@ Apply these specific patterns based on the detected task type:
 
 ---
 
-*RUNE v1.5 | NeuraByte Labs | "Every prompt is a spell."*
+*RUNE v2.0 | NeuraByte Labs | "Every prompt is a spell."*
 *License: MIT | Created for Advanced Agentic Coding*
 ---
 

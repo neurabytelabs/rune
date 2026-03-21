@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RUNE — Prompt Amplification Framework</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0e0f14;
+      --surface: #15161e;
+      --surface-raised: #1c1d27;
+      --surface-high: #232536;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #e8e9f0;
+      --text-dim: #8b8d9e;
+      --text-muted: #55576a;
+      --gold: #d4a73a;
+      --gold-dim: rgba(212,167,58,0.15);
+      --gold-glow: rgba(212,167,58,0.08);
+      --deep-blue: #1e3a5f;
+      --accent: #4a9eff;
+      --accent-dim: rgba(74,158,255,0.12);
+      --green: #4caf7d;
+      --green-dim: rgba(76,175,125,0.12);
+      --red: #e05c5c;
+      --red-dim: rgba(224,92,92,0.10);
+      --l0: #e05c5c;
+      --l1: #e07f3a;
+      --l2: #d4a73a;
+      --l3: #4caf7d;
+      --l4: #4a9eff;
+      --l5: #9b7fe8;
+      --l6: #e05c9b;
+      --l7: #7ec8e3;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f3ef;
+        --surface: #faf8f4;
+        --surface-raised: #fff;
+        --surface-high: #fff;
+        --border: rgba(0,0,0,0.08);
+        --border-strong: rgba(0,0,0,0.14);
+        --text: #1a1b26;
+        --text-dim: #555770;
+        --text-muted: #9a9cb0;
+        --gold: #b8860b;
+        --gold-dim: rgba(184,134,11,0.10);
+        --gold-glow: rgba(184,134,11,0.05);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background atmosphere */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(212,167,58,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(14,15,20,0.85);
+      backdrop-filter: blur(20px);
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-logo span { color: var(--text-dim); font-weight: 400; }
+
+    .nav-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 7rem 2rem 5rem;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 1.05;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.3s ease forwards;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s ease forwards;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.2rem;
+      color: var(--gold);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── SECTION ─── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    section h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      margin-bottom: 2.5rem;
+      color: var(--text);
+    }
+
+    /* ─── BEFORE / AFTER DEMO ─── */
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: start;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .demo-arrow { display: none; }
+    }
+
+    .demo-panel {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .demo-panel--before { border-color: var(--red); }
+    .demo-panel--after { border-color: var(--gold); box-shadow: 0 0 40px var(--gold-glow); }
+
+    .demo-header {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .demo-header--before { background: var(--red-dim); border-color: rgba(224,92,92,0.2); }
+    .demo-header--after { background: var(--gold-dim); border-color: rgba(212,167,58,0.2); }
+
+    .demo-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .demo-title--before { color: var(--red); }
+    .demo-title--after { color: var(--gold); }
+
+    .demo-body {
+      padding: 1.5rem;
+      background: var(--surface);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+      min-height: 120px;
+    }
+
+    .demo-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem;
+      padding-top: 2.5rem;
+    }
+
+    .arrow-inner {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 1.3rem;
+    }
+
+    /* RUNE Output Layers */
+    .rune-output {
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 40px var(--gold-glow);
+    }
+
+    .rune-output-header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid rgba(212,167,58,0.2);
+      background: var(--gold-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .rune-output-header .demo-title--after { flex: 1; }
+
+    .layer-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .rune-layers {
+      padding: 0;
+    }
+
+    .rune-layer {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    .rune-layer:last-child { border-bottom: none; }
+    .rune-layer:hover { background: var(--surface-raised); }
+
+    .layer-badge {
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .layer-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .layer-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .layer-desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ─── 8 LAYERS GRID ─── */
+    .layers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .layer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+      opacity: 0;
+    }
+
+    .layer-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .layer-card.visible { animation: fadeUp 0.5s ease forwards; }
+
+    .layer-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .layer-num::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.2;
+    }
+
+    .layer-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .layer-card p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── INTERACTIVE DEMO ─── */
+    .demo-interactive {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .demo-int-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-raised);
+    }
+
+    .demo-int-header h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .demo-int-header span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .demo-int-body {
+      padding: 1.5rem;
+    }
+
+    .input-area {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-area:focus { border-color: var(--gold); }
+
+    .rune-btn {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold);
+      color: #0e0f14;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .rune-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .rune-btn:active { transform: translateY(0); }
+
+    .output-area {
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .output-area.show { display: block; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    footer strong {
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeScale {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; }
+    }
+
+    /* divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">RUNE <span>by NeuraByte Labs</span></div>
+  <div class="nav-badge">v1.6 — arXiv:2512.14982</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Prompt Amplification Framework</div>
+  <h1>Turn flat prompts into<br><em>structured intelligence.</em></h1>
+  <p class="hero-sub">
+    RUNE transforms any raw prompt into an 8-layer XML structure rooted in Spinoza's philosophical framework — delivering up to 45% higher quality AI responses.
+  </p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">~45%</span>
+      <span class="stat-label">Quality Increase</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">8</span>
+      <span class="stat-label">Semantic Layers</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Any LLM</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">v1.6</span>
+      <span class="stat-label">Current Version</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BEFORE / AFTER -->
+<section id="demo">
+  <div class="section-label">The Transformation</div>
+  <h2>Before and After RUNE</h2>
+
+  <div class="demo-container">
+
+    <!-- BEFORE -->
+    <div class="demo-panel demo-panel--before">
+      <div class="demo-header demo-header--before">
+        <span class="demo-title demo-title--before">Raw Prompt</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted)">❌ Unstructured</span>
+      </div>
+      <div class="demo-body">
+        "Write a landing page for my AI startup."
+      </div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="demo-arrow">
+      <div class="arrow-inner">→</div>
+    </div>
+
+    <!-- AFTER -->
+    <div class="rune-output">
+      <div class="rune-output-header">
+        <span class="demo-title demo-title--after">RUNE Amplified</span>
+        <span class="layer-count">8 layers active</span>
+      </div>
+      <div class="rune-layers">
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(224,92,92,0.15);color:var(--l0)">L0</span>
+          <div class="layer-content">
+            <div class="layer-name">System Core</div>
+            <div class="layer-desc">Act as a senior SaaS copywriter with 10+ years in B2B tech. Tone: confident, direct, conversion-focused.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(224,127,58,0.15);color:var(--l1)">L1</span>
+          <div class="layer-content">
+            <div class="layer-name">Context Identity</div>
+            <div class="layer-desc">Target audience: technical founders, CTOs at seed-stage startups. Domain: AI infrastructure, developer tooling.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(212,167,58,0.15);color:var(--l2)">L2</span>
+          <div class="layer-content">
+            <div class="layer-name">Intent Scope</div>
+            <div class="layer-desc">Produce: hero headline, subheadline, 3 feature cards, social proof section, CTA. Output as structured HTML sections.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(76,175,125,0.15);color:var(--l3)">L3</span>
+          <div class="layer-content">
+            <div class="layer-name">Governance</div>
+            <div class="layer-desc">No buzzword overuse. No false claims. Highlight genuine differentiation only. GDPR-safe copy.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(74,158,255,0.15);color:var(--l4)">L4</span>
+          <div class="layer-content">
+            <div class="layer-name">Cognitive Engine</div>
+            <div class="layer-desc">Chain-of-thought: identify unique value prop → map to pain points → craft emotional + rational hooks.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(155,127,232,0.15);color:var(--l5)">L5</span>
+          <div class="layer-content">
+            <div class="layer-name">Capabilities Domain</div>
+            <div class="layer-desc">Available: brand guidelines, product screenshots, existing testimonials. Web: latest LLM trends Q1 2026.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(224,92,155,0.15);color:var(--l6)">L6</span>
+          <div class="layer-content">
+            <div class="layer-name">Quality Assurance</div>
+            <div class="layer-desc">Validate: clear value prop in first 5 seconds, one primary CTA, mobile-friendly structure, no lorem ipsum.</div>
+          </div>
+        </div>
+
+        <div class="rune-layer">
+          <span class="layer-badge" style="background:rgba(126,200,227,0.15);color:var(--l7)">L7</span>
+          <div class="layer-content">
+            <div class="layer-name">Output Meta</div>
+            <div class="layer-desc">Format: semantic HTML5. Length: ~600 words. Language: EN-US. Reading level: Flesch 60+. Sections labeled.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 8 LAYERS -->
+<section id="layers">
+  <div class="section-label">Architecture</div>
+  <h2>The 8 Layers of RUNE</h2>
+
+  <div class="layers-grid">
+
+    <div class="layer-card" style="border-color:rgba(224,92,92,0.3)">
+      <div class="layer-num" style="color:var(--l0)">L0 · SYSTEM CORE</div>
+      <h3>Role & Persona</h3>
+      <p>Defines who the AI is for this task — expertise level, behavioral rules, and foundational identity constraints.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(224,127,58,0.3)">
+      <div class="layer-num" style="color:var(--l1)">L1 · CONTEXT IDENTITY</div>
+      <h3>Domain & Audience</h3>
+      <p>Anchors the AI in the right knowledge domain and specifies exactly who the output is for.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(212,167,58,0.3)">
+      <div class="layer-num" style="color:var(--l2)">L2 · INTENT SCOPE</div>
+      <h3>Task Definition</h3>
+      <p>Crystallizes the precise goal, expected deliverables, and output format — eliminating ambiguity.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(76,175,125,0.3)">
+      <div class="layer-num" style="color:var(--l3)">L3 · GOVERNANCE</div>
+      <h3>Constraints & Ethics</h3>
+      <p>Sets hard and soft limits — what to avoid, what's out of scope, and ethical boundaries to respect.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(74,158,255,0.3)">
+      <div class="layer-num" style="color:var(--l4)">L4 · COGNITIVE ENGINE</div>
+      <h3>Thinking Strategy</h3>
+      <p>Instructs the AI how to reason — chain-of-thought, tree-of-thought, step-by-step decomposition.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(155,127,232,0.3)">
+      <div class="layer-num" style="color:var(--l5)">L5 · CAPABILITIES</div>
+      <h3>Tools & Resources</h3>
+      <p>Declares what tools, data sources, and external capabilities are available for the task.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(224,92,155,0.3)">
+      <div class="layer-num" style="color:var(--l6)">L6 · QUALITY ASSURANCE</div>
+      <h3>Validation Criteria</h3>
+      <p>Defines the success criteria — how the AI should self-validate before producing the final output.</p>
+    </div>
+
+    <div class="layer-card" style="border-color:rgba(126,200,227,0.3)">
+      <div class="layer-num" style="color:var(--l7)">L7 · OUTPUT META</div>
+      <h3>Format & Style</h3>
+      <p>Controls the final form — length, language, reading level, structure, and presentation format.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INTERACTIVE -->
+<section id="try">
+  <div class="section-label">Try It</div>
+  <h2>Amplify any prompt</h2>
+
+  <div class="demo-interactive">
+    <div class="demo-int-header">
+      <h3>RUNE Prompt Amplifier</h3>
+      <span>Powered by NeuraByte Labs</span>
+    </div>
+    <div class="demo-int-body">
+      <textarea class="input-area" id="promptInput" placeholder="Enter any raw prompt here…">Write a cold email to a potential investor for my AI startup.</textarea>
+      <br>
+      <button class="rune-btn" onclick="amplify()">⟳ RÜNLE!</button>
+
+      <div class="output-area" id="outputArea">
+        <div style="margin-bottom:1rem;padding:0.75rem 1rem;background:var(--gold-dim);border:1px solid rgba(212,167,58,0.3);border-radius:8px;font-size:0.82rem;color:var(--gold);">
+          ✦ RUNE amplified your prompt across 8 semantic layers
+        </div>
+        <div class="rune-output">
+          <div class="rune-output-header">
+            <span class="demo-title demo-title--after">Amplified Prompt</span>
+            <span class="layer-count" id="layerCount">8 layers</span>
+          </div>
+          <div class="rune-layers" id="layerOutput"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:0.5rem;color:var(--text-dim)">
+    Built on Spinoza's <em>conatus</em> — every system striving to amplify its own power.
+  </p>
+  <p>RUNE v1.6 · <strong>NeuraByte Labs</strong> · Cologne, Germany · <a href="https://neurabytelabs.com">neurabytelabs.com</a></p>
+</footer>
+
+<script>
+  // Intersection observer for layer cards
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const cards = entry.target.querySelectorAll('.layer-card');
+        cards.forEach((card, idx) => {
+          setTimeout(() => card.classList.add('visible'), idx * 80);
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.layers-grid').forEach(g => observer.observe(g));
+
+  // Interactive amplifier
+  const examples = {
+    "Write a cold email to a potential investor for my AI startup.": [
+      { l: "L0", name: "System Core", color: "var(--l0)", bg: "rgba(224,92,92,0.15)", desc: "Act as a seasoned startup advisor and investor relations expert. Be direct, credible, and respect the reader's time." },
+      { l: "L1", name: "Context Identity", color: "var(--l1)", bg: "rgba(224,127,58,0.15)", desc: "Recipient: angel investor or VC partner, 200+ deals reviewed per year. Your company: early-stage AI startup, B2B, pre-seed." },
+      { l: "L2", name: "Intent Scope", color: "var(--l2)", bg: "rgba(212,167,58,0.15)", desc: "Goal: secure a 20-minute intro call. Output: subject line + 150-word email body. One CTA only." },
+      { l: "L3", name: "Governance", color: "var(--l3)", bg: "rgba(76,175,125,0.15)", desc: "No exaggeration, no vague claims. Only provable traction. No attachments mentioned. GDPR-compliant." },
+      { l: "L4", name: "Cognitive Engine", color: "var(--l4)", bg: "rgba(74,158,255,0.15)", desc: "Hook with a specific insight or result → state problem + solution in 2 lines → show traction → single ask." },
+      { l: "L5", name: "Capabilities", color: "var(--l5)", bg: "rgba(155,127,232,0.15)", desc: "Reference: Crunchbase data, investor's portfolio, recent LinkedIn activity for personalization." },
+      { l: "L6", name: "Quality Assurance", color: "var(--l6)", bg: "rgba(224,92,155,0.15)", desc: "Validate: opens with a hook (not 'I hope this email finds you well'), under 150 words, one clear CTA." },
+      { l: "L7", name: "Output Meta", color: "var(--l7)", bg: "rgba(126,200,227,0.15)", desc: "Plain text, EN-US, professional but human tone. Include: Subject: / Body: labels clearly." }
+    ]
+  };
+
+  const defaultLayers = [
+    { l: "L0", name: "System Core", color: "var(--l0)", bg: "rgba(224,92,92,0.15)", desc: "Role and persona derived from your prompt's domain. Expert-level authority established." },
+    { l: "L1", name: "Context Identity", color: "var(--l1)", bg: "rgba(224,127,58,0.15)", desc: "Target audience and domain context extracted and anchored from your intent." },
+    { l: "L2", name: "Intent Scope", color: "var(--l2)", bg: "rgba(212,167,58,0.15)", desc: "Precise deliverables and output format defined based on your request." },
+    { l: "L3", name: "Governance", color: "var(--l3)", bg: "rgba(76,175,125,0.15)", desc: "Constraints and ethical boundaries set to ensure reliable, safe output." },
+    { l: "L4", name: "Cognitive Engine", color: "var(--l4)", bg: "rgba(74,158,255,0.15)", desc: "Optimal reasoning strategy selected — chain-of-thought decomposition applied." },
+    { l: "L5", name: "Capabilities", color: "var(--l5)", bg: "rgba(155,127,232,0.15)", desc: "Available tools and knowledge sources mapped for this task." },
+    { l: "L6", name: "Quality Assurance", color: "var(--l6)", bg: "rgba(224,92,155,0.15)", desc: "Success criteria and self-validation checklist generated." },
+    { l: "L7", name: "Output Meta", color: "var(--l7)", bg: "rgba(126,200,227,0.15)", desc: "Format, length, language, and style specifications applied." }
+  ];
+
+  function amplify() {
+    const input = document.getElementById('promptInput').value.trim();
+    if (!input) return;
+
+    const btn = document.querySelector('.rune-btn');
+    btn.textContent = '⟳ Amplifying…';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      const layers = examples[input] || defaultLayers;
+      const container = document.getElementById('layerOutput');
+      container.innerHTML = '';
+
+      layers.forEach((layer, i) => {
+        const div = document.createElement('div');
+        div.className = 'rune-layer';
+        div.style.opacity = '0';
+        div.style.transform = 'translateY(8px)';
+        div.innerHTML = `
+          <span class="layer-badge" style="background:${layer.bg};color:${layer.color}">${layer.l}</span>
+          <div class="layer-content">
+            <div class="layer-name">${layer.name}</div>
+            <div class="layer-desc">${layer.desc}</div>
+          </div>
+        `;
+        container.appendChild(div);
+
+        setTimeout(() => {
+          div.style.transition = 'opacity 0.3s, transform 0.3s';
+          div.style.opacity = '1';
+          div.style.transform = 'translateY(0)';
+        }, i * 100);
+      });
+
+      document.getElementById('outputArea').classList.add('show');
+      btn.textContent = '⟳ RÜNLE!';
+      btn.disabled = false;
+    }, 600);
+  }
+</script>
+
+</body>
+</html>
