@@ -74,6 +74,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--strategy", "-s", choices=["layered", "merged", "chain"],
                    default="layered", help="Fusion strategy (default: layered)")
 
+    # lineage
+    p = sub.add_parser("lineage", help="View prompt ancestry and evolution")
+    p.add_argument("lineage_id", nargs="?", help="Specific lineage ID to trace")
+    p.add_argument("--limit", "-l", type=int, default=10, help="Number of recent entries")
+
     # swarm
     p = sub.add_parser("swarm", help="Multi-agent prompt evolution")
     p.add_argument("prompt", nargs="+", help="Your prompt")
@@ -108,6 +113,7 @@ def main() -> None:
         cmd_forge, cmd_stats, cmd_cost, cmd_config, cmd_fuse, cmd_version,
     )
     from rune.cli.swarm_cmd import cmd_swarm
+    from rune.cli.lineage_cmd import cmd_lineage
 
     commands = {
         "cast": cmd_cast,
@@ -122,6 +128,7 @@ def main() -> None:
         "config": cmd_config,
         "fuse": cmd_fuse,
         "swarm": cmd_swarm,
+        "lineage": cmd_lineage,
         "version": cmd_version,
     }
 
