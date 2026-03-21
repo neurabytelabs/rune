@@ -259,6 +259,52 @@ def cmd_cast(args: argparse.Namespace) -> None:
     except Exception as e:
         print_warn(f"Memory save failed: {e}")
 
+    # Oracle: auto-refinement if score is low
+    overall_score = report.get("overall", 0.0) if isinstance(report, dict) else 0.0
+    lineage_id = None
+    try:
+        from rune.core.oracle import Oracle
+        oracle = Oracle(spinoza_threshold=float(CONFIG.get("spinoza_threshold", 0.6)))
+
+        # Auto-refine if below threshold (max 2 rounds)
+        refinement_round = 0
+        while oracle.should_refine(output) and refinement_round < oracle.max_rounds:
+            refinement_round += 1
+            print_warn(f"Score below threshold — auto-refining (round {refinement_round})...")
+            report_summary = report.get("summary", "Quality below threshold")
+            refine_prompt = oracle.build_refinement_prompt(prompt, output, str(report_summary), refinement_round)
+            output = llm_call(refine_prompt, model=model)
+            report = spinoza_validate(output, model="gemini-3-flash-preview")
+            print_spinoza_report(report, f"Refined Output (Round {refinement_round})")
+            overall_score = report.get("overall", 0.0)
+
+        # Track lineage
+        from rune.core.validator import _grade
+        lineage = oracle.create_lineage(
+            original_prompt=prompt,
+            enhanced_prompt=enhanced,
+            model=model,
+            spinoza_score=overall_score,
+            grade=_grade(overall_score) if isinstance(overall_score, (int, float)) else "?",
+            refinement_round=refinement_round,
+        )
+        lineage_id = lineage.id
+        print_meta(f"📜 Lineage: {lineage_id}")
+    except Exception as e:
+        print_warn(f"Oracle unavailable: {e}")
+
+    # Feedback prompt (interactive only, not quick mode)
+    if lineage_id and not quick_mode and sys.stdin.isatty():
+        try:
+            fb = input(f"\n{C.GREEN}📝 Rate this output [A-F / skip]: {C.RESET}").strip().upper()
+            if fb and fb in ("A", "B", "C", "D", "F"):
+                from rune.core.oracle import Oracle
+                oracle = Oracle()
+                oracle.record_feedback(lineage_id, fb)
+                print_success(f"Feedback recorded: {fb}")
+        except (EOFError, KeyboardInterrupt):
+            pass
+
     # Save to file
     data = {
         "timestamp": datetime.datetime.now().isoformat(),
@@ -267,6 +313,7 @@ def cmd_cast(args: argparse.Namespace) -> None:
         "enhanced_prompt": enhanced if not args.raw else None,
         "output": output,
         "spinoza": report,
+        "lineage_id": lineage_id,
     }
     fp = save_result(data)
     print_success(f"Saved to {fp}")
