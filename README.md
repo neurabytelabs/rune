@@ -141,20 +141,25 @@ wand stats                  # Your prompt evolution over time: Chart your journe
 ## ⚡ Quick Start: Embrace the Power
 
 ```bash
+# Option A: pip install (recommended)
+pip install rune-wand
+wand cast "Explain quantum computing to a curious 12-year-old"
+
+# Option B: from source
 git clone https://github.com/neurabytelabs/rune.git
 cd rune
+python wand.py cast "Explain quantum computing to a curious 12-year-old"
+```
 
-# Configure (Declare your chosen conduit of intelligence)
+```bash
+# Configure your LLM provider
 mkdir -p ~/.rune
 cat > ~/.rune/config.toml << EOF
 [llm]
 api_url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-api_key = "your-gemini-key"
-default_model = "gemini-2.5-flash"
+api_key = "your-api-key"
+default_model = "gemini-3-flash"
 EOF
-
-# Cast your first spell (Command the AI to reveal its wisdom)
-python3 wand.py cast "Explain quantum computing to a curious 12-year-old"
 ```
 
 This is the threshold. No superfluous dependencies beyond Python 3.11+ and `requests`. The path to mastery is unburdened.
@@ -231,7 +236,7 @@ Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tun
 ├─────────────────────────────────────────────┤
 │                                             │
 │  🪄 WAND CLI                                │
-│  Interactive Q&A · Quick Mode · 12 commands │
+│  Interactive Q&A · Quick Mode · 15 commands │
 │                                             │
 │  📜 8-LAYER ENHANCER                        │
 │  L0 → L7: structured prompt transformation  │
@@ -248,6 +253,9 @@ Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tun
 │  🧪 Evaluator    Cross-model A/B testing    │
 │  💰 Cost         Per-model spend tracking   │
 │  🐝 Swarm        Multi-agent tournament     │
+│  🔮 Oracle       Self-improving prompts     │
+│  📜 Lineage      Prompt ancestry tracking   │
+│  🔌 Providers    Unified LLM interface      │
 │                                             │
 └─────────────────────────────────────────────┘
 ```
@@ -286,11 +294,22 @@ RUNE operates seamlessly with any OpenAI-compatible endpoint. Bring forth your o
 
 ### v2.0 ✅ Current — Deus Sive Natura: A New Era of AI Interaction
 
-- [ ] **Oracle** — self-improving prompts via feedback loops: The perpetual refinement of understanding, an evolution towards absolute clarity.
-- [ ] **Prompt DNA** — genetic algorithm prompt evolution: The organic growth of perfect prompts, adapting to the very *natura* of AI.
-- [ ] **Marketplace** — community prompt sharing & rating: A collective consciousness of perfected spells, shared for the benefit of all.
-- [ ] **Visual Pipeline** — text-to-image prompt engineering: Extending the dominion of understanding into the realm of pure vision.
-- [ ] **Agent Negotiation** — agent-to-agent prompt collaboration: The symphony of multiple intelligences, collaborating towards a shared truth.
+- [x] **Modular architecture** — wand.py refactored from monolith to `rune/cli/` package: Clean separation of concerns.
+- [x] **pyproject.toml** — pip-installable package (`rune-wand`): The path to mastery, simplified.
+- [x] **SpinozaValidator** — local heuristic validation, no LLM needed: Instant quality assessment.
+- [x] **Unified providers** — single interface for all OpenAI-compatible LLMs: One wand, many conduits.
+- [x] **Swarm integration** — `wand swarm` in main CLI: Multi-agent evolution at your fingertips.
+- [x] **Oracle** — self-improving prompts via feedback loops: Auto-refinement when quality falls below threshold.
+- [x] **Prompt Lineage** — ancestry tracking for every enhanced prompt: `wand lineage` reveals the evolution.
+- [x] **Grimoire v2** — YAML frontmatter metadata on all 42 templates: Machine-readable spell library.
+- [x] **Test suite** — 23 pytest tests covering validator, router, CLI: Quality assurance for the quality assurer.
+- [x] **RUNE.md v2.0** — clean rewrite with Domain Profiles: Token-efficient paste-in system.
+
+### v2.1 — The Expansion: Extending the Dominion
+
+- [ ] **Visual Pipeline** — text-to-image prompt engineering: Extending understanding into the realm of pure vision.
+- [ ] **Marketplace** — community prompt sharing & rating: A collective consciousness of perfected spells.
+- [ ] **Prompt DNA** — genetic algorithm prompt evolution: Organic growth of perfect prompts.
 
 ---
 
