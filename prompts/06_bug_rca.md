@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 🐛 Bug Root Cause Analysis
 
 5 Whys metodolojisi ile sistematik hata analizi yapan prompt. Kök neden + düzeltme + önleme üçlüsü üretir.

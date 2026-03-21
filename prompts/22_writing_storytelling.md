@@ -1,3 +1,8 @@
+---
+domain: writing
+version: "2.0"
+---
+
 # 📖 Brand Storytelling & Narrative Design
 
 ## Category: WRITING

@@ -1,3 +1,8 @@
+---
+domain: analysis
+version: "2.0"
+---
+
 # 💰 Financial Model & Unit Economics
 
 ## Category: ANALYSIS

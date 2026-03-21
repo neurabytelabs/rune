@@ -1,3 +1,8 @@
+---
+domain: writing
+version: "2.0"
+---
+
 # ✍️ Technical Blog Post Writer
 
 ## Category: WRITING

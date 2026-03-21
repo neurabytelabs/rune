@@ -1,3 +1,10 @@
+---
+domain: coding
+complexity: L3-L4
+version: "2.0"
+tags: [coding]
+---
+
 # 🧪 Test Scenario Generation
 
 Generates unit, integration, and e2e test scenarios. Focused on edge cases and error paths.
