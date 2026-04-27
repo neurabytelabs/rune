@@ -23,7 +23,7 @@ DEFAULTS: dict[str, Any] = {
     "llm": {
         "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
         "api_key": os.getenv("RUNE_API_KEY", ""),
-        "default_model": "gemini-3-pro",
+        "default_model": "gemini-3.1-pro-preview",
         "timeout": 120,
         "max_tokens": 8000,
         "temperature": 0.7,

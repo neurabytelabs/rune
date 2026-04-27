@@ -22,7 +22,7 @@ from rune.swarm.tournament import score_response
 class SwarmOrchestrator:
     """Orchestrates multi-agent prompt evolution."""
 
-    def __init__(self, provider: OpenAICompatProvider, model: str = "gemini-3-flash-preview"):
+    def __init__(self, provider: OpenAICompatProvider, model: str = "gemini-3.1-pro-preview"):
         self.provider = provider
         self.model = model
 

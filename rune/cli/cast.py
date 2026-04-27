@@ -232,7 +232,7 @@ def cmd_cast(args: argparse.Namespace) -> None:
     report = {}
     try:
         print_meta("\n🔍 Running Spinoza validation...")
-        report = spinoza_validate(output, model="gemini-3-flash-preview")
+        report = spinoza_validate(output, model="gemini-3.1-pro-preview")
         print_spinoza_report(report)
     except Exception as e:
         print_warn(f"Spinoza validation skipped: {e}")
@@ -274,7 +274,7 @@ def cmd_cast(args: argparse.Namespace) -> None:
             report_summary = report.get("summary", "Quality below threshold")
             refine_prompt = oracle.build_refinement_prompt(prompt, output, str(report_summary), refinement_round)
             output = llm_call(refine_prompt, model=model)
-            report = spinoza_validate(output, model="gemini-3-flash-preview")
+            report = spinoza_validate(output, model="gemini-3.1-pro-preview")
             print_spinoza_report(report, f"Refined Output (Round {refinement_round})")
             overall_score = report.get("overall", 0.0)
 
