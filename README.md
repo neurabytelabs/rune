@@ -2,9 +2,11 @@
 
 # ᚱ RUNE
 
-### Every prompt is a spell. Every spell, a decree of understanding.
+### The wand for your AI.
 
-*347 years ago, Baruch Spinoza unveiled the profound truth: to understand is to possess power, to achieve freedom. Today, we confront the digital void with mere wishes, disguised as prompts. RUNE transmutes these fleeting desires into potent spells, forging understanding into an undeniable force.*
+**Every prompt is a spell. Every spell, a decree of understanding.**
+
+*Your AI isn't weak. Your prompts are unstructured. RUNE is an 8-layer prompt amplification framework — backed by research (arXiv:2512.14982) showing ~45% quality improvement. One command. 42 spells. Structured reasoning, not wishful thinking.*
 
 <br>
 
