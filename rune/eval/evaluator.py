@@ -19,9 +19,11 @@ from rune.core.validator import SpinozaValidator
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class LLMResponse:
     """Raw response from an LLM call."""
+
     content: str
     model: str
     tokens_in: int
@@ -33,6 +35,7 @@ class LLMResponse:
 @dataclass
 class ModelResult:
     """Evaluation result for a single model."""
+
     model: str
     response: LLMResponse
     spinoza_score: float
@@ -43,6 +46,7 @@ class ModelResult:
 @dataclass
 class CrossModelReport:
     """Comparative report across multiple models."""
+
     prompt: str
     enhanced_prompt: str | None
     results: list[ModelResult]
@@ -54,6 +58,7 @@ class CrossModelReport:
 @dataclass
 class DuelReport:
     """A/B test report: raw vs enhanced prompt."""
+
     prompt: str
     raw_result: LLMResponse
     enhanced_result: LLMResponse
@@ -80,6 +85,7 @@ DEFAULT_MODELS: list[str] = [
 # ---------------------------------------------------------------------------
 # Evaluator
 # ---------------------------------------------------------------------------
+
 
 class Evaluator:
     """Cross-model evaluation and A/B testing engine.
@@ -139,13 +145,15 @@ class Evaluator:
             score = validation.get("score", 0.0)
             grade = validation.get("grade", "F")
 
-            model_results.append(ModelResult(
-                model=model,
-                response=resp,
-                spinoza_score=score,
-                spinoza_grade=grade,
-                rank=0,
-            ))
+            model_results.append(
+                ModelResult(
+                    model=model,
+                    response=resp,
+                    spinoza_score=score,
+                    spinoza_grade=grade,
+                    rank=0,
+                )
+            )
 
         # Rank by Spinoza score descending, break ties by speed
         model_results.sort(
@@ -282,7 +290,9 @@ class Evaluator:
     # Persistence
     # ------------------------------------------------------------------
 
-    def save_report(self, report: CrossModelReport | DuelReport, output_dir: str = "outputs") -> str:
+    def save_report(
+        self, report: CrossModelReport | DuelReport, output_dir: str = "outputs"
+    ) -> str:
         """Save a report as JSON and Markdown.
 
         Creates a date-stamped subfolder inside *output_dir*.
@@ -357,7 +367,7 @@ class Evaluator:
             f"{self.api_url}/v1/chat/completions",
             json=payload,
             headers=headers,
-            timeout=120,
+            timeout=300,
         )
         elapsed = time.monotonic() - start
         resp.raise_for_status()
