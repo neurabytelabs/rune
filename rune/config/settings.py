@@ -2,6 +2,7 @@
 ⚙️ RUNE Settings — Configuration Management
 TOML-based config with sensible defaults.
 """
+
 import os
 import copy
 from typing import Any, Optional
@@ -24,7 +25,7 @@ DEFAULTS: dict[str, Any] = {
         "api_url": os.getenv("RUNE_API_URL", "http://127.0.0.1:8045/v1/chat/completions"),
         "api_key": os.getenv("RUNE_API_KEY", ""),
         "default_model": "gemini-3.1-pro-preview",
-        "timeout": 120,
+        "timeout": 300,
         "max_tokens": 8000,
         "temperature": 0.7,
         "stream": False,
