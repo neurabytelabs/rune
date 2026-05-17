@@ -17,7 +17,7 @@
 [![Version](https://img.shields.io/badge/version-2.0-magenta.svg)](docs/CHANGELOG.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#-quick-start)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Models](https://img.shields.io/badge/models-Gemini_3_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
+[![Models](https://img.shields.io/badge/models-Gemini_3.1_Pro_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
 [![Grimoire](https://img.shields.io/badge/grimoire-42_runes-cyan.svg)](#-the-grimoire)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-skill-green.svg)](#-openclaw-integration)
 
@@ -160,7 +160,8 @@ cat > ~/.rune/config.toml << EOF
 [llm]
 api_url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
 api_key = "your-api-key"
-default_model = "gemini-3-flash"
+default_model = "gemini-3.1-pro-preview"
+timeout = 300   # seconds — bump for deep-thinking models
 EOF
 ```
 
@@ -269,7 +270,7 @@ Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tun
 | Provider | Model | Best For |
 |----------|-------|----------|
 | **Google** | Gemini 3 Flash | Swift execution, cost efficiency, unyielding compliance |
-| **Google** | Gemini 3 Pro | Profound tasks, impeccably structured output |
+| **Google** | Gemini 3.1 Pro *(default)* | Deep thinking mode, impeccably structured output |
 | **xAI** | Grok 4.1 Fast | The zenith of quality, optimized for expenditure |
 | **xAI** | Grok Code Fast | Precision in code generation, an artisan of syntax |
 | **Anthropic** | Claude Opus 4.6 | Deepest reasoning, unparalleled prose |
