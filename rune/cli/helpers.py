@@ -40,6 +40,7 @@ def get_cost_tracker():
     if _cost_tracker is None:
         try:
             from rune.analytics.tracker import CostTracker
+
             _cost_tracker = CostTracker()
         except Exception:
             pass
@@ -59,11 +60,13 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "color": True,
 }
 
+
 # ──────────────────────────────────────────────
 # ANSI Colors
 # ──────────────────────────────────────────────
 class C:
     """ANSI color codes — disabled when --no-color or non-TTY."""
+
     MAGENTA = "\033[35m"
     CYAN = "\033[36m"
     GREEN = "\033[32m"
@@ -173,9 +176,9 @@ def print_meta(msg: str) -> None:
 
 
 def section(title: str) -> None:
-    print(f"\n{C.MAGENTA}{C.BOLD}{'═'*60}{C.RESET}")
+    print(f"\n{C.MAGENTA}{C.BOLD}{'═' * 60}{C.RESET}")
     print(f"{C.MAGENTA}{C.BOLD}  {title}{C.RESET}")
-    print(f"{C.MAGENTA}{C.BOLD}{'═'*60}{C.RESET}")
+    print(f"{C.MAGENTA}{C.BOLD}{'═' * 60}{C.RESET}")
 
 
 # ──────────────────────────────────────────────
@@ -239,8 +242,9 @@ LAYER_NAMES = [
 # ──────────────────────────────────────────────
 # LLM Integration
 # ──────────────────────────────────────────────
-def llm_call(prompt: str, model: str, stream: bool = False,
-             system: Optional[str] = None, track: bool = True) -> str:
+def llm_call(
+    prompt: str, model: str, stream: bool = False, system: Optional[str] = None, track: bool = True
+) -> str:
     """Send prompt to LLM API. Returns full response text."""
     messages = []
     if system:
@@ -277,10 +281,14 @@ def llm_call(prompt: str, model: str, stream: bool = False,
                 print_error("Cannot connect to LLM API at " + CONFIG["api_url"])
                 print_info("Check your API endpoint and network connection.")
                 sys.exit(1)
-            import time; time.sleep(2 * (attempt + 1))
+            import time
+
+            time.sleep(2 * (attempt + 1))
         except requests.HTTPError as e:
             if resp is not None and resp.status_code in (429, 503) and attempt < max_retries - 1:
-                import time; time.sleep(5 * (attempt + 1))
+                import time
+
+                time.sleep(5 * (attempt + 1))
                 continue
             print_error(f"API error: {e}")
             sys.exit(1)
@@ -331,9 +339,9 @@ def llm_call(prompt: str, model: str, stream: bool = False,
 # ──────────────────────────────────────────────
 # Enhancer
 # ──────────────────────────────────────────────
-def enhance_prompt(user_prompt: str, model: str,
-                   rune_name: Optional[str] = None,
-                   verbose: bool = False) -> str:
+def enhance_prompt(
+    user_prompt: str, model: str, rune_name: Optional[str] = None, verbose: bool = False
+) -> str:
     """Enhance a user prompt using the RUNE 8-layer meta-prompt."""
     extra = ""
     if rune_name:
@@ -404,6 +412,9 @@ TEXT TO EVALUATE:
     except Exception as e:
         print_warn(f"Spinoza validation failed: {e}")
 
+    # TODO: silent-fail hardening — fence-aware JSON extraction, exception detail
+    # in summary, configurable spinoza_model. Repro: cast → outputs/.../*.json
+    # shows {"summary": "Validation failed"}. See chat 2026-05-16.
     return {"scores": {}, "overall": 0.0, "summary": "Validation failed"}
 
 
@@ -440,8 +451,30 @@ def detect_intent(prompt: str) -> Dict[str, Any]:
     prompt_lower = prompt.lower()
     domain = "GENERAL"
     hints = {
-        "CODING": ["code", "function", "api", "bug", "refactor", "script", "implement", "debug", "deploy", "kod"],
-        "WRITING": ["blog", "article", "write", "essay", "story", "content", "post", "draft", "yaz", "makale"],
+        "CODING": [
+            "code",
+            "function",
+            "api",
+            "bug",
+            "refactor",
+            "script",
+            "implement",
+            "debug",
+            "deploy",
+            "kod",
+        ],
+        "WRITING": [
+            "blog",
+            "article",
+            "write",
+            "essay",
+            "story",
+            "content",
+            "post",
+            "draft",
+            "yaz",
+            "makale",
+        ],
         "ANALYSIS": ["analyze", "compare", "evaluate", "review", "assess", "report", "analiz"],
         "CREATIVE": ["design", "create", "imagine", "visual", "logo", "brand", "tasarla", "gorsel"],
         "RESEARCH": ["research", "study", "investigate", "explore", "survey", "arastir", "incele"],
@@ -450,7 +483,10 @@ def detect_intent(prompt: str) -> Dict[str, Any]:
         if any(k in prompt_lower for k in kws):
             domain = d
             break
-    tr_detect = any(c in "\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc" for c in prompt)
+    tr_detect = any(
+        c in "\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc"
+        for c in prompt
+    )
     tr_words = any(w in prompt_lower for w in ["yaz", "olustur", "hakkinda", "icin"])
     lang = "tr" if (tr_detect or tr_words) else "en"
     return {"domain": domain, "lang": lang, "prompt": prompt}
