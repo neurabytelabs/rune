@@ -133,10 +133,49 @@ wand validate "any text"    # Spinoza philosophical validation: Ascertain the tr
 wand grimoire               # Browse 42 spell templates: Explore the perfected forms of digital sorcery.
 wand forge                  # Create your own rune: Architect your own pathways to power.
 wand fuse a.txt b.txt       # Merge multiple prompts into one: Synthesize complex intentions into a single, potent decree.
+wand bind "A" "B"           # Transmute two ideas into one emergent rune: Where mechanical fusion ends, alchemy begins.
 wand test "prompt"          # Benchmark across models: Measure the fidelity of understanding across diverse intelligences.
 wand cost                   # What you've spent, by model: Understand the true cost of digital creation.
 wand stats                  # Your prompt evolution over time: Chart your journey towards mastery.
 ```
+
+---
+
+## ᚷ Bind: The Alchemy Spell
+
+`fuse` stacks prompts. **`bind` transmutes them.**
+
+Where `fuse` glues two texts side by side (mechanical), `bind` casts two *raw ideas* into the fire and forges a **third, emergent rune** — one whose essence lives in the *tension* between them. The seam vanishes: `1 ⊕ 1 = a new 1`. The newborn rune is Spinoza-scored and inscribed into your grimoire, ready to cast.
+
+```bash
+wand bind "minimalism" "CRM dashboard"     # → a rune neither idea could birth alone
+wand bind "rune" "rune"                     # bind RUNE with itself — and watch it turn recursive
+wand bind "silence" "blockchain" --dry      # preview the transmutation without inscribing
+```
+
+### Watch It Work: `rune ⊕ rune`
+
+Bind RUNE with itself, and the wand folds inward — producing a rune that *forges other runes*:
+
+```
+ᚷ  rune  ⊕  rune
+
+tension: "The absolute singularity of a discrete instruction fractures when
+          forced to recursively define itself, birthing a generative syntax."
+
+# 🌀 The Metaglyph                                    Spinoza: 0.94
+# Category: AIML · Complexity: L5
+# A recursive architect that analyzes raw intent to forge, structure,
+# and optimize other system prompts.
+
+  L1 Identity   → "the prime architect of cognitive instructions… you forge
+                   the linguistic machinery, you do not perform the task"
+  L4 Methodology → Deconstruction → Architecture → Inscription
+  L6 Errors      → Recursion Failure: executing the task instead of building
+                   the prompt for it
+```
+
+Not "rune + rune." A genuinely new thing: **The Metaglyph** — the rune that makes runes. That is the difference between fusion and alchemy.
 
 ---
 
@@ -250,6 +289,7 @@ Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tun
 ├─────────────────────────────────────────────┤
 │                                             │
 │  🧬 Synthesis    Fuse multiple prompts      │
+│  ᚷ Bind         Transmute 2 ideas → 1 rune │
 │  🧠 Memory       Track prompt evolution     │
 │  🔀 Router       Pick the right model       │
 │  🔍 Search       TF-IDF grimoire search     │
