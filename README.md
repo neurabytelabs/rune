@@ -143,6 +143,14 @@ wand stats                  # Your prompt evolution over time: Chart your journe
 
 ## ᚷ Bind: The Alchemy Spell
 
+<div align="center">
+
+![Bind — the Alchemy spell: two ideas fused into one emergent rune](docs/xbind.jpeg)
+
+*Two ideas collide. The seam vanishes. A third rune is born.*
+
+</div>
+
 `fuse` stacks prompts. **`bind` transmutes them.**
 
 Where `fuse` glues two texts side by side (mechanical), `bind` casts two *raw ideas* into the fire and forges a **third, emergent rune** — one whose essence lives in the *tension* between them. The seam vanishes: `1 ⊕ 1 = a new 1`. The newborn rune is Spinoza-scored and inscribed into your grimoire, ready to cast.
