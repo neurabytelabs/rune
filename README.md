@@ -204,17 +204,21 @@ wand lineage
 # Export recent lineage for visual inspection
 wand lineage --limit 25 --export-gepa run.json
 
-# Optional viewer, installed separately
-pip install gepa-viz
-gepa-viz serve --run run.json
+# Optional upstream viewer path: run GEPA-viz separately and load run.json
+# Keep this outside RUNE's runtime dependency chain.
 
 # Zero-install local demo included in this repo
 open demo/gepa-lineage/index.html
 ```
 
-For a ready-made sample candidate tree, see [`demo/gepa-lineage/`](demo/gepa-lineage/).
+For ready-made sample candidate trees, see:
+
+- [`demo/gepa-lineage/`](demo/gepa-lineage/) — compact prompt-evolution walkthrough.
+- [`demo/agent-cron-lineage/`](demo/agent-cron-lineage/) — staged Hermes Agent Mesh + cronjob operating-loop demo.
 
 Why it matters: RUNE stops being a black box. You can see **which prompt form improved, why it changed, and whether the score justified the mutation**. That is the shortest path from prompt magic to prompt engineering.
+
+Decision boundary: use visible lineage for **important prompt systems** — releases, agent-role prompts, recurring cron briefs, and automation guardrails. Do not make GEPA-viz a required RUNE dependency, and do not graph every tiny prompt.
 
 ---
 
