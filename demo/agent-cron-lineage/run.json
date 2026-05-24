@@ -1,0 +1,256 @@
+{
+  "examples": [
+    {
+      "lineage_id": "mesh-00-rough",
+      "prompt": "Check my agent system and cronjobs.",
+      "ground_truth": {
+        "goal": "Operational clarity without alert fatigue"
+      }
+    },
+    {
+      "lineage_id": "mesh-01-rick",
+      "prompt": "RICK should coordinate agent mesh status and summarize decisions.",
+      "ground_truth": {
+        "goal": "Coordinator brief with ownership and next actions"
+      }
+    },
+    {
+      "lineage_id": "mesh-02-summer",
+      "prompt": "SUMMER should monitor services, cron health, and stale signals.",
+      "ground_truth": {
+        "goal": "Monitoring brief with evidence and risk flags"
+      }
+    },
+    {
+      "lineage_id": "mesh-03-morty",
+      "prompt": "MORTY should finish queued execution tasks and report blockers.",
+      "ground_truth": {
+        "goal": "Execution brief with artifacts and verification"
+      }
+    },
+    {
+      "lineage_id": "mesh-04-unified",
+      "prompt": "Create a daily Agent Mesh brief from RICK, SUMMER, MORTY, and cronjob outputs.",
+      "ground_truth": {
+        "goal": "Unified briefing with source-separated signals"
+      }
+    },
+    {
+      "lineage_id": "mesh-05-safe-autonomy",
+      "prompt": "Create an escalation-safe Agent Mesh operating loop with cron context, risk thresholds, and reply codes.",
+      "ground_truth": {
+        "goal": "Decision-ready recurring operating surface"
+      }
+    }
+  ],
+  "candidates": {
+    "0": {
+      "prompt": "Check the agents and cronjobs and tell me what is going on.",
+      "parent": null,
+      "score": 0.52,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-00-rough",
+            "grade": "D+",
+            "model": "rune-demo",
+            "strategy": "generic-ops"
+          },
+          "score": 0.52
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Check my agent system and cronjobs."
+          },
+          "parent_prediction": null,
+          "parent_score": null,
+          "prediction": {
+            "enhanced_prompt": "Check the agents and cronjobs and tell me what is going on."
+          },
+          "score": 0.52,
+          "feedback": "Too broad. No owner split, cadence, evidence rules, or escalation boundary."
+        }
+      ]
+    },
+    "1": {
+      "prompt": "You are RICK, coordinator of the mesh. Produce a concise decision brief: active projects, agent ownership, unanswered questions, and one next move per project.",
+      "parent": "0",
+      "score": 0.7,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-01-rick",
+            "grade": "B-",
+            "model": "rune-demo",
+            "strategy": "role-specialization"
+          },
+          "score": 0.7
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "RICK should coordinate agent mesh status and summarize decisions."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Coordinator brief with ownership and decision surface."
+          },
+          "score": 0.7,
+          "feedback": "Better coordination. Still missing raw monitoring and execution evidence."
+        }
+      ]
+    },
+    "2": {
+      "prompt": "You are SUMMER. Inspect monitoring signals, scheduler health, stale cron outputs, and noisy alerts. Report only changed risk, evidence, and recommended watch action.",
+      "parent": "0",
+      "score": 0.73,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-02-summer",
+            "grade": "B",
+            "model": "rune-demo",
+            "strategy": "monitoring-specialization"
+          },
+          "score": 0.73
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "SUMMER should monitor services, cron health, and stale signals."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Monitoring brief with changed risk only."
+          },
+          "score": 0.73,
+          "feedback": "Good signal filtering; reduces alert fatigue. Needs integration with coordinator and execution results."
+        }
+      ]
+    },
+    "3": {
+      "prompt": "You are MORTY. Review queued execution tasks, bot jobs, failed automations, and artifacts created. Report finished work, blockers, verification handles, and safe next actions.",
+      "parent": "0",
+      "score": 0.71,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-03-morty",
+            "grade": "B-",
+            "model": "rune-demo",
+            "strategy": "execution-specialization"
+          },
+          "score": 0.71
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "MORTY should finish queued execution tasks and report blockers."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Execution report with artifacts and blockers."
+          },
+          "score": 0.71,
+          "feedback": "Good for operational finishing. Needs escalation rules before touching protected services."
+        }
+      ]
+    },
+    "4": {
+      "prompt": "Create the daily Agent Mesh brief. Inputs: latest RICK plan, SUMMER monitoring report, MORTY execution report, and Hermes cronjob outputs. Separate facts from recommendations; include P# items, S# questions, owners, stale signals, and verification handles.",
+      "parent": "1",
+      "score": 0.84,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-04-unified",
+            "grade": "A-",
+            "model": "rune-demo",
+            "strategy": "context-fusion"
+          },
+          "score": 0.84
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create a daily Agent Mesh brief from RICK, SUMMER, MORTY, and cronjob outputs."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-01-rick"
+          },
+          "parent_score": 0.7,
+          "prediction": {
+            "enhanced_prompt": "Unified daily brief with source-separated inputs and reply codes."
+          },
+          "score": 0.84,
+          "feedback": "Now decision-ready. Makes cron output useful instead of noisy. Still needs safety thresholds for autonomous follow-up."
+        }
+      ]
+    },
+    "5": {
+      "prompt": "Create an escalation-safe Agent Mesh operating loop for recurring cron delivery. Use: RICK=coordination, SUMMER=monitoring, MORTY=execution. Include context_from cron sources, changed-since-last-run filter, protected-domain guardrails, reply codes, owner/action/risk fields, and explicit stop conditions before service changes or broad rollout.",
+      "parent": "4",
+      "score": 0.92,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-05-safe-autonomy",
+            "grade": "A",
+            "model": "rune-demo",
+            "strategy": "safe-autonomy-loop"
+          },
+          "score": 0.92
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create an escalation-safe Agent Mesh operating loop with cron context, risk thresholds, and reply codes."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-04-unified"
+          },
+          "parent_score": 0.84,
+          "prediction": {
+            "enhanced_prompt": "Recurring operating loop with source inputs, thresholds, guardrails, and reply protocol."
+          },
+          "score": 0.92,
+          "feedback": "Winner: turns autonomous cron output into a controlled decision surface. Strong fit for Hermes mesh; no production dependency required."
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "demo": "agent-cron-lineage",
+    "status": "synthetic staged demo",
+    "purpose": "Evaluate whether RUNE Visible Lineage is useful for Hermes agent mesh and recurring cronjob prompts.",
+    "agents": [
+      "RICK",
+      "SUMMER",
+      "MORTY"
+    ],
+    "cron_features": [
+      "schedule",
+      "deliver",
+      "context_from",
+      "changed-since-last-run",
+      "reply codes",
+      "guardrails"
+    ]
+  }
+}

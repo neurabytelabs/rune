@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RUNE × Agent Mesh Cronjob Lineage</title>
+  <style>
+    :root { color-scheme: dark; --bg:#080a0f; --card:#121622; --card2:#171d2d; --line:#30384d; --text:#edf2ff; --muted:#9aa7bd; --gold:#d4a73a; --green:#74c69d; --blue:#7aa2f7; --red:#ff6b6b; --violet:#b794f4; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 10% 0%, rgba(122,162,247,.22), transparent 32%), radial-gradient(circle at 85% 0%, rgba(212,167,58,.16), transparent 30%), var(--bg); color:var(--text); }
+    main { max-width:1180px; margin:0 auto; padding:46px 20px 72px; }
+    .eyebrow { color:var(--gold); text-transform:uppercase; letter-spacing:.18em; font-size:12px; font-weight:800; }
+    h1 { font-size:clamp(34px, 6vw, 70px); line-height:.94; margin:14px 0 18px; max-width:980px; }
+    .lead { color:var(--muted); font-size:18px; max-width:860px; line-height:1.6; }
+    .banner { margin-top:22px; border:1px solid rgba(212,167,58,.35); background:rgba(212,167,58,.08); color:#f2dca3; border-radius:18px; padding:14px 16px; font-size:14px; line-height:1.45; }
+    .metrics { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:14px; margin:30px 0; }
+    .metric, .card { background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:0 24px 90px rgba(0,0,0,.24); }
+    .metric b { display:block; font-size:30px; color:var(--green); }
+    .metric span { color:var(--muted); font-size:13px; }
+    .flow { display:grid; grid-template-columns: 1fr; gap:14px; margin-top:28px; }
+    .row { display:grid; gap:14px; }
+    .row.root { grid-template-columns: minmax(0, 1fr); max-width:460px; margin:0 auto; }
+    .row.branch { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .row.final { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+    .node { position:relative; min-height:220px; }
+    .node .top { display:flex; align-items:start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .badge { font:700 12px ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--muted); border:1px solid var(--line); padding:6px 8px; border-radius:999px; }
+    .score { font-weight:900; font-size:34px; color:var(--green); }
+    .delta { color:var(--blue); font-size:15px; font-weight:800; }
+    .prompt { color:#f4f7ff; line-height:1.45; font-size:15px; }
+    .feedback { margin-top:14px; border-left:3px solid var(--gold); padding-left:12px; color:#dbe2ef; line-height:1.45; font-size:14px; }
+    .agent { display:inline-flex; gap:8px; align-items:center; margin-bottom:10px; color:var(--gold); font-weight:800; }
+    .connector { text-align:center; color:var(--muted); font:700 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:.08em; }
+    .decision { margin-top:34px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+    h2 { margin-top:44px; font-size:28px; }
+    ul { margin:12px 0 0; padding-left:20px; color:#dbe2ef; line-height:1.55; }
+    pre { overflow:auto; max-height:430px; background:#05070b; border:1px solid var(--line); border-radius:18px; padding:16px; color:#d7dce8; font-size:12px; }
+    code { color:#f2dca3; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">RUNE Visible Lineage · Agent Mesh Decision Demo</div>
+    <h1>Recurring agent prompts should be inspectable before they become habits.</h1>
+    <p class="lead">This staged demo uses the Hermes mesh — RICK, SUMMER, MORTY plus cronjob context — to test whether RUNE's GEPA-compatible lineage export is useful beyond a pretty graph. The answer we are evaluating: can lineage make recurring autonomous prompts safer, quieter, and more decision-ready?</p>
+    <div class="banner"><b>Demo status:</b> synthetic/staged. It does not touch production cronjobs, services, or agents. It is a safe rehearsal surface for deciding whether the feature belongs in RUNE.</div>
+    <section class="metrics" id="metrics"></section>
+    <div class="flow" id="flow"></div>
+    <section class="decision">
+      <article class="card"><h3>Why it helps</h3><ul><li>Shows how a vague cron prompt becomes an operating loop.</li><li>Separates RICK/SUMMER/MORTY roles before fusion.</li><li>Makes guardrails and escalation thresholds visible.</li><li>Reduces alert noise by scoring prompt variants.</li></ul></article>
+      <article class="card"><h3>Where to use it</h3><ul><li>Daily/weekly Agent Mesh briefings.</li><li>Context-from chained cron reports.</li><li>Operational prompt reviews before automation.</li><li>Demo/pitch proof for observable prompt engineering.</li></ul></article>
+      <article class="card"><h3>Where not to use it</h3><ul><li>Do not make GEPA-viz a runtime dependency.</li><li>Do not graph every tiny prompt.</li><li>Do not auto-rollout cron changes from a demo.</li><li>Do not replace human approval for protected domains.</li></ul></article>
+    </section>
+    <h2>GEPA-compatible run.json</h2>
+    <pre id="json"></pre>
+  </main>
+  <script>
+    const run = {
+  "examples": [
+    {
+      "lineage_id": "mesh-00-rough",
+      "prompt": "Check my agent system and cronjobs.",
+      "ground_truth": {
+        "goal": "Operational clarity without alert fatigue"
+      }
+    },
+    {
+      "lineage_id": "mesh-01-rick",
+      "prompt": "RICK should coordinate agent mesh status and summarize decisions.",
+      "ground_truth": {
+        "goal": "Coordinator brief with ownership and next actions"
+      }
+    },
+    {
+      "lineage_id": "mesh-02-summer",
+      "prompt": "SUMMER should monitor services, cron health, and stale signals.",
+      "ground_truth": {
+        "goal": "Monitoring brief with evidence and risk flags"
+      }
+    },
+    {
+      "lineage_id": "mesh-03-morty",
+      "prompt": "MORTY should finish queued execution tasks and report blockers.",
+      "ground_truth": {
+        "goal": "Execution brief with artifacts and verification"
+      }
+    },
+    {
+      "lineage_id": "mesh-04-unified",
+      "prompt": "Create a daily Agent Mesh brief from RICK, SUMMER, MORTY, and cronjob outputs.",
+      "ground_truth": {
+        "goal": "Unified briefing with source-separated signals"
+      }
+    },
+    {
+      "lineage_id": "mesh-05-safe-autonomy",
+      "prompt": "Create an escalation-safe Agent Mesh operating loop with cron context, risk thresholds, and reply codes.",
+      "ground_truth": {
+        "goal": "Decision-ready recurring operating surface"
+      }
+    }
+  ],
+  "candidates": {
+    "0": {
+      "prompt": "Check the agents and cronjobs and tell me what is going on.",
+      "parent": null,
+      "score": 0.52,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-00-rough",
+            "grade": "D+",
+            "model": "rune-demo",
+            "strategy": "generic-ops"
+          },
+          "score": 0.52
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Check my agent system and cronjobs."
+          },
+          "parent_prediction": null,
+          "parent_score": null,
+          "prediction": {
+            "enhanced_prompt": "Check the agents and cronjobs and tell me what is going on."
+          },
+          "score": 0.52,
+          "feedback": "Too broad. No owner split, cadence, evidence rules, or escalation boundary."
+        }
+      ]
+    },
+    "1": {
+      "prompt": "You are RICK, coordinator of the mesh. Produce a concise decision brief: active projects, agent ownership, unanswered questions, and one next move per project.",
+      "parent": "0",
+      "score": 0.7,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-01-rick",
+            "grade": "B-",
+            "model": "rune-demo",
+            "strategy": "role-specialization"
+          },
+          "score": 0.7
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "RICK should coordinate agent mesh status and summarize decisions."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Coordinator brief with ownership and decision surface."
+          },
+          "score": 0.7,
+          "feedback": "Better coordination. Still missing raw monitoring and execution evidence."
+        }
+      ]
+    },
+    "2": {
+      "prompt": "You are SUMMER. Inspect monitoring signals, scheduler health, stale cron outputs, and noisy alerts. Report only changed risk, evidence, and recommended watch action.",
+      "parent": "0",
+      "score": 0.73,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-02-summer",
+            "grade": "B",
+            "model": "rune-demo",
+            "strategy": "monitoring-specialization"
+          },
+          "score": 0.73
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "SUMMER should monitor services, cron health, and stale signals."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Monitoring brief with changed risk only."
+          },
+          "score": 0.73,
+          "feedback": "Good signal filtering; reduces alert fatigue. Needs integration with coordinator and execution results."
+        }
+      ]
+    },
+    "3": {
+      "prompt": "You are MORTY. Review queued execution tasks, bot jobs, failed automations, and artifacts created. Report finished work, blockers, verification handles, and safe next actions.",
+      "parent": "0",
+      "score": 0.71,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-03-morty",
+            "grade": "B-",
+            "model": "rune-demo",
+            "strategy": "execution-specialization"
+          },
+          "score": 0.71
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "MORTY should finish queued execution tasks and report blockers."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-00-rough"
+          },
+          "parent_score": 0.52,
+          "prediction": {
+            "enhanced_prompt": "Execution report with artifacts and blockers."
+          },
+          "score": 0.71,
+          "feedback": "Good for operational finishing. Needs escalation rules before touching protected services."
+        }
+      ]
+    },
+    "4": {
+      "prompt": "Create the daily Agent Mesh brief. Inputs: latest RICK plan, SUMMER monitoring report, MORTY execution report, and Hermes cronjob outputs. Separate facts from recommendations; include P# items, S# questions, owners, stale signals, and verification handles.",
+      "parent": "1",
+      "score": 0.84,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-04-unified",
+            "grade": "A-",
+            "model": "rune-demo",
+            "strategy": "context-fusion"
+          },
+          "score": 0.84
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create a daily Agent Mesh brief from RICK, SUMMER, MORTY, and cronjob outputs."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-01-rick"
+          },
+          "parent_score": 0.7,
+          "prediction": {
+            "enhanced_prompt": "Unified daily brief with source-separated inputs and reply codes."
+          },
+          "score": 0.84,
+          "feedback": "Now decision-ready. Makes cron output useful instead of noisy. Still needs safety thresholds for autonomous follow-up."
+        }
+      ]
+    },
+    "5": {
+      "prompt": "Create an escalation-safe Agent Mesh operating loop for recurring cron delivery. Use: RICK=coordination, SUMMER=monitoring, MORTY=execution. Include context_from cron sources, changed-since-last-run filter, protected-domain guardrails, reply codes, owner/action/risk fields, and explicit stop conditions before service changes or broad rollout.",
+      "parent": "4",
+      "score": 0.92,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "mesh-05-safe-autonomy",
+            "grade": "A",
+            "model": "rune-demo",
+            "strategy": "safe-autonomy-loop"
+          },
+          "score": 0.92
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create an escalation-safe Agent Mesh operating loop with cron context, risk thresholds, and reply codes."
+          },
+          "parent_prediction": {
+            "parent_id": "mesh-04-unified"
+          },
+          "parent_score": 0.84,
+          "prediction": {
+            "enhanced_prompt": "Recurring operating loop with source inputs, thresholds, guardrails, and reply protocol."
+          },
+          "score": 0.92,
+          "feedback": "Winner: turns autonomous cron output into a controlled decision surface. Strong fit for Hermes mesh; no production dependency required."
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "demo": "agent-cron-lineage",
+    "status": "synthetic staged demo",
+    "purpose": "Evaluate whether RUNE Visible Lineage is useful for Hermes agent mesh and recurring cronjob prompts.",
+    "agents": [
+      "RICK",
+      "SUMMER",
+      "MORTY"
+    ],
+    "cron_features": [
+      "schedule",
+      "deliver",
+      "context_from",
+      "changed-since-last-run",
+      "reply codes",
+      "guardrails"
+    ]
+  }
+};
+    const metrics = document.getElementById('metrics');
+    const scores = Object.values(run.candidates).map(c => c.score);
+    const improvement = Math.max(...scores) - Math.min(...scores);
+    [
+      ['6', 'candidate prompts'],
+      ['3', 'agent roles: RICK / SUMMER / MORTY'],
+      ['+' + improvement.toFixed(2), 'score lift from vague to governed'],
+      ['0', 'production side effects']
+    ].forEach(([n,l]) => { const e=document.createElement('div'); e.className='metric'; e.innerHTML=`<b>${n}</b><span>${l}</span>`; metrics.appendChild(e); });
+    const flow = document.getElementById('flow');
+    const rows = [ ['0'], ['1','2','3'], ['4'], ['5'] ];
+    const labels = {0:'rough cron prompt',1:'RICK coordinator',2:'SUMMER monitoring',3:'MORTY execution',4:'unified daily brief',5:'safe autonomy loop'};
+    const prevScore = id => { const p=run.candidates[id].parent; return p == null ? null : run.candidates[p].score; };
+    rows.forEach((ids, idx) => {
+      if (idx > 0) { const c=document.createElement('div'); c.className='connector'; c.textContent = idx === 1 ? 'branches into role-specialized prompts' : 'refines into'; flow.appendChild(c); }
+      const row=document.createElement('section'); row.className='row ' + (idx===0?'root':idx===1?'branch':'final');
+      ids.forEach(id => {
+        const c=run.candidates[id]; const pred=c.predictions?.[0]?.prediction || {}; const fb=c.minibatch?.[0]?.feedback || ''; const ps=prevScore(id); const delta=ps==null?'':` <span class="delta">(+${(c.score-ps).toFixed(2)})</span>`;
+        const el=document.createElement('article'); el.className='card node'; el.innerHTML=`<div class="agent">${labels[id]}</div><div class="top"><span class="badge">candidate #${id} · parent ${c.parent ?? 'none'} · ${pred.grade}</span><span class="score">${c.score.toFixed(2)}${delta}</span></div><div class="prompt">${c.prompt}</div><div class="feedback">${fb}</div>`; row.appendChild(el);
+      });
+      flow.appendChild(row);
+    });
+    document.getElementById('json').textContent = JSON.stringify(run, null, 2);
+  </script>
+</body>
+</html>
