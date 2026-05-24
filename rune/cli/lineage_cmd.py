@@ -6,9 +6,15 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from rune.cli.helpers import (
-    C, print_banner, print_info, print_error, print_meta, section,
+    C,
+    print_banner,
+    print_error,
+    print_info,
+    print_meta,
+    section,
 )
 
 
@@ -35,11 +41,20 @@ def cmd_lineage(args: argparse.Namespace) -> None:
         recent = oracle.get_recent_lineage(limit=limit)
 
         if not recent:
-            print_info("No lineage records yet. Run 'wand cast' to start tracking.")
+            if getattr(args, "export_gepa", None):
+                output_path = Path(args.export_gepa).expanduser().resolve()
+                oracle.export_gepa_run(limit=limit, output_path=output_path)
+                print_meta(f"GEPA-viz run exported: {output_path}")
+                print_info(f"View with: gepa-viz serve --run {output_path}")
+            else:
+                print_info("No lineage records yet. Run 'wand cast' to start tracking.")
             return
 
         section(f"📜 Recent Prompt Lineage ({len(recent)} entries)")
-        print(f"  {C.BOLD}{'ID':<28} {'Score':>6} {'Grade':>5} {'Feedback':>8} {'Model':<20} {'Prompt'}{C.RESET}")
+        print(
+            f"  {C.BOLD}{'ID':<28} {'Score':>6} {'Grade':>5} "
+            f"{'Feedback':>8} {'Model':<20} {'Prompt'}{C.RESET}"
+        )
         print(f"  {'─'*28} {'─'*6} {'─'*5} {'─'*8} {'─'*20} {'─'*30}")
 
         for entry in recent:
@@ -56,6 +71,16 @@ def cmd_lineage(args: argparse.Namespace) -> None:
                 f"{C.CYAN}{entry['model']:<20}{C.RESET} "
                 f"{prompt_preview}"
             )
+
+    if getattr(args, "export_gepa", None):
+        output_path = Path(args.export_gepa).expanduser().resolve()
+        oracle.export_gepa_run(
+            getattr(args, "lineage_id", None),
+            limit=getattr(args, "limit", 10) or 10,
+            output_path=output_path,
+        )
+        print_meta(f"GEPA-viz run exported: {output_path}")
+        print_info(f"View with: gepa-viz serve --run {output_path}")
 
     if getattr(args, "json", False):
         recent = oracle.get_recent_lineage(limit=50)

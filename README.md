@@ -14,7 +14,7 @@
 
 <br>
 
-[![Version](https://img.shields.io/badge/version-2.0-magenta.svg)](docs/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1-magenta.svg)](docs/CHANGELOG.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#-quick-start)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Models](https://img.shields.io/badge/models-Gemini_3.1_Pro_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
@@ -134,6 +134,7 @@ wand grimoire               # Browse 42 spell templates: Explore the perfected f
 wand forge                  # Create your own rune: Architect your own pathways to power.
 wand fuse a.txt b.txt       # Merge multiple prompts into one: Synthesize complex intentions into a single, potent decree.
 wand bind "A" "B"           # Transmute two ideas into one emergent rune: Where mechanical fusion ends, alchemy begins.
+wand lineage --export-gepa run.json  # Export prompt evolution for GEPA-viz: Make improvement visible.
 wand test "prompt"          # Benchmark across models: Measure the fidelity of understanding across diverse intelligences.
 wand cost                   # What you've spent, by model: Understand the true cost of digital creation.
 wand stats                  # Your prompt evolution over time: Chart your journey towards mastery.
@@ -184,6 +185,31 @@ tension: "The absolute singularity of a discrete instruction fractures when
 ```
 
 Not "rune + rune." A genuinely new thing: **The Metaglyph** — the rune that makes runes. That is the difference between fusion and alchemy.
+
+---
+
+## 📜 Lineage: Prompt Evolution You Can See
+
+RUNE already records prompt ancestry when you cast. v2.1 makes that evolution portable: export lineage into a **GEPA-viz-compatible `run.json`** and inspect the candidate tree visually.
+
+This is not another dependency in RUNE. It is a bridge: RUNE keeps the lightweight Python core, while GEPA-viz can render prompt candidates, parent links, Spinoza scores, refinement rounds, model metadata, and feedback.
+
+```bash
+# Cast prompts as usual; RUNE records lineage under ~/.rune/lineage
+wand cast -q "Turn this rough product idea into a launch brief!"
+
+# List recent lineage records
+wand lineage
+
+# Export recent lineage for visual inspection
+wand lineage --limit 25 --export-gepa run.json
+
+# Optional viewer, installed separately
+pip install gepa-viz
+gepa-viz serve --run run.json
+```
+
+Why it matters: RUNE stops being a black box. You can see **which prompt form improved, why it changed, and whether the score justified the mutation**. That is the shortest path from prompt magic to prompt engineering.
 
 ---
 

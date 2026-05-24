@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from rune.cli.helpers import C, BANNER_PLAIN
+from rune.cli.helpers import BANNER_PLAIN, C
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -94,6 +94,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("lineage", help="View prompt ancestry and evolution")
     p.add_argument("lineage_id", nargs="?", help="Specific lineage ID to trace")
     p.add_argument("--limit", "-l", type=int, default=10, help="Number of recent entries")
+    p.add_argument(
+        "--export-gepa",
+        metavar="PATH",
+        help="Write a GEPA-viz-compatible run.json for visual prompt lineage",
+    )
 
     # swarm
     p = sub.add_parser("swarm", help="Multi-agent prompt evolution")
@@ -122,23 +127,23 @@ def main() -> None:
         h.BANNER = BANNER_PLAIN
 
     # Lazy imports to keep startup fast
+    from rune.cli.bind_cmd import cmd_bind
     from rune.cli.cast import cmd_cast
     from rune.cli.commands import (
-        cmd_inscribe,
+        cmd_config,
+        cmd_cost,
         cmd_duel,
+        cmd_forge,
+        cmd_fuse,
         cmd_grimoire,
+        cmd_inscribe,
+        cmd_stats,
         cmd_test,
         cmd_validate,
-        cmd_forge,
-        cmd_stats,
-        cmd_cost,
-        cmd_config,
-        cmd_fuse,
         cmd_version,
     )
-    from rune.cli.swarm_cmd import cmd_swarm
     from rune.cli.lineage_cmd import cmd_lineage
-    from rune.cli.bind_cmd import cmd_bind
+    from rune.cli.swarm_cmd import cmd_swarm
 
     commands = {
         "cast": cmd_cast,

@@ -10,7 +10,7 @@ Oracle provides:
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -73,7 +73,9 @@ class Oracle:
         for fp in sorted(self.lineage_dir.glob("*.json"), reverse=True):
             try:
                 data = json.loads(fp.read_text())
-                if data.get("feedback_grade") and domain.lower() in data.get("original_prompt", "").lower():
+                has_feedback = data.get("feedback_grade")
+                prompt_matches = domain.lower() in data.get("original_prompt", "").lower()
+                if has_feedback and prompt_matches:
                     results.append({
                         "grade": data["feedback_grade"],
                         "note": data.get("feedback_note", ""),
@@ -108,7 +110,8 @@ class Oracle:
         ]
         strategy = strategies[round_num % len(strategies)]
 
-        return f"""The previous response to this prompt scored below threshold on quality validation.
+        return f"""The previous response to this prompt scored below threshold on quality
+validation.
 
 ORIGINAL PROMPT:
 {original_prompt}
@@ -141,7 +144,10 @@ Be concrete, structured, and natural. Avoid filler phrases."""
     ) -> PromptLineage:
         """Create and save a lineage record."""
         ts = datetime.now()
-        lineage_id = ts.strftime("%Y%m%d_%H%M%S") + f"_{abs(hash(original_prompt[:50])) % 10000:04d}"
+        lineage_id = (
+            ts.strftime("%Y%m%d_%H%M%S")
+            + f"_{abs(hash(original_prompt[:50])) % 10000:04d}"
+        )
 
         lineage = PromptLineage(
             id=lineage_id,
@@ -172,7 +178,15 @@ Be concrete, structured, and natural. Avoid filler phrases."""
             if not fp.exists():
                 break
             data = json.loads(fp.read_text())
-            chain.append(PromptLineage(**{k: v for k, v in data.items() if k in PromptLineage.__dataclass_fields__}))
+            chain.append(
+                PromptLineage(
+                    **{
+                        k: v
+                        for k, v in data.items()
+                        if k in PromptLineage.__dataclass_fields__
+                    }
+                )
+            )
             current_id = data.get("parent_id")
 
         return chain
@@ -220,6 +234,91 @@ Be concrete, structured, and natural. Avoid filler phrases."""
             lines.append(f"{connector} {entry.model} | {entry.timestamp[:16]}")
             lines.append(f"{connector} \"{prompt_preview}...\"")
             if i < len(chain) - 1:
-                lines.append(f"  │")
+                lines.append("  │")
 
         return "\n".join(lines)
+
+    # ── GEPA-viz Export ─────────────────────────────────────────────────
+
+    def export_gepa_run(
+        self,
+        lineage_id: Optional[str] = None,
+        *,
+        limit: int = 25,
+        output_path: Optional[Path] = None,
+    ) -> Dict[str, Any]:
+        """Export RUNE lineage as a GEPA-viz-compatible ``run.json``.
+
+        GEPA-viz visualizes prompt-optimization candidates with this shape:
+        ``examples`` plus a ``candidates`` map. RUNE is not GEPA, but its
+        prompt lineage has the same useful primitives: candidate prompt,
+        parent, score, model, feedback, and refinement strategy. This adapter
+        keeps RUNE dependency-free while making prompt evolution inspectable
+        with ``gepa-viz serve --run <file>``.
+        """
+        entries = self.get_lineage_chain(lineage_id) if lineage_id else [
+            PromptLineage(**self._read_lineage(fp))
+            for fp in sorted(self.lineage_dir.glob("*.json"), reverse=True)[:limit]
+        ]
+
+        # GEPA-viz expects parent references to candidate ids. RUNE lineage ids
+        # are timestamp/hash strings, so map them to compact integer strings.
+        entries = list(reversed(entries))
+        id_map = {entry.id: str(i) for i, entry in enumerate(entries)}
+
+        examples: list[dict[str, Any]] = []
+        candidates: dict[str, dict[str, Any]] = {}
+
+        for entry in entries:
+            candidate_id = id_map[entry.id]
+            parent = id_map.get(entry.parent_id) if entry.parent_id else None
+            feedback_bits = []
+            if entry.feedback_grade:
+                feedback_bits.append(f"user feedback: {entry.feedback_grade}")
+            if entry.feedback_note:
+                feedback_bits.append(entry.feedback_note)
+            if entry.refinement_round:
+                feedback_bits.append(f"refinement round: {entry.refinement_round}")
+            feedback = "; ".join(feedback_bits) or f"strategy: {entry.strategy}"
+
+            examples.append({
+                "lineage_id": entry.id,
+                "prompt": entry.original_prompt,
+                "ground_truth": {
+                    "goal": "Higher Spinoza score with clearer RUNE structure",
+                },
+            })
+            candidates[candidate_id] = {
+                "prompt": entry.enhanced_prompt or entry.original_prompt,
+                "parent": parent,
+                "score": entry.spinoza_score,
+                "predictions": [{
+                    "prediction": {
+                        "lineage_id": entry.id,
+                        "grade": entry.grade,
+                        "model": entry.model,
+                        "strategy": entry.strategy,
+                    },
+                    "score": entry.spinoza_score,
+                }],
+                "minibatch": [{
+                    "example": {"prompt": entry.original_prompt},
+                    "parent_prediction": (
+                        {"parent_id": entry.parent_id} if entry.parent_id else None
+                    ),
+                    "parent_score": None,
+                    "prediction": {"enhanced_prompt": entry.enhanced_prompt},
+                    "score": entry.spinoza_score,
+                    "feedback": feedback,
+                }],
+            }
+
+        run = {"examples": examples, "candidates": candidates}
+        if output_path is not None:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(json.dumps(run, indent=2, ensure_ascii=False), encoding="utf-8")
+        return run
+
+    def _read_lineage(self, fp: Path) -> Dict[str, Any]:
+        data = json.loads(fp.read_text(encoding="utf-8"))
+        return {k: v for k, v in data.items() if k in PromptLineage.__dataclass_fields__}
