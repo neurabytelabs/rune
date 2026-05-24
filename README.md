@@ -207,7 +207,12 @@ wand lineage --limit 25 --export-gepa run.json
 # Optional viewer, installed separately
 pip install gepa-viz
 gepa-viz serve --run run.json
+
+# Zero-install local demo included in this repo
+open demo/gepa-lineage/index.html
 ```
+
+For a ready-made sample candidate tree, see [`demo/gepa-lineage/`](demo/gepa-lineage/).
 
 Why it matters: RUNE stops being a black box. You can see **which prompt form improved, why it changed, and whether the score justified the mutation**. That is the shortest path from prompt magic to prompt engineering.
 

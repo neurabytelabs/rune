@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RUNE × GEPA Lineage Demo</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0e0f14; --card:#171923; --line:#2d3142; --text:#eceff4; --muted:#9aa3b2; --gold:#d4a73a; --green:#74c69d; --blue:#7aa2f7; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top, #1b2030, var(--bg) 55%); color:var(--text); }
+    main { max-width:1080px; margin:0 auto; padding:48px 20px 72px; }
+    .eyebrow { color:var(--gold); text-transform:uppercase; letter-spacing:.18em; font-size:12px; font-weight:700; }
+    h1 { font-size:clamp(36px, 6vw, 72px); line-height:.95; margin:16px 0; }
+    .lead { color:var(--muted); font-size:18px; max-width:760px; line-height:1.6; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:18px; margin-top:36px; }
+    .card { background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow:0 20px 80px rgba(0,0,0,.25); }
+    .node { position:relative; }
+    .node:not(:first-child)::before { content:"↑ parent"; display:block; color:var(--muted); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; margin-bottom:12px; }
+    .score { display:inline-flex; align-items:center; gap:8px; color:var(--green); font-weight:800; font-size:28px; }
+    .meta { color:var(--muted); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; margin:10px 0 18px; }
+    .prompt { font-size:15px; line-height:1.55; }
+    .feedback { margin-top:18px; border-left:3px solid var(--gold); padding-left:12px; color:#d7dce8; font-size:14px; line-height:1.5; }
+    pre { overflow:auto; background:#0a0b10; border:1px solid var(--line); border-radius:18px; padding:16px; color:#d7dce8; }
+    .delta { color:var(--blue); font-weight:700; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">RUNE v2.1 · Visible Lineage</div>
+    <h1>Prompt evolution is now inspectable.</h1>
+    <p class="lead">This local demo renders a GEPA-viz-compatible <code>run.json</code> produced from the RUNE lineage shape. No package install needed. The useful move: prompt improvement stops being invisible magic and becomes an auditable candidate tree.</p>
+    <section class="grid" id="nodes"></section>
+    <h2>GEPA-compatible shape</h2>
+    <pre id="json"></pre>
+  </main>
+  <script>
+    const run = {
+  "examples": [
+    {
+      "lineage_id": "demo-00-rough",
+      "prompt": "Turn this rough product idea into a launch brief: AI agents that help founders keep context across projects.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    },
+    {
+      "lineage_id": "demo-01-structured",
+      "prompt": "Create a launch brief for Agentic Founder OS with audience, proof, risks, and next actions.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    },
+    {
+      "lineage_id": "demo-02-observable",
+      "prompt": "Create an observable launch brief for Agentic Founder OS, including RUNE lineage, score, risks, and demo path.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    }
+  ],
+  "candidates": {
+    "0": {
+      "prompt": "Write about AI agents for founders.",
+      "parent": null,
+      "score": 0.58,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-00-rough",
+            "grade": "D",
+            "model": "rune-demo",
+            "strategy": "default"
+          },
+          "score": 0.58
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Turn this rough product idea into a launch brief: AI agents that help founders keep context across projects."
+          },
+          "parent_prediction": null,
+          "parent_score": null,
+          "prediction": {
+            "enhanced_prompt": "Write about AI agents for founders."
+          },
+          "score": 0.58,
+          "feedback": "too broad; no audience, constraints, evidence, or launch path"
+        }
+      ]
+    },
+    "1": {
+      "prompt": "You are a product strategist. Create a launch brief for Agentic Founder OS. Include target user, problem, promise, proof points, risks, and first 3 launch moves.",
+      "parent": "0",
+      "score": 0.76,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-01-structured",
+            "grade": "B",
+            "model": "rune-demo",
+            "strategy": "oracle-refined"
+          },
+          "score": 0.76
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create a launch brief for Agentic Founder OS with audience, proof, risks, and next actions."
+          },
+          "parent_prediction": {
+            "parent_id": "demo-00-rough"
+          },
+          "parent_score": 0.58,
+          "prediction": {
+            "enhanced_prompt": "Structured launch brief with audience, problem, promise, proof, risks, launch moves."
+          },
+          "score": 0.76,
+          "feedback": "clearer structure; still missing observability and demo evidence; refinement round: 1"
+        }
+      ]
+    },
+    "2": {
+      "prompt": "You are RUNE release strategist. Create an observable launch brief for Agentic Founder OS. Use sections: audience, problem, promise, RUNE lineage proof, measurable demo path, risks, first 3 moves. Make every claim auditable from repo artifacts or local demo output.",
+      "parent": "1",
+      "score": 0.88,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-02-observable",
+            "grade": "A-",
+            "model": "rune-demo",
+            "strategy": "visible-lineage"
+          },
+          "score": 0.88
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create an observable launch brief for Agentic Founder OS, including RUNE lineage, score, risks, and demo path."
+          },
+          "parent_prediction": {
+            "parent_id": "demo-01-structured"
+          },
+          "parent_score": 0.76,
+          "prediction": {
+            "enhanced_prompt": "Observable launch brief with RUNE lineage proof and demo path."
+          },
+          "score": 0.88,
+          "feedback": "winner: visible proof, repo-backed claims, concrete demo path; refinement round: 2"
+        }
+      ]
+    }
+  }
+};
+    const nodes = document.getElementById('nodes');
+    Object.entries(run.candidates).forEach(([id, c], idx) => {
+      const fb = c.minibatch?.[0]?.feedback || '';
+      const pred = c.predictions?.[0]?.prediction || {};
+      const prev = idx > 0 ? run.candidates[String(idx - 1)]?.score : null;
+      const delta = prev == null ? '' : ` <span class="delta">(+${(c.score - prev).toFixed(2)})</span>`;
+      const el = document.createElement('article');
+      el.className = 'card node';
+      el.innerHTML = `
+        <div class="score">${c.score.toFixed(2)}${delta}</div>
+        <div class="meta">candidate #${id} · parent ${c.parent ?? 'none'} · ${pred.grade} · ${pred.strategy}</div>
+        <div class="prompt">${c.prompt}</div>
+        <div class="feedback">${fb}</div>
+      `;
+      nodes.appendChild(el);
+    });
+    document.getElementById('json').textContent = JSON.stringify(run, null, 2);
+  </script>
+</body>
+</html>
