@@ -1,5 +1,11 @@
 # 📝 Changelog
 
+## v2.1.0 — Visible Lineage (2026-05)
+- **GEPA-viz bridge:** `wand lineage --export-gepa run.json` exports RUNE prompt ancestry into a GEPA-viz-compatible candidate tree.
+- **Observable prompt evolution:** Exported nodes include parent links, Spinoza score, grade, model, strategy, refinement round, and feedback.
+- **README release story:** Added the Lineage section showing how to cast, export, and optionally inspect the run with `gepa-viz serve`.
+- **No new runtime dependency:** RUNE remains lightweight; GEPA-viz is an optional viewer.
+
 ## v2.0.0 — Deus Sive Natura (2026-03)
 - **Unified versioning:** Single 2.0.0 across all components
 - **pyproject.toml:** pip-installable package (`rune-wand`)
