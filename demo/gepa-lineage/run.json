@@ -1,0 +1,121 @@
+{
+  "examples": [
+    {
+      "lineage_id": "demo-00-rough",
+      "prompt": "Turn this rough product idea into a launch brief: AI agents that help founders keep context across projects.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    },
+    {
+      "lineage_id": "demo-01-structured",
+      "prompt": "Create a launch brief for Agentic Founder OS with audience, proof, risks, and next actions.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    },
+    {
+      "lineage_id": "demo-02-observable",
+      "prompt": "Create an observable launch brief for Agentic Founder OS, including RUNE lineage, score, risks, and demo path.",
+      "ground_truth": {
+        "goal": "Higher Spinoza score with clearer RUNE structure"
+      }
+    }
+  ],
+  "candidates": {
+    "0": {
+      "prompt": "Write about AI agents for founders.",
+      "parent": null,
+      "score": 0.58,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-00-rough",
+            "grade": "D",
+            "model": "rune-demo",
+            "strategy": "default"
+          },
+          "score": 0.58
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Turn this rough product idea into a launch brief: AI agents that help founders keep context across projects."
+          },
+          "parent_prediction": null,
+          "parent_score": null,
+          "prediction": {
+            "enhanced_prompt": "Write about AI agents for founders."
+          },
+          "score": 0.58,
+          "feedback": "too broad; no audience, constraints, evidence, or launch path"
+        }
+      ]
+    },
+    "1": {
+      "prompt": "You are a product strategist. Create a launch brief for Agentic Founder OS. Include target user, problem, promise, proof points, risks, and first 3 launch moves.",
+      "parent": "0",
+      "score": 0.76,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-01-structured",
+            "grade": "B",
+            "model": "rune-demo",
+            "strategy": "oracle-refined"
+          },
+          "score": 0.76
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create a launch brief for Agentic Founder OS with audience, proof, risks, and next actions."
+          },
+          "parent_prediction": {
+            "parent_id": "demo-00-rough"
+          },
+          "parent_score": 0.58,
+          "prediction": {
+            "enhanced_prompt": "Structured launch brief with audience, problem, promise, proof, risks, launch moves."
+          },
+          "score": 0.76,
+          "feedback": "clearer structure; still missing observability and demo evidence; refinement round: 1"
+        }
+      ]
+    },
+    "2": {
+      "prompt": "You are RUNE release strategist. Create an observable launch brief for Agentic Founder OS. Use sections: audience, problem, promise, RUNE lineage proof, measurable demo path, risks, first 3 moves. Make every claim auditable from repo artifacts or local demo output.",
+      "parent": "1",
+      "score": 0.88,
+      "predictions": [
+        {
+          "prediction": {
+            "lineage_id": "demo-02-observable",
+            "grade": "A-",
+            "model": "rune-demo",
+            "strategy": "visible-lineage"
+          },
+          "score": 0.88
+        }
+      ],
+      "minibatch": [
+        {
+          "example": {
+            "prompt": "Create an observable launch brief for Agentic Founder OS, including RUNE lineage, score, risks, and demo path."
+          },
+          "parent_prediction": {
+            "parent_id": "demo-01-structured"
+          },
+          "parent_score": 0.76,
+          "prediction": {
+            "enhanced_prompt": "Observable launch brief with RUNE lineage proof and demo path."
+          },
+          "score": 0.88,
+          "feedback": "winner: visible proof, repo-backed claims, concrete demo path; refinement round: 2"
+        }
+      ]
+    }
+  }
+}
