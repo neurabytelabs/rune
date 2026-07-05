@@ -110,6 +110,27 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--all", action="store_true", help="Use all 6 agent types")
     p.add_argument("--top-k", type=int, default=2, help="Top K agents to fuse (default: 2)")
 
+    # bench
+    p = sub.add_parser("bench", help="Reproducible A/B benchmark: raw vs RUNE-enhanced")
+    p.add_argument(
+        "action",
+        choices=["smoke", "generate", "export", "judge", "ingest", "report"],
+        help="Benchmark stage to run",
+    )
+    p.add_argument("--run", help="Run ID (default: most recent run)")
+    p.add_argument(
+        "--promptset",
+        default=None,
+        help="Path to prompt set JSONL (default: benchmark/promptset_v1.jsonl)",
+    )
+    p.add_argument("--models", help="Comma-separated generation models")
+    p.add_argument("--seed", type=int, default=7, help="Anonymization/bootstrap seed")
+    p.add_argument("--delay", type=float, default=2.0, help="Seconds between LLM calls")
+    p.add_argument("--judges", type=int, default=3, help="Judge slots per pair")
+    p.add_argument("--api-url", help="Judge endpoint (inline judge only)")
+    p.add_argument("--publish", action="store_true", help="Also regenerate docs/BENCHMARKS.md")
+    p.add_argument("--limit", type=int, help="Cap prompt count (dry runs)")
+
     # version
     sub.add_parser("version", help="Show version info")
 
@@ -127,6 +148,7 @@ def main() -> None:
         h.BANNER = BANNER_PLAIN
 
     # Lazy imports to keep startup fast
+    from rune.cli.bench_cmd import cmd_bench
     from rune.cli.bind_cmd import cmd_bind
     from rune.cli.cast import cmd_cast
     from rune.cli.commands import (
@@ -160,6 +182,7 @@ def main() -> None:
         "bind": cmd_bind,
         "swarm": cmd_swarm,
         "lineage": cmd_lineage,
+        "bench": cmd_bench,
         "version": cmd_version,
     }
 

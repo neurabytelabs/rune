@@ -47,3 +47,5 @@ legacy/
 .env
 .env.*
 __pycache__/
+benchmark/results/*/judge_inbox/split/
+benchmark/results/*/judge_outbox/parts/

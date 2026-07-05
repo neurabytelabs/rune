@@ -1,0 +1,319 @@
+{
+  "run_id": "bench-20260704-2316-c29090a",
+  "pairs": {
+    "pr-d16d44c4": {
+      "prompt_id": "p001",
+      "model": "gemini-3-flash-preview",
+      "result": "tie"
+    },
+    "pr-9e0793a8": {
+      "prompt_id": "p001",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-ca0a30f9": {
+      "prompt_id": "p002",
+      "model": "gemini-3-flash-preview",
+      "result": "tie"
+    },
+    "pr-2379d025": {
+      "prompt_id": "p002",
+      "model": "gemini-3.1-pro-preview",
+      "result": "tie"
+    },
+    "pr-3c5336dc": {
+      "prompt_id": "p003",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-20ffb869": {
+      "prompt_id": "p003",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-202347d7": {
+      "prompt_id": "p004",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-764cf96a": {
+      "prompt_id": "p004",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-d1f6c764": {
+      "prompt_id": "p005",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-4ff92bb5": {
+      "prompt_id": "p005",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-3d3328f5": {
+      "prompt_id": "p006",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-83663f71": {
+      "prompt_id": "p006",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-6fc6fbf9": {
+      "prompt_id": "p007",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-14a40698": {
+      "prompt_id": "p007",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-1f4ad05b": {
+      "prompt_id": "p008",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-62b467a1": {
+      "prompt_id": "p008",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-a4bd1830": {
+      "prompt_id": "p009",
+      "model": "gemini-3-flash-preview",
+      "result": "treatment_win"
+    },
+    "pr-257dec32": {
+      "prompt_id": "p009",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-fcc1cbfb": {
+      "prompt_id": "p010",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-fdedd4c1": {
+      "prompt_id": "p010",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-0c4e8e1b": {
+      "prompt_id": "p011",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-b9b8ebb0": {
+      "prompt_id": "p011",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-fe7be9b3": {
+      "prompt_id": "p012",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-5a6fe8d0": {
+      "prompt_id": "p012",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-cfd5dd58": {
+      "prompt_id": "p013",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-29040d96": {
+      "prompt_id": "p013",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-aeadfe82": {
+      "prompt_id": "p014",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-a1d66704": {
+      "prompt_id": "p014",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-8891d589": {
+      "prompt_id": "p015",
+      "model": "gemini-3-flash-preview",
+      "result": "treatment_win"
+    },
+    "pr-fe4bf118": {
+      "prompt_id": "p015",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-5dc08528": {
+      "prompt_id": "p016",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-8169991f": {
+      "prompt_id": "p016",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-d735d9d9": {
+      "prompt_id": "p017",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-328ba4d5": {
+      "prompt_id": "p017",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-61b21c53": {
+      "prompt_id": "p018",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-b7bf84db": {
+      "prompt_id": "p018",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-f86a412e": {
+      "prompt_id": "p019",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-7a3443e5": {
+      "prompt_id": "p019",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-0253622b": {
+      "prompt_id": "p020",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-7245b325": {
+      "prompt_id": "p020",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-cf7b5b1f": {
+      "prompt_id": "p021",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-0177e7a4": {
+      "prompt_id": "p021",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    },
+    "pr-6dbbacb5": {
+      "prompt_id": "p022",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-ad2b104e": {
+      "prompt_id": "p022",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-0840cb3d": {
+      "prompt_id": "p023",
+      "model": "gemini-3-flash-preview",
+      "result": "treatment_win"
+    },
+    "pr-ff189433": {
+      "prompt_id": "p023",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    },
+    "pr-2f49d026": {
+      "prompt_id": "p024",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-24504296": {
+      "prompt_id": "p024",
+      "model": "gemini-3.1-pro-preview",
+      "result": "tie"
+    },
+    "pr-77375f81": {
+      "prompt_id": "p025",
+      "model": "gemini-3-flash-preview",
+      "result": "control_win"
+    },
+    "pr-4e23f023": {
+      "prompt_id": "p025",
+      "model": "gemini-3.1-pro-preview",
+      "result": "control_win"
+    }
+  },
+  "headline": {
+    "wins": 9,
+    "losses": 37,
+    "ties": 4,
+    "preference_rate": 0.1956521739130435,
+    "ci95": [
+      0.10204081632653061,
+      0.2926829268292683
+    ],
+    "p_value": 4.0560361327379724e-05,
+    "n_pairs": 50
+  },
+  "criterion_deltas": {
+    "task_fulfillment": -0.30666666666666675,
+    "accuracy": -0.4973333333333332,
+    "depth": -0.2306666666666667,
+    "clarity": -0.35600000000000004,
+    "actionability": -0.6053333333333334
+  },
+  "breakdowns": {
+    "by_domain": {
+      "coding": {
+        "treatment_win": 0,
+        "control_win": 7,
+        "tie": 3
+      },
+      "writing": {
+        "treatment_win": 2,
+        "control_win": 8,
+        "tie": 0
+      },
+      "analysis": {
+        "treatment_win": 2,
+        "control_win": 8,
+        "tie": 0
+      },
+      "creative": {
+        "treatment_win": 3,
+        "control_win": 7,
+        "tie": 0
+      },
+      "research": {
+        "treatment_win": 2,
+        "control_win": 7,
+        "tie": 1
+      }
+    },
+    "by_model": {
+      "gemini-3-flash-preview": {
+        "treatment_win": 3,
+        "control_win": 20,
+        "tie": 2
+      },
+      "gemini-3.1-pro-preview": {
+        "treatment_win": 6,
+        "control_win": 17,
+        "tie": 2
+      }
+    }
+  },
+  "judge_agreement": {
+    "unanimous": 39,
+    "split": 11
+  }
+}
