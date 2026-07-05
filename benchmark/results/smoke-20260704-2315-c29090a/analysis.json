@@ -1,0 +1,49 @@
+{
+  "run_id": "smoke-20260704-2315-c29090a",
+  "pairs": {
+    "pr-c21f2e61": {
+      "prompt_id": "p001",
+      "model": "gemini-3.1-pro-preview",
+      "result": "treatment_win"
+    }
+  },
+  "headline": {
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "preference_rate": 1.0,
+    "ci95": [
+      1.0,
+      1.0
+    ],
+    "p_value": 1.0,
+    "n_pairs": 1
+  },
+  "criterion_deltas": {
+    "task_fulfillment": 0.0,
+    "accuracy": 1.0,
+    "depth": 0.0,
+    "clarity": 0.0,
+    "actionability": 0.0
+  },
+  "breakdowns": {
+    "by_domain": {
+      "coding": {
+        "treatment_win": 1,
+        "control_win": 0,
+        "tie": 0
+      }
+    },
+    "by_model": {
+      "gemini-3.1-pro-preview": {
+        "treatment_win": 1,
+        "control_win": 0,
+        "tie": 0
+      }
+    }
+  },
+  "judge_agreement": {
+    "unanimous": 1,
+    "split": 0
+  }
+}
