@@ -6,7 +6,7 @@
 
 **Every prompt is a spell. Every spell, a decree of understanding.**
 
-*Your AI isn't weak. Your prompts are unstructured. RUNE is an 8-layer prompt amplification framework — backed by research (arXiv:2512.14982) showing ~45% quality improvement. One command. 42 spells. Structured reasoning, not wishful thinking.*
+*RUNE is an 8-layer prompt amplification framework — and a blind A/B harness that measures whether amplification actually helps. We ran it on ourselves and the amplified prompts lost. [The numbers, and their limits.](docs/BENCHMARKS.md) One command. 42 spells. Measured, not asserted.*
 
 <br>
 
@@ -393,9 +393,25 @@ RUNE operates seamlessly with any OpenAI-compatible endpoint. Bring forth your o
 
 ### v2.1 — The Expansion: Extending the Dominion
 
+The RePrompter and automatic prompt-optimization landscape review made the next boundary clear: RUNE must remain a wand for humans, but gain the optimizer spine of modern APO systems.
+
+**Non-negotiable v2.1 gates:**
+
+- [ ] **`wand optimize` backend architecture** — plug RUNE into measurable optimizers such as GEPA, DSPy, PromptWizard, and TextGrad without making them mandatory runtime dependencies.
+- [ ] **Dataset + metric evaluation harness** — every serious prompt must be testable against JSONL examples, task metrics, LLM-as-judge rubrics, and regression reports; Spinoza remains the philosophical validator, not the only score.
+- [ ] **Prompt Command Card** — after important casts, emit a compact agent-ready card with objective, risk, missing inputs, verification commands, quality score, and copyable `/goal`/agent prompt.
+- [ ] **`wand reverse` / Prompt DNA** — extract reusable prompt structure from excellent outputs, score it, and optionally promote it into the grimoire as a new rune.
+- [ ] **Trace-aware lineage loop** — lineage must record prompt ancestry, evaluator feedback, model/cost metadata, and why a mutation improved or failed; GEPA-viz export remains the interoperability target.
+- [ ] **Edge-case generator** — generate adversarial and boundary examples from the intent/governance layers before optimization, especially for classification, moderation, coding, and safety-sensitive prompts.
+- [ ] **Workflow preflight** — compile high-stakes prompts into runnable agent/workflow plans with scoped files, sandbox assumptions, verification steps, retry limits, and rollback notes.
+- [ ] **Cross-runtime packaging** — generate clean install artifacts for Hermes skills, Claude/Codex/OpenClaw skill folders, and plain “Any LLM” paste-in usage from the same source-of-truth templates.
+- [ ] **Cost-aware optimization mode** — track candidate spend, cache evaluations, enforce budget ceilings, and prefer Pareto improvements that increase quality without blindly increasing token cost.
+
+**Still planned after the gates:**
+
 - [ ] **Visual Pipeline** — text-to-image prompt engineering: Extending understanding into the realm of pure vision.
 - [ ] **Marketplace** — community prompt sharing & rating: A collective consciousness of perfected spells.
-- [ ] **Prompt DNA** — genetic algorithm prompt evolution: Organic growth of perfect prompts.
+- [ ] **Prompt DNA evolution** — genetic/Pareto prompt evolution once `wand reverse`, lineage, and eval harness are stable.
 
 ---
 

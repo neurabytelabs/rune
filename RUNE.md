@@ -113,6 +113,12 @@ Apply these specific patterns based on the detected task type:
 ## 5. PROMPT AMPLIFICATION (Prompt Repetition)
 
 > Based on: "Prompt Repetition Improves Non-Reasoning LLMs" (Leviathan, Kalman, Matias — Google Research, arXiv:2512.14982)
+>
+> **Scope note.** This citation covers *prompt repetition* only — sending the query twice.
+> It says nothing about RUNE's 8-layer restructuring, and the paper reports no percentage
+> figure. Repetition is **not implemented** in the `enhance_prompt` runtime path (it exists
+> only as this paste-into-chat instruction) and was **not** the intervention measured in
+> [BENCHMARKS.md](docs/BENCHMARKS.md).
 
 ### Rule
 - **Non-reasoning mode:** Automatically transform `<QUERY>` → `<QUERY>\n---\n<QUERY>` before sending to LLM
