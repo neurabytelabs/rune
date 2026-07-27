@@ -57,11 +57,18 @@ def bootstrap_ci(
     iters: int = 10_000,
     seed: int = 7,
     confidence: float = 0.95,
+    win_result: str = "treatment_win",
+    loss_result: str = "control_win",
 ) -> Tuple[float, float]:
     """Cluster bootstrap over prompt_id.
 
     Args:
-        pair_results: [{"prompt_id": ..., "result": "treatment_win|control_win|tie"}]
+        pair_results: [{"prompt_id": ..., "result": "<arm_id>_win|tie"}]
+        win_result: the result string counted in the numerator (variant arm).
+        loss_result: the result string counted only in the denominator (baseline arm).
+
+    The defaults are the default arm pair, so callers that predate arm specs keep
+    their behaviour.
     """
     clusters: Dict[str, List[str]] = defaultdict(list)
     for r in pair_results:
@@ -74,9 +81,9 @@ def bootstrap_ci(
         wins = losses = 0
         for _ in prompt_ids:
             for result in clusters[rng.choice(prompt_ids)]:
-                if result == "treatment_win":
+                if result == win_result:
                     wins += 1
-                elif result == "control_win":
+                elif result == loss_result:
                     losses += 1
         rate = preference_rate(wins, losses)
         if rate is not None:
@@ -92,14 +99,16 @@ def bootstrap_ci(
 
 
 def criterion_deltas(
-    verdicts: List[Dict[str, Any]], assignment: Dict[str, Dict[str, str]]
+    verdicts: List[Dict[str, Any]],
+    assignment: Dict[str, Dict[str, str]],
+    variant_arm: str = "treatment",
 ) -> Dict[str, float]:
-    """Mean per-criterion score delta (treatment − control) across verdicts."""
+    """Mean per-criterion score delta (variant − baseline) across verdicts."""
     sums: Dict[str, float] = {c: 0.0 for c in RUBRIC_CRITERIA}
     n = 0
     for v in verdicts:
         slot_a_arm = assignment[v["judge_id"]]["A"]
-        t_key, c_key = ("a", "b") if slot_a_arm == "treatment" else ("b", "a")
+        t_key, c_key = ("a", "b") if slot_a_arm == variant_arm else ("b", "a")
         for crit in RUBRIC_CRITERIA:
             sums[crit] += v["scores"][crit][t_key] - v["scores"][crit][c_key]
         n += 1

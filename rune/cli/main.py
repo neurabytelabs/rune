@@ -124,6 +124,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to prompt set JSONL (default: benchmark/promptset_v1.jsonl)",
     )
     p.add_argument("--models", help="Comma-separated generation models")
+    p.add_argument(
+        "--arms",
+        help="Path to an arm file, e.g. benchmark/arms/soul-ab.json (default: raw vs RUNE)",
+    )
     p.add_argument("--seed", type=int, default=7, help="Anonymization/bootstrap seed")
     p.add_argument("--delay", type=float, default=2.0, help="Seconds between LLM calls")
     p.add_argument("--judges", type=int, default=3, help="Judge slots per pair")

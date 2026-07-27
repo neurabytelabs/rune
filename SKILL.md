@@ -156,13 +156,20 @@ wand inscribe "prompt"      # show the amplified prompt only
 wand cast "prompt"          # amplify, then execute
 wand duel "prompt"          # A/B: raw vs amplified
 wand grimoire               # browse 42 templates
-wand bench generate         # run the blind A/B harness
+wand bench generate         # run the blind A/B harness (raw vs amplified)
+wand bench generate --arms benchmark/arms/soul-ab.json   # any two arms
 wand bench report           # regenerate docs/BENCHMARKS.md from run artifacts
 ```
 
-`wand bench` is the part worth reaching for. The judge is pluggable — any system honoring
-`benchmark/JUDGE_PROTOCOL.md` (an LLM endpoint, a multi-agent workflow, or a human panel)
-produces verdicts the harness can analyze.
+`wand bench` is the part worth reaching for. It measures exactly two arms, and what an arm
+does is a file, not a hardcoded branch: the raw prompt, a RUNE-amplified prompt, a system
+message or policy file placed in front of the prompt, or an external command. So the same
+blind machinery that measured RUNE will compare two SOUL.md revisions, two agent policies,
+or two prompt templates. See `benchmark/arms/` for the shipped examples.
+
+The judge is pluggable — any system honoring `benchmark/JUDGE_PROTOCOL.md` (an LLM
+endpoint, a multi-agent workflow, or a human panel) produces verdicts the harness can
+analyze.
 
 ## Governance
 

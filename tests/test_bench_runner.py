@@ -6,7 +6,7 @@ import pytest
 
 import rune.cli.helpers as helpers
 from rune.bench.runner import RunnerError, generate, make_run_id, preflight, write_manifest
-from rune.bench.schemas import PromptRecord, read_jsonl, write_jsonl
+from rune.bench.schemas import ArmSpec, ArmSpecError, PromptRecord, read_jsonl, write_jsonl
 
 
 def _prompts(n=2):
@@ -137,6 +137,102 @@ def test_generate_retries_errored_cells(tmp_path, fake_llm):
     assert by_key[("p001", "control")]["output"] == "answer to: task 1"
 
 
+# ── arm kinds ───────────────────────────────────────────────────────────────
+
+
+def test_prefix_arms_put_their_system_text_first(tmp_path, fake_llm):
+    arms = [
+        ArmSpec(arm_id="soul_v1", kind="prefix", config={"system": "POLICY ONE"}),
+        ArmSpec(arm_id="soul_v2", kind="prefix", config={"system": "POLICY TWO"}),
+    ]
+    records = generate(tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms)
+
+    by_arm = {r["arm"]: r for r in records}
+    assert set(by_arm) == {"soul_v1", "soul_v2"}
+    assert by_arm["soul_v1"]["enhanced_prompt"] == "POLICY ONE\n\ntask 1"
+    assert by_arm["soul_v2"]["enhanced_prompt"] == "POLICY TWO\n\ntask 1"
+    assert by_arm["soul_v1"]["gen_id"] == "p001|model-x|soul_v1"
+    assert all(r["error"] is None for r in records)
+
+
+def test_prefix_arm_reads_its_system_file(tmp_path, fake_llm):
+    (tmp_path / "soul.md").write_text("FROM FILE", encoding="utf-8")
+    arms = [
+        ArmSpec(arm_id="a", kind="prefix", config={"system": "soul.md"}),
+        ArmSpec(arm_id="b", kind="prefix", config={"system": "INLINE"}),
+    ]
+    records = generate(
+        tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms, base_dir=tmp_path
+    )
+    by_arm = {r["arm"]: r for r in records}
+    assert by_arm["a"]["enhanced_prompt"] == "FROM FILE\n\ntask 1"
+
+
+def test_prefix_arm_with_missing_file_errors_the_cell(tmp_path, fake_llm):
+    """A typo'd policy path must fail the cell, not silently become the prompt."""
+    arms = [
+        ArmSpec(arm_id="a", kind="prefix", config={"system": "policies/absent.md"}),
+        ArmSpec(arm_id="b", kind="prefix", config={"system": "INLINE"}),
+    ]
+    records = generate(
+        tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms, base_dir=tmp_path
+    )
+    by_arm = {r["arm"]: r for r in records}
+    assert "looks like a file path" in by_arm["a"]["error"]
+    assert by_arm["a"]["output"] is None
+    assert by_arm["b"]["error"] is None
+
+
+def test_command_arm_pipes_prompt_through_stdin(tmp_path, fake_llm):
+    arms = [
+        ArmSpec(arm_id="raw", kind="raw"),
+        ArmSpec(arm_id="upper", kind="command", config={"cmd": "tr '[:lower:]' '[:upper:]'"}),
+    ]
+    records = generate(tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms)
+
+    by_arm = {r["arm"]: r for r in records}
+    assert by_arm["upper"]["output"] == "TASK 1"
+    assert by_arm["raw"]["output"] == "answer to: task 1"
+    # a command arm never touches the LLM path
+    assert len(fake_llm) == 1
+
+
+def test_command_arm_failure_becomes_a_cell_error(tmp_path, fake_llm):
+    arms = [
+        ArmSpec(arm_id="ok", kind="raw"),
+        ArmSpec(arm_id="broken", kind="command", config={"cmd": "echo nope >&2; exit 3"}),
+    ]
+    records = generate(tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms)
+    broken = next(r for r in records if r["arm"] == "broken")
+    assert "exited 3" in broken["error"]
+    assert "nope" in broken["error"]
+
+
+def test_rune_enhance_arm_passes_its_template(tmp_path, monkeypatch):
+    seen = {}
+
+    def enhance_prompt(user_prompt, model, rune_name=None, verbose=False):
+        seen["rune_name"] = rune_name
+        return f"E[{user_prompt}]"
+
+    monkeypatch.setattr(helpers, "enhance_prompt", enhance_prompt)
+    monkeypatch.setattr(
+        helpers, "llm_call", lambda prompt, model, stream=False, system=None, track=True: "ok"
+    )
+    arms = [
+        ArmSpec(arm_id="control", kind="raw"),
+        ArmSpec(arm_id="tuned", kind="rune_enhance", config={"rune": "architect"}),
+    ]
+    generate(tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms)
+    assert seen["rune_name"] == "architect"
+
+
+def test_generate_rejects_three_arms(tmp_path, fake_llm):
+    arms = [ArmSpec(arm_id=f"a{i}", kind="raw") for i in range(3)]
+    with pytest.raises(ArmSpecError, match="not an arbitrary cap"):
+        generate(tmp_path, _prompts(1), models=["model-x"], delay=0, arms=arms)
+
+
 # ── manifest ────────────────────────────────────────────────────────────────
 
 
@@ -157,4 +253,6 @@ def test_manifest_redacts_api_key(tmp_path, monkeypatch):
     assert manifest["config_snapshot"]["api_key"] == "<redacted>"
     assert manifest["enhancer"]["meta_prompt_sha256"]
     assert manifest["git_sha"] == "abc1234def"
-    assert manifest["arms"] == ["control", "treatment"]
+    assert [a["arm_id"] for a in manifest["arms"]] == ["control", "treatment"]
+    assert [a["kind"] for a in manifest["arms"]] == ["raw", "rune_enhance"]
+    assert all("config" in a for a in manifest["arms"])

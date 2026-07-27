@@ -9,10 +9,11 @@ import pytest
 
 from rune.bench.promptset import PromptSetError, load_promptset, promptset_sha256
 from rune.bench.schemas import (
-    ARMS,
+    DEFAULT_ARMS,
     DOMAINS,
     RUBRIC_CRITERIA,
     append_jsonl,
+    arm_ids,
     read_jsonl,
     write_jsonl,
 )
@@ -52,7 +53,9 @@ def _write_promptset(path, records):
 
 def test_domain_and_arm_constants():
     assert DOMAINS == ("coding", "writing", "analysis", "creative", "research")
-    assert ARMS == ("control", "treatment")
+    # Order is load-bearing: arms[0] is the baseline, arms[1] the reported variant.
+    assert arm_ids(DEFAULT_ARMS) == ["control", "treatment"]
+    assert [a.kind for a in DEFAULT_ARMS] == ["raw", "rune_enhance"]
     assert RUBRIC_CRITERIA == (
         "task_fulfillment",
         "accuracy",

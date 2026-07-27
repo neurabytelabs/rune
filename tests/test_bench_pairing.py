@@ -5,9 +5,13 @@ from __future__ import annotations
 import json
 
 from rune.bench.pairing import build_pairs, export_judge_inboxes, make_pair_id
-from rune.bench.schemas import read_jsonl
+from rune.bench.schemas import DEFAULT_ARMS, ArmSpec, arm_ids, read_jsonl
 
 RUN_ID = "bench-20260704-1200-abc1234"
+
+# The arm ids under test. Kept as names rather than literals so the blindness and
+# balance assertions below stay true for any arm pair, not just control/treatment.
+ARM_BASELINE, ARM_VARIANT = arm_ids(DEFAULT_ARMS)
 
 
 def _gen(prompt_id, model, arm, output="some output", error=None):
@@ -103,8 +107,40 @@ def test_inbox_records_leak_nothing(tmp_path):
     for j in (1, 2, 3):
         for rec in read_jsonl(tmp_path / "judge_inbox" / f"pairs_j{j}.jsonl"):
             assert set(rec.keys()) == {"pair_id", "task_prompt", "response_a", "response_b"}
-            assert "treatment" not in json.dumps(rec)
-            assert "enhanced" not in json.dumps(rec)
+            blob = json.dumps(rec)
+            # No arm id of this run may appear — asserting only on "treatment" would
+            # keep passing for arm pairs like soul_v1/soul_v2 while leaking both.
+            for arm_id in (ARM_BASELINE, ARM_VARIANT):
+                assert arm_id not in blob
+            assert "enhanced" not in blob
+
+
+def test_inbox_leaks_no_custom_arm_ids(tmp_path):
+    """The blindness guarantee has to hold for arbitrary arm ids, not just the default."""
+    arms = [
+        ArmSpec(arm_id="soul_v1", kind="prefix", config={"system": "policy one"}),
+        ArmSpec(arm_id="soul_v2", kind="prefix", config={"system": "policy two"}),
+    ]
+    gens = []
+    for pid in ("p001", "p002"):
+        for arm in arms:
+            gens.append(_gen(pid, "model-x", arm.arm_id, output=f"answer {pid} {arm.arm_id[-2:]}"))
+    export_judge_inboxes(
+        tmp_path,
+        RUN_ID,
+        seed=7,
+        generations=gens,
+        prompts=_prompts_by_id(gens),
+        judges=3,
+        arms=arms,
+    )
+    for j in (1, 2, 3):
+        for rec in read_jsonl(tmp_path / "judge_inbox" / f"pairs_j{j}.jsonl"):
+            blob = json.dumps(rec)
+            for arm in arms:
+                assert arm.arm_id not in blob
+    key = json.loads((tmp_path / "pairing_key.json").read_text())
+    assert key["arms"] == ["soul_v1", "soul_v2"]  # the one unblinding record
 
 
 def test_ab_assignment_balanced_and_judge_independent(tmp_path):
@@ -114,7 +150,7 @@ def test_ab_assignment_balanced_and_judge_independent(tmp_path):
     key = json.loads((tmp_path / "pairing_key.json").read_text())["pairs"]
     for j in ("j1", "j2", "j3"):
         arms_as_a = [v["assignments"][j]["A"] for v in key.values()]
-        assert 5 <= arms_as_a.count("treatment") <= 25  # not degenerate
+        assert 5 <= arms_as_a.count(ARM_VARIANT) <= 25  # not degenerate
     j1_vs_j2 = [v["assignments"]["j1"]["A"] == v["assignments"]["j2"]["A"] for v in key.values()]
     assert not all(j1_vs_j2)  # judges get independent assignments
 

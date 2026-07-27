@@ -17,10 +17,12 @@ from typing import Any, Dict, List, Optional
 import requests
 
 from rune.bench.schemas import (
+    DEFAULT_ARMS,
     JUDGE_PROMPT,
     RUBRIC_CRITERIA,
     WINNERS,
     append_jsonl,
+    arm_ids,
     read_jsonl,
 )
 from rune.bench.stats import (
@@ -76,6 +78,18 @@ def validate_verdicts(key: Dict[str, Any], verdicts: List[Dict[str, Any]]) -> No
 # ── analysis ─────────────────────────────────────────────────────────────────
 
 
+def arms_of_key(key: Dict[str, Any]) -> tuple[str, str]:
+    """(baseline, variant) arm ids for a run, from its pairing key.
+
+    Keys written before arm specs have no "arms" field; those runs are always the
+    default control/treatment pair, so the fallback keeps them replayable.
+    """
+    ids = key.get("arms") or arm_ids(DEFAULT_ARMS)
+    if len(ids) != 2:
+        raise IngestError(f"pairing_key.json must name exactly 2 arms, got {ids}")
+    return ids[0], ids[1]
+
+
 def analyze_run(
     run_dir: Path | str,
     prompt_domains: Dict[str, str],
@@ -88,6 +102,10 @@ def analyze_run(
     verdicts = read_jsonl(run_dir / "judge_outbox" / "verdicts.jsonl")
     validate_verdicts(key, verdicts)
 
+    baseline, variant = arms_of_key(key)
+    variant_win, baseline_win = f"{variant}_win", f"{baseline}_win"
+    outcome_to_result = {variant: variant_win, baseline: baseline_win, "tie": "tie"}
+
     by_pair: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for v in verdicts:
         by_pair[v["pair_id"]].append(v)
@@ -96,18 +114,18 @@ def analyze_run(
     flat_results: List[Dict[str, Any]] = []
     wins = losses = ties = 0
     by_domain: Dict[str, Dict[str, int]] = defaultdict(
-        lambda: {"treatment_win": 0, "control_win": 0, "tie": 0}
+        lambda: {variant_win: 0, baseline_win: 0, "tie": 0}
     )
     by_model: Dict[str, Dict[str, int]] = defaultdict(
-        lambda: {"treatment_win": 0, "control_win": 0, "tie": 0}
+        lambda: {variant_win: 0, baseline_win: 0, "tie": 0}
     )
 
     for pair_id, meta in key["pairs"].items():
         outcome = majority_vote(by_pair[pair_id], meta["assignments"])
-        result = {"treatment": "treatment_win", "control": "control_win", "tie": "tie"}[outcome]
-        if result == "treatment_win":
+        result = outcome_to_result[outcome]
+        if result == variant_win:
             wins += 1
-        elif result == "control_win":
+        elif result == baseline_win:
             losses += 1
         else:
             ties += 1
@@ -124,15 +142,22 @@ def analyze_run(
     assignments_by_pair = {pid: key["pairs"][pid]["assignments"] for pid in by_pair}
     deltas_sum: Dict[str, float] = {c: 0.0 for c in RUBRIC_CRITERIA}
     for pid, vs in by_pair.items():
-        d = criterion_deltas(vs, assignments_by_pair[pid])
+        d = criterion_deltas(vs, assignments_by_pair[pid], variant_arm=variant)
         for c in RUBRIC_CRITERIA:
             deltas_sum[c] += d[c]
     n_pairs = len(by_pair)
     deltas = {c: deltas_sum[c] / n_pairs for c in RUBRIC_CRITERIA} if n_pairs else deltas_sum
 
-    ci_lo, ci_hi = bootstrap_ci(flat_results, iters=bootstrap_iters, seed=seed)
+    ci_lo, ci_hi = bootstrap_ci(
+        flat_results,
+        iters=bootstrap_iters,
+        seed=seed,
+        win_result=variant_win,
+        loss_result=baseline_win,
+    )
     analysis = {
         "run_id": key["run_id"],
+        "arms": {"baseline": baseline, "variant": variant},
         "pairs": pair_results,
         "headline": {
             "wins": wins,

@@ -8,9 +8,20 @@ from typing import Any, Dict
 
 from rune.bench.schemas import RUBRIC_CRITERIA
 
+DEFAULT_ARM_NAMES = ("control", "treatment")
+
 
 def _pct(x: float | None) -> str:
     return "n/a" if x is None else f"{x * 100:.1f}%"
+
+
+def _arms(analysis: Dict[str, Any]) -> tuple[str, str]:
+    """(baseline, variant) arm ids. Analyses written before arm specs omit the field."""
+    arms = analysis.get("arms") or {}
+    return (
+        arms.get("baseline", DEFAULT_ARM_NAMES[0]),
+        arms.get("variant", DEFAULT_ARM_NAMES[1]),
+    )
 
 
 def _headline_sentence(analysis: Dict[str, Any]) -> str:
@@ -19,33 +30,45 @@ def _headline_sentence(analysis: Dict[str, Any]) -> str:
         return (
             "No decided pairs — every pair was judged a tie; no preference claim can be made (n/a)."
         )
+    baseline, variant = _arms(analysis)
+    # The default pair keeps its published wording so the RUNE result reads the same
+    # as it always has; any other arm pair is described by its arm ids.
+    if (baseline, variant) == DEFAULT_ARM_NAMES:
+        subject = "RUNE-amplified prompts were preferred"
+    else:
+        subject = f"`{variant}` was preferred over `{baseline}`"
     lo, hi = h["ci95"]
     decided = h["wins"] + h["losses"]
     tie_share = h["ties"] / h["n_pairs"] if h["n_pairs"] else 0
     return (
-        f"In blind pairwise comparison, RUNE-amplified prompts were preferred in "
+        f"In blind pairwise comparison, {subject} in "
         f"**{_pct(h['preference_rate'])}** of decided pairs "
         f"(95% CI [{_pct(lo)}, {_pct(hi)}]; {decided} decided of {h['n_pairs']} pairs; "
         f"ties: {_pct(tie_share)}; exact binomial sign test p = {h['p_value']:.4g})."
     )
 
 
-def _breakdown_table(title: str, rows: Dict[str, Dict[str, int]]) -> str:
+def _breakdown_table(title: str, rows: Dict[str, Dict[str, int]], arms: tuple[str, str]) -> str:
+    baseline, variant = arms
     lines = [
         f"### {title}",
         "",
-        "| | treatment wins | control wins | ties |",
+        f"| | {variant} wins | {baseline} wins | ties |",
         "|---|---|---|---|",
     ]
     for name in sorted(rows):
         r = rows[name]
-        lines.append(f"| {name} | {r['treatment_win']} | {r['control_win']} | {r['tie']} |")
+        lines.append(
+            f"| {name} | {r.get(f'{variant}_win', 0)} | {r.get(f'{baseline}_win', 0)} "
+            f"| {r['tie']} |"
+        )
     return "\n".join(lines)
 
 
-def _deltas_table(deltas: Dict[str, float]) -> str:
+def _deltas_table(deltas: Dict[str, float], arms: tuple[str, str]) -> str:
+    baseline, variant = arms
     lines = [
-        "### Per-criterion score delta (treatment − control, 1–5 scale)",
+        f"### Per-criterion score delta ({variant} − {baseline}, 1–5 scale)",
         "",
         "| criterion | mean delta |",
         "|---|---|",
@@ -55,9 +78,9 @@ def _deltas_table(deltas: Dict[str, float]) -> str:
     return "\n".join(lines)
 
 
-LIMITATIONS = """## Limitations
+_LIMITATIONS_TMPL = """## Limitations
 
-- **The protocol is label-blind, not style-blind.** RUNE-amplified responses may self-reveal through
+- **The protocol is label-blind, not style-blind.** {self_reveal} may self-reveal through
   structural artifacts. Judges are instructed not to reward structure per se; judge
   agreement and tie rates above are the honesty diagnostics.
 - **Single sample per cell** at the configured temperature — the benchmark measures the
@@ -68,9 +91,21 @@ LIMITATIONS = """## Limitations
   full set are committed for scrutiny."""
 
 
+def _limitations(arms: tuple[str, str]) -> str:
+    baseline, variant = arms
+    self_reveal = (
+        "RUNE-amplified responses"
+        if (baseline, variant) == DEFAULT_ARM_NAMES
+        else f"`{variant}` responses"
+    )
+    return _LIMITATIONS_TMPL.format(self_reveal=self_reveal)
+
+
 def render_report(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> str:
     h = analysis["headline"]
     agreement = analysis["judge_agreement"]
+    arms = _arms(analysis)
+    baseline, variant = arms
     parts = [
         f"# RUNE Benchmark Report — `{manifest['run_id']}`",
         "",
@@ -86,24 +121,25 @@ def render_report(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> str:
         "",
         _headline_sentence(analysis),
         "",
-        f"Raw counts: **{h['wins']} treatment wins / {h['losses']} control wins / "
+        f"Raw counts: **{h['wins']} {variant} wins / {h['losses']} {baseline} wins / "
         f"{h['ties']} ties** over {h['n_pairs']} pairs.",
         "",
         f"Judge agreement: {agreement['unanimous']} unanimous, {agreement['split']} split.",
         "",
-        _deltas_table(analysis["criterion_deltas"]),
+        _deltas_table(analysis["criterion_deltas"], arms),
         "",
-        _breakdown_table("By domain", analysis["breakdowns"]["by_domain"]),
+        _breakdown_table("By domain", analysis["breakdowns"]["by_domain"], arms),
         "",
-        _breakdown_table("By model", analysis["breakdowns"]["by_model"]),
+        _breakdown_table("By model", analysis["breakdowns"]["by_model"], arms),
         "",
-        LIMITATIONS,
+        _limitations(arms),
         "",
         "## Reproduce",
         "",
         "```bash",
         f"wand bench generate --promptset {manifest['promptset']['path']} "
-        f"--models {','.join(manifest['models'])} --seed {manifest['seed']}",
+        f"--models {','.join(manifest['models'])} --seed {manifest['seed']}"
+        + (f" --arms {manifest['arms_file']}" if manifest.get("arms_file") else ""),
         "wand bench export",
         "wand bench judge --api-url <openai-compat-endpoint> --model <judge-model>",
         "wand bench ingest",
@@ -115,6 +151,18 @@ def render_report(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> str:
 
 def render_benchmarks_md(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> str:
     """Regenerate docs/BENCHMARKS.md wholesale from real run data."""
+    arms = _arms(analysis)
+    baseline, variant = arms
+    if (baseline, variant) == DEFAULT_ARM_NAMES:
+        arms_sentence = [
+            "through two arms — **control** (the raw prompt) and **treatment** (the prompt",
+            "amplified by RUNE's 8-layer enhancement) — on the same model with identical",
+        ]
+    else:
+        arms_sentence = [
+            f"through two arms — **{baseline}** and **{variant}**, as defined in the run",
+            "manifest — on the same model with identical",
+        ]
     parts = [
         "# RUNE Benchmarks",
         "",
@@ -125,8 +173,7 @@ def render_benchmarks_md(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> 
         "## Methodology",
         "",
         "Blind pairwise A/B: each prompt in the committed, versioned prompt set runs",
-        "through two arms — **control** (the raw prompt) and **treatment** (the prompt",
-        "amplified by RUNE's 8-layer enhancement) — on the same model with identical",
+        *arms_sentence,
         "parameters. Responses are anonymized (per-judge randomized A/B order) and",
         "scored by independent judges on a 5-criterion rubric with a forced winner.",
         "Majority vote decides each pair; split decisions get an adversarial verifier.",
@@ -136,19 +183,20 @@ def render_benchmarks_md(manifest: Dict[str, Any], analysis: Dict[str, Any]) -> 
         "",
         _headline_sentence(analysis),
         "",
-        _deltas_table(analysis["criterion_deltas"]),
+        _deltas_table(analysis["criterion_deltas"], arms),
         "",
-        _breakdown_table("By domain", analysis["breakdowns"]["by_domain"]),
+        _breakdown_table("By domain", analysis["breakdowns"]["by_domain"], arms),
         "",
-        _breakdown_table("By model", analysis["breakdowns"]["by_model"]),
+        _breakdown_table("By model", analysis["breakdowns"]["by_model"], arms),
         "",
-        LIMITATIONS,
+        _limitations(arms),
         "",
         "## Run it yourself",
         "",
         "```bash",
         "export RUNE_API_KEY=<your key>",
-        f"wand bench generate --promptset {manifest['promptset']['path']}",
+        f"wand bench generate --promptset {manifest['promptset']['path']}"
+        + (f" --arms {manifest['arms_file']}" if manifest.get("arms_file") else ""),
         "wand bench export",
         "wand bench judge --api-url <any-openai-compat-endpoint> --model <judge-model>",
         "wand bench ingest && wand bench report",

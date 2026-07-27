@@ -156,6 +156,58 @@ def test_analyze_run_unanimous_treatment(run_dir):
     assert (run_dir / "analysis.json").exists()
 
 
+def test_analyze_run_keys_breakdowns_by_arm_id(tmp_path):
+    """Result keys are derived from arm ids, so a soul_v1/soul_v2 run reads correctly."""
+    from rune.bench.schemas import ArmSpec
+
+    arms = [
+        ArmSpec(arm_id="soul_v1", kind="prefix", config={"system": "one"}),
+        ArmSpec(arm_id="soul_v2", kind="prefix", config={"system": "two"}),
+    ]
+    gens = []
+    for pid in ("p001", "p002"):
+        for arm in arms:
+            gens.append(_gen(pid, "model-x", arm.arm_id, f"answer {pid} from {arm.kind}"))
+    export_judge_inboxes(
+        tmp_path,
+        RUN_ID,
+        seed=7,
+        generations=gens,
+        prompts={"p001": "task one", "p002": "task two"},
+        judges=3,
+        arms=arms,
+    )
+    _write_unanimous_verdicts(tmp_path, winning_arm="soul_v2")
+
+    analysis = analyze_run(tmp_path, prompt_domains={"p001": "coding"}, bootstrap_iters=200, seed=7)
+    assert analysis["arms"] == {"baseline": "soul_v1", "variant": "soul_v2"}
+    assert analysis["headline"]["wins"] == 2
+    assert analysis["headline"]["losses"] == 0
+    assert analysis["breakdowns"]["by_model"]["model-x"]["soul_v2_win"] == 2
+    assert analysis["breakdowns"]["by_domain"]["coding"]["soul_v1_win"] == 0
+    assert "treatment_win" not in json.dumps(analysis["breakdowns"])
+
+
+def test_analyze_run_baseline_sweep_with_custom_arms(tmp_path):
+    """Winning the baseline arm must count as a loss, whatever the arms are named."""
+    from rune.bench.schemas import ArmSpec
+
+    arms = [
+        ArmSpec(arm_id="soul_v1", kind="prefix", config={"system": "one"}),
+        ArmSpec(arm_id="soul_v2", kind="prefix", config={"system": "two"}),
+    ]
+    gens = [_gen("p001", "model-x", a.arm_id, f"answer {a.arm_id[-2:]}") for a in arms]
+    export_judge_inboxes(
+        tmp_path, RUN_ID, seed=7, generations=gens, prompts={"p001": "task"}, judges=3, arms=arms
+    )
+    _write_unanimous_verdicts(tmp_path, winning_arm="soul_v1")
+
+    analysis = analyze_run(tmp_path, prompt_domains={}, bootstrap_iters=200, seed=7)
+    assert analysis["headline"]["wins"] == 0
+    assert analysis["headline"]["losses"] == 1
+    assert analysis["headline"]["preference_rate"] == pytest.approx(0.0)
+
+
 def test_analyze_run_control_sweep(run_dir):
     _write_unanimous_verdicts(run_dir, winning_arm="control")
     analysis = analyze_run(run_dir, prompt_domains={}, bootstrap_iters=200, seed=7)

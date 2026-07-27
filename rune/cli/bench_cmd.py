@@ -74,6 +74,28 @@ def _models(args: argparse.Namespace) -> list[str]:
     return [CONFIG["model"]]
 
 
+def _arms(args: argparse.Namespace):
+    """Arms for a new run: the --arms file if given, otherwise the default pair."""
+    from rune.bench.schemas import DEFAULT_ARMS, ArmSpecError, load_arms
+
+    path = getattr(args, "arms", None)
+    if not path:
+        return list(DEFAULT_ARMS)
+    try:
+        return load_arms(path)
+    except ArmSpecError as e:
+        print_error(str(e))
+        sys.exit(1)
+
+
+def _arms_of_run(manifest: dict):
+    """Arms of an existing run, read from its manifest so later stages cannot drift."""
+    from rune.bench.schemas import DEFAULT_ARMS, arms_from_manifest
+
+    entries = manifest.get("arms")
+    return arms_from_manifest(entries) if entries else list(DEFAULT_ARMS)
+
+
 def _do_generate(args: argparse.Namespace, smoke: bool = False) -> None:
     from datetime import datetime
 
@@ -83,6 +105,7 @@ def _do_generate(args: argparse.Namespace, smoke: bool = False) -> None:
     preflight()
     prompts = _load_prompts(args, limit=1 if smoke else None)
     models = _models(args)[:1] if smoke else _models(args)
+    arms = _arms(args)
     sha = _git_sha()
 
     if getattr(args, "run", None):
@@ -105,14 +128,26 @@ def _do_generate(args: argparse.Namespace, smoke: bool = False) -> None:
         models=models,
         seed=args.seed,
         n_prompts=len(prompts),
+        arms=arms,
+        base_dir=WAND_DIR,
+        arms_file=getattr(args, "arms", None),
     )
-    total = len(prompts) * len(models) * 2
+    total = len(prompts) * len(models) * len(arms)
+    arm_label = " vs ".join(a.arm_id for a in arms)
     print_info(
-        f"🧪 Run {run_id}: {len(prompts)} prompts × {len(models)} models × 2 arms "
-        f"= {total} cells (delay {args.delay}s)"
+        f"🧪 Run {run_id}: {len(prompts)} prompts × {len(models)} models × "
+        f"2 arms ({arm_label}) = {total} cells (delay {args.delay}s)"
     )
     started = datetime.now()
-    records = generate(run_dir, prompts, models, delay=args.delay, progress=print_meta)
+    records = generate(
+        run_dir,
+        prompts,
+        models,
+        delay=args.delay,
+        progress=print_meta,
+        arms=arms,
+        base_dir=WAND_DIR,
+    )
     errors = [r for r in records if r["error"]]
     print_success(
         f"Generation done in {datetime.now() - started}: "
@@ -142,6 +177,7 @@ def _do_export(args: argparse.Namespace) -> None:
         generations=generations,
         prompts=prompts,
         judges=args.judges,
+        arms=_arms_of_run(manifest),
     )
     print_success(
         f"Exported {len(pairs)} blind pairs × {args.judges} judges → {run_dir / 'judge_inbox'}"

@@ -13,7 +13,10 @@ def _manifest():
         "harness_version": "2.1.0",
         "promptset": {"path": "benchmark/promptset_v1.jsonl", "sha256": "ff" * 32, "n": 25},
         "models": ["gemini-3.1-pro-preview", "gemini-3-flash-preview"],
-        "arms": ["control", "treatment"],
+        "arms": [
+            {"arm_id": "control", "kind": "raw", "config": {}},
+            {"arm_id": "treatment", "kind": "rune_enhance", "config": {}},
+        ],
         "seed": 7,
         "config_snapshot": {"api_key": "<redacted>", "temperature": 0.7},
         "enhancer": {"meta_prompt_sha256": "aa" * 32},
@@ -74,6 +77,46 @@ def test_report_no_decided_pairs_degrades_gracefully():
     )
     md = render_report(_manifest(), analysis)
     assert "n/a" in md.lower()
+
+
+def _custom_arm_analysis():
+    """The same run shape, but for two prefix arms instead of the default pair."""
+    analysis = _analysis()
+    analysis["arms"] = {"baseline": "soul_v1", "variant": "soul_v2"}
+    for section in analysis["breakdowns"].values():
+        for row in section.values():
+            row["soul_v2_win"] = row.pop("treatment_win")
+            row["soul_v1_win"] = row.pop("control_win")
+    return analysis
+
+
+def test_report_labels_tables_with_arm_ids():
+    md = render_report(_manifest(), _custom_arm_analysis())
+    assert "| | soul_v2 wins | soul_v1 wins | ties |" in md
+    assert "Per-criterion score delta (soul_v2 − soul_v1, 1–5 scale)" in md
+    assert "`soul_v2` was preferred over `soul_v1`" in md
+    assert "treatment" not in md and "RUNE-amplified" not in md
+    assert "72.1%" in md  # the statistics are untouched by the relabelling
+
+
+def test_report_without_arms_field_reads_as_the_default_pair():
+    """Analyses written before arm specs carry no arms field and must still render."""
+    md = render_report(_manifest(), _analysis())
+    assert "| | treatment wins | control wins | ties |" in md
+    assert "RUNE-amplified prompts were preferred" in md
+
+
+def test_benchmarks_md_names_custom_arms():
+    md = render_benchmarks_md(_manifest(), _custom_arm_analysis())
+    assert "**soul_v1** and **soul_v2**" in md
+    assert "8-layer enhancement" not in md  # methodology must not describe the wrong arms
+
+
+def test_reproduce_block_carries_the_arms_file():
+    manifest = _manifest()
+    manifest["arms_file"] = "benchmark/arms/soul-ab.json"
+    md = render_report(manifest, _custom_arm_analysis())
+    assert "--arms benchmark/arms/soul-ab.json" in md
 
 
 def test_benchmarks_md_is_honest_and_reproducible():
