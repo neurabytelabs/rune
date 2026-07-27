@@ -27,11 +27,25 @@ checklist covers.
    ```
    Then sync `package.json` → `description` from the canonical frontmatter `description`.
 
-3. **Sync any locally installed copies.** These are runtime caches, not sources:
+3. **Sync locally installed copies — but diff first.** Most are runtime caches. At least one
+   is not, and copying over it destroys work:
    ```bash
-   cp SKILL.md ~/.claude/skills/rune-prompt-amplification/SKILL.md
-   # ...and any other runtime you have installed it into
+   for f in ~/.claude/skills/rune-prompt-amplification/SKILL.md \
+            ~/.hermes/skills/prompt-engineering/rune-prompt-amplification/SKILL.md; do
+     [ -f "$f" ] && { diff -q SKILL.md "$f" >/dev/null && echo "cache  → safe to cp: $f" \
+                                                       || echo "DIVERGED → inspect:    $f"; }
+   done
    ```
+   Copy only over the ones reported as `cache`. Anything `DIVERGED` is a fork with its own
+   frontmatter or body and needs a deliberate merge — never a blind `cp`.
+
+   Known as of 2026-07-27: the Claude Code copy is byte-identical (safe). The Hermes copy is
+   a **fork** — version 2.0.0, a Hermes-targeted `description`, `homepage` pointing at the
+   mirror, an extra `metadata.hermes` block, and a different body (348 diff lines). It has
+   never been synced from canonical and must not be overwritten without a decision.
+
+   `tests/test_claims.py` cannot see these files — they live outside the repo. This diff step
+   is the only thing standing between the checklist and data loss.
 
 4. **Publish to clawhub** (or any registry). Two fields are hand-copied because registries
    store description text server-side and do not render links:
@@ -45,6 +59,32 @@ checklist covers.
 5. **Check `mustafasarac-core`.** The repo table and the
    `agents/skills/prompt-engineering/rune-framework/references/` copy must point at the
    canonical file rather than restate it.
+
+## Before running `wand bench report`
+
+**`docs/BENCHMARKS.md` and each run's `report.md` are generated-plus-manual, not generated.**
+Both commands regenerate their target wholesale, with no warning and no diff prompt, and the
+renderer cannot reproduce the hand-authored sections that were committed on top:
+
+- `docs/BENCHMARKS.md` — the "Is this a harness artifact?" section and the two-judge-panel
+  limitation bullet (16 lines as of 2026-07-27)
+- `benchmark/results/bench-20260704-2316-c29090a/report.md` — the "Judge panel note" with its
+  per-panel breakdown, and the "Qualitative root-cause spot-check"
+
+This is pre-existing behaviour, not something the arm-spec refactor introduced. It matters
+because the qualitative spot-check is what rules out "harness bug" as the explanation for the
+19.6% result — analysis that cannot be regenerated from artifacts.
+
+So, every time:
+
+```bash
+cp docs/BENCHMARKS.md /tmp/BENCHMARKS.before.md
+wand bench report --publish
+diff /tmp/BENCHMARKS.before.md docs/BENCHMARKS.md   # re-apply anything the renderer dropped
+```
+
+If this trips anyone twice, the real fix is sentinel markers the renderer preserves — the
+same pattern as the `CLAIM` block in `SKILL.md`.
 
 ## Why this exists
 
