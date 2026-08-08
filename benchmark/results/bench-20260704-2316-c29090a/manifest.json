@@ -1,46 +1,58 @@
 {
-  "run_id": "bench-20260704-2316-c29090a",
-  "created_at": "2026-07-04T23:16:56",
-  "git_sha": "c29090ab431ab5117ec02cb6539cad0e9d86512e",
-  "harness_version": "2.1.0",
-  "promptset": {
-    "path": "benchmark/promptset_v1.jsonl",
-    "sha256": "a45bd0f3fd1f7d0b9b0d9f31d3a99a9e483446960db29c3b6cb2904edf3035ed",
-    "n": 25
-  },
-  "models": [
-    "gemini-3.1-pro-preview",
-    "gemini-3-flash-preview"
+ "run_id": "bench-20260704-2316-c29090a",
+ "created_at": "2026-07-04T23:16:56",
+ "git_sha": "c29090ab431ab5117ec02cb6539cad0e9d86512e",
+ "harness_version": "2.1.0",
+ "promptset": {
+  "path": "benchmark/promptset_v1.jsonl",
+  "sha256": "3e3223bc616d09342a97c0f598f59b24cfe141d6f0ab7eadc43298655c26c063",
+  "n": 25
+ },
+ "models": [
+  "gemini-3.1-pro-preview",
+  "gemini-3-flash-preview"
+ ],
+ "arms": [
+  "control",
+  "treatment"
+ ],
+ "seed": 7,
+ "config_snapshot": {
+  "model": "gemini-3.1-pro-preview",
+  "api_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+  "api_key": "<redacted>",
+  "template_version": "v4.3",
+  "spinoza_threshold": 0.6,
+  "output_dir": "outputs",
+  "color": true,
+  "version": "1.5.0",
+  "verbose": false,
+  "timeout": 300,
+  "max_tokens": 8000,
+  "temperature": 0.7,
+  "conatus": 0.3,
+  "ratio": 0.35,
+  "laetitia": 0.15,
+  "natura": 0.2,
+  "prompts_dir": "prompts"
+ },
+ "enhancer": {
+  "meta_prompt_sha256": "4ba74c807e1559173c94f01b2def67503574e26473c8a1fa14b8f5f9261ee778"
+ },
+ "cells": {
+  "total": 100
+ },
+ "note": "llm_call does not expose token usage; cost is estimated from char counts. Benchmark traffic is excluded from ~/.rune/history.db (track=False).",
+ "redaction": {
+  "applied": "2026-08-08",
+  "reason": "privacy: p003 named a private repository and enumerated host hardware",
+  "scope": [
+   "benchmark/promptset_v1.jsonl",
+   "generations.jsonl",
+   "judge_inbox/pairs_j1..j5.jsonl"
   ],
-  "arms": [
-    "control",
-    "treatment"
-  ],
-  "seed": 7,
-  "config_snapshot": {
-    "model": "gemini-3.1-pro-preview",
-    "api_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-    "api_key": "<redacted>",
-    "template_version": "v4.3",
-    "spinoza_threshold": 0.6,
-    "output_dir": "outputs",
-    "color": true,
-    "version": "1.5.0",
-    "verbose": false,
-    "timeout": 300,
-    "max_tokens": 8000,
-    "temperature": 0.7,
-    "conatus": 0.3,
-    "ratio": 0.35,
-    "laetitia": 0.15,
-    "natura": 0.2,
-    "prompts_dir": "prompts"
-  },
-  "enhancer": {
-    "meta_prompt_sha256": "4ba74c807e1559173c94f01b2def67503574e26473c8a1fa14b8f5f9261ee778"
-  },
-  "cells": {
-    "total": 100
-  },
-  "note": "llm_call does not expose token usage; cost is estimated from char counts. Benchmark traffic is excluded from ~/.rune/history.db (track=False)."
+  "promptset_sha256_before_redaction": "a45bd0f3fd1f7d0b9b0d9f31d3a99a9e483446960db29c3b6cb2904edf3035ed",
+  "promptset_sha256_after_redaction": "3e3223bc616d09342a97c0f598f59b24cfe141d6f0ab7eadc43298655c26c063",
+  "note": "Judges scored the pre-redaction text. Substitutions are semantically neutral and no result was recomputed. See benchmark/REDACTIONS.md."
+ }
 }
