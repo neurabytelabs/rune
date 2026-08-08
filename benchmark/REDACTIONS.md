@@ -20,9 +20,11 @@ a harness bug as the explanation for the headline result (see `docs/BENCHMARKS.m
 | `Mac mini`, `MacBook` (any case) | `machine` |
 | model-invented hostnames `rick-macbook`, `morty-m4`, `summer-m1` | `agent-a-host`, `agent-b-host`, `agent-c-host` |
 
-252 substitutions across 7 files: `promptset_v1.jsonl`,
-`results/bench-20260704-2316-c29090a/generations.jsonl`, and
-`results/bench-20260704-2316-c29090a/judge_inbox/pairs_j1..j5.jsonl`.
+437 substitutions across 17 files: `promptset_v1.jsonl`,
+`results/bench-20260704-2316-c29090a/generations.jsonl`,
+`results/bench-20260704-2316-c29090a/judge_inbox/pairs_j1..j5.jsonl`, and the ten
+per-pair split files `judge_inbox/split/j{1..5}/pr-3c5336dc.json` and
+`.../pr-20ffb869.json` (the two `p003` pairs).
 
 ## What was deliberately **not** redacted
 
@@ -34,6 +36,10 @@ a harness bug as the explanation for the headline result (see `docs/BENCHMARKS.m
 - **Model-invented paths and branch names** (`tasks/pending/morty-login.md`,
   `task/morty/login-api`, `ssh morty@<morty-ip>`). Illustrative output, not real
   infrastructure; the IP was already a placeholder in the generated text.
+- **`M2`/`M3`/`M4` in unrelated pairs.** `pr-2f49d026` and `pr-24504296` discuss
+  local-LLM hardware (RTX 4090, Mac Studio M2/M3 Max, 32GB unified memory). Those
+  are generic Apple Silicon references with no connection to the author's setup
+  and were left untouched.
 - **Everything in the other 24 prompts.** A scan of all 25 prompts and all 100
   generations for credentials, tokens, IP addresses, hostnames, local filesystem
   paths and email addresses returned nothing. 18 of 25 prompts matched no pattern
