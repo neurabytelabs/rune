@@ -50,7 +50,7 @@
 - 8-layer yapı olgun (v4.2→v4.3 consolidation)
 - Grimoire kütüphanesi zengin (42 template, 5 domain)
 - Swarm konsepti güçlü (paralel agent + tournament + fusion)
-- Prompt Amplification araştırma-destekli (arXiv:2512.14982)
+- Benchmark harness olgun ve tarafsız (kendi tezini ölçüp çürütecek kadar — bkz. `docs/BENCHMARKS.md`)
 
 ---
 

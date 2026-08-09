@@ -1,0 +1,25 @@
+{
+  "run_id": "smoke-20260704-2315-c29090a",
+  "seed": 7,
+  "judges": 3,
+  "pairs": {
+    "pr-c21f2e61": {
+      "prompt_id": "p001",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    }
+  }
+}
