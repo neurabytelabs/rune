@@ -1,12 +1,14 @@
 <div align="center">
 
-# ᚱ RUNE
+# RUNE
 
-### The wand for your AI.
+### 8-layer prompt amplification framework with a blind A/B benchmark harness
 
-**Every prompt is a spell. Every spell, a decree of understanding.**
+**Structured prompts, measured against raw prompts.**
 
-*RUNE is an 8-layer prompt amplification framework — and a blind A/B harness that measures whether amplification actually helps. We ran it on ourselves and the amplified prompts lost. [The numbers, and their limits.](docs/BENCHMARKS.md) One command. 42 spells. Measured, not asserted.*
+*RUNE restructures prompts into 8 layers, ships a blind pairwise A/B harness, and in our own pilot (50 pairs, 2 Gemini models) amplified prompts were preferred in 19.6% of decided pairs, i.e. they lost. Read [the benchmark numbers and limits](docs/BENCHMARKS.md).*
+
+Status / limits: this pilot covers 50 pairs on the tested prompts and Gemini models; results do not generalize beyond those prompts or models.
 
 <br>
 
@@ -18,22 +20,22 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#-quick-start)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Models](https://img.shields.io/badge/models-Gemini_3.1_Pro_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
-[![Grimoire](https://img.shields.io/badge/grimoire-42_runes-cyan.svg)](#-the-grimoire)
+[![Templates](https://img.shields.io/badge/templates-42_runes-cyan.svg)](#-the-grimoire)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-skill-green.svg)](#-openclaw-integration)
 
-[The Problem](#-the-problem) · [The Solution](#-eight-layers-of-intent) · [Watch It Work](#-watch-it-work) · [Quick Start](#-quick-start) · [Grimoire](#-the-grimoire) · [Philosophy](#-why-spinoza) · [Roadmap](#-roadmap)
+[The Problem](#the-problem) · [The Solution](#-eight-layers-of-intent) · [Watch It Work](#-watch-it-work) · [Quick Start](#-quick-start) · [Templates](#-the-grimoire) · [Philosophy](#-why-spinoza) · [Roadmap](#-roadmap)
 
 </div>
 
 ---
 
-## 💀 The Problem: The Tyranny of Ambiguity
+## The Problem
 
-You cast a prompt into the void. You *hope* the AI comprehends its essence. Yet, it falters. You laboriously rephrase, adding desperate pleas like "be specific" or "think step by step." The result is often mediocre, a compromise born of exhaustion. You accept it.
+Prompt quality is hard to reason about when the only workflow is to rewrite by instinct and compare outputs informally. Small wording changes can improve one task and hurt another, and it is easy to overfit to a single example.
 
-**This is the prevailing tragedy of AI interaction, a pervasive resignation to the suboptimal.**
+**RUNE treats prompt rewriting as something to structure and test, not something to assume.**
 
-The chasm between your *intent* and the AI's *output* is not a failing of the model itself. It is a profound **prompt crisis.** You are attempting to wield formidable power without the fundamental instrument of command – a true wand.
+The project is useful only if its structure survives measurement. The current benchmark result is negative for the tested prompt set and models, which is why the benchmark harness is part of the first impression rather than an appendix.
 
 > *"Most people don't have bad ideas. They have bad prompts."*
 > This is a truth we can no longer afford to ignore.
