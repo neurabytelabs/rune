@@ -1,0 +1,16 @@
+{
+  "name": "soul-ab",
+  "description": "Two system messages against each other on the same prompt set. This is the shape to copy for comparing SOUL.md revisions, agent policies, or any two prefixes: point `system` at a file and the run manifest pins its sha256. `system` may also hold the text inline.",
+  "arms": [
+    {
+      "arm_id": "soul_v1",
+      "kind": "prefix",
+      "config": { "system": "benchmark/arms/policies/soul_v1.md" }
+    },
+    {
+      "arm_id": "soul_v2",
+      "kind": "prefix",
+      "config": { "system": "benchmark/arms/policies/soul_v2.md" }
+    }
+  ]
+}
