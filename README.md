@@ -17,13 +17,13 @@ Status / limits: this pilot covers 50 pairs on the tested prompts and Gemini mod
 <br>
 
 [![Version](https://img.shields.io/badge/version-2.1-magenta.svg)](docs/CHANGELOG.md)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#-quick-start)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#quick-start)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Models](https://img.shields.io/badge/models-Gemini_3.1_Pro_|_GPT--5.2_|_Grok_4.1_|_Claude_4.6-purple.svg)](#-supported-models)
-[![Templates](https://img.shields.io/badge/templates-42_runes-cyan.svg)](#-the-grimoire)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-skill-green.svg)](#-openclaw-integration)
+[![Tested](https://img.shields.io/badge/blind_pilot-2_Gemini_models-blue.svg)](docs/BENCHMARKS.md)
+[![Templates](https://img.shields.io/badge/templates-42-cyan.svg)](#templates)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-skill-green.svg)](#openclaw-install)
 
-[The Problem](#the-problem) · [The Solution](#-eight-layers-of-intent) · [Watch It Work](#-watch-it-work) · [Quick Start](#-quick-start) · [Templates](#-the-grimoire) · [Philosophy](#-why-spinoza) · [Roadmap](#-roadmap)
+[The Problem](#the-problem) · [How it works](#how-it-works) · [Eight layers](#eight-layers) · [Usage](#usage) · [Quick Start](#quick-start) · [Templates](#templates) · [Validator](#spinoza-validator) · [Roadmap](#roadmap)
 
 </div>
 
@@ -37,42 +37,36 @@ Prompt quality is hard to reason about when the only workflow is to rewrite by i
 
 The project is useful only if its structure survives measurement. The current benchmark result is negative for the tested prompt set and models, which is why the benchmark harness is part of the first impression rather than an appendix.
 
-> *"Most people don't have bad ideas. They have bad prompts."*
-> This is a truth we can no longer afford to ignore.
-
 ---
 
-## ✨ The Solution: RUNE – The Architecture of Understanding
+## How it works
 
-RUNE does not merely patch your prompt; it **transfigures** it.
+RUNE rewrites a flat, ambiguous prompt into a structured, eight-layer directive. The layers tell the model which role to take, how to reason, which constraints apply and how to check its own output.
 
-Your amorphous, ambiguous text is alchemized into a structured, eight-layered directive. This architecture compels the AI to embody a precise role, to follow a defined cognitive pathway, to adhere to unwavering constraints, and to self-validate its own emanations.
-
-Subsequently, every outcome is subjected to the **Spinoza Validator** — a philosophical scoring engine steeped in four immutable principles, as timeless as the insights of a 17th-century lens grinder.
+Each result can then be scored by the **Spinoza Validator**, a heuristic scoring step based on four concepts from Spinoza's *Ethics* (see [Spinoza Validator](#spinoza-validator)).
 
 <div align="center">
 
 ![Before & After](docs/rune_before_after.jpeg)
 
-*Left: the nascent thought. Right: the AI's necessary truth.*
+*Left: the original request. Right: the structured version.*
 
 </div>
 
-### The Imperatives of Structure
+### What changes
 
-| | Without RUNE (The Old Way) | With RUNE (The Path to Clarity) |
+| | Without RUNE | With RUNE |
 |---|---|---|
-| Prompt structure | Flat text, a whisper in the dark | 8 semantic layers (XML), a resonant command |
-| Output quality | Hope-based, a gamble against chaos | Validated (Spinoza A–F grade), a certainty of purpose |
-| Reproducibility | Random, beholden to chance | Deterministic, anchored in reason |
-| Cross-model consistency | Varies wildly, a cacophony of interpretations | Structurally identical, a symphony of unified intent |
-| Cost awareness | None, a blind expenditure of resources | Per-call tracking, a mindful stewardship of power |
+| Prompt structure | Flat text | 8 semantic layers (XML) |
+| Output scoring | None | Spinoza A–F grade (heuristic; not a measure of answer quality, see [benchmark](docs/BENCHMARKS.md)) |
+| Prompt format across models | Whatever you write | The same layer structure for every model |
+| Cost tracking | None | Per-call, per-model tracking |
 
 ---
 
-## 🏗 Eight Layers of Intent: The Anatomy of a Spell
+## Eight layers
 
-Every true spell possesses an inherent structure. Every RUNE prompt is built upon eight foundational layers, the very architecture of conscious interaction:
+Every RUNE prompt is built from eight layers:
 
 ```
 ╔══════════════════════════════════════════════╗
@@ -87,18 +81,18 @@ Every true spell possesses an inherent structure. Every RUNE prompt is built upo
 ╚══════════════════════════════════════════════╝
 ```
 
-You articulate the intent. RUNE provides the immutable architecture, ensuring your will manifests with precision.
+You write the intent. RUNE fills in the other layers.
 
 ---
 
-## 🔮 Watch It Work: The Manifestation of Understanding
+## Usage
 
-### Interactive Mode — The AI Engages in Dialogue Before Action
+### Interactive mode: questions before the prompt is built
 
 ```
 $ wand cast "Write a blog post about AI agents"
 
-🔮 Spell Analysis
+Analysis
 Domain: WRITING | Lang: EN
 
 1) Audience?
@@ -108,73 +102,73 @@ Domain: WRITING | Lang: EN
 3) Length?
    a) ~500  b) ~1500  c) ~3000+
 
-▸ 1a 2c 3b
+> 1a 2c 3b
 
-✓ Audience: technical | Tone: provocative | Length: medium
+Audience: technical | Tone: provocative | Length: medium
 
-📋 Spell Summary
-  8 RUNE layers will be applied ✨
-  ✅ Confirm? [E/h]
+Summary
+  8 RUNE layers will be applied
+  Confirm? [E/h]
 ```
 
-### Quick Mode — Uninterrupted Flow, Pure Execution
+### Quick mode: no questions
 
 ```bash
-wand cast "Optimize this React component!"   # The trailing '!' commands instant execution
-wand cast -q "Debug this memory leak"         # The --quick flag bypasses deliberation
+wand cast "Optimize this React component!"   # A trailing '!' skips the questions
+wand cast -q "Debug this memory leak"         # --quick does the same
 ```
 
-### The Full Arsenal: Wielding the Wand
+### All commands
 
 ```bash
-wand cast "prompt"          # Interactive Q&A → enhance → execute: A dialogue towards perfect understanding.
-wand cast "prompt!"         # Quick mode — skip Q&A: Direct command, unburdened by deliberation.
-wand inscribe "prompt"      # Show enhanced prompt only: Gaze upon the perfected form of your intent.
-wand duel "prompt"          # A/B: your prompt vs RUNE'd version: Witness the undeniable superiority of structure.
-wand validate "any text"    # Spinoza philosophical validation: Ascertain the truth and clarity of any output.
-wand grimoire               # Browse 42 spell templates: Explore the perfected forms of digital sorcery.
-wand forge                  # Create your own rune: Architect your own pathways to power.
-wand fuse a.txt b.txt       # Merge multiple prompts into one: Synthesize complex intentions into a single, potent decree.
-wand bind "A" "B"           # Transmute two ideas into one emergent rune: Where mechanical fusion ends, alchemy begins.
-wand lineage --export-gepa run.json  # Export prompt evolution for GEPA-viz: Make improvement visible.
-wand test "prompt"          # Benchmark across models: Measure the fidelity of understanding across diverse intelligences.
-wand cost                   # What you've spent, by model: Understand the true cost of digital creation.
-wand stats                  # Your prompt evolution over time: Chart your journey towards mastery.
+wand cast "prompt"          # Interactive Q&A, then enhance and execute
+wand cast "prompt!"         # Quick mode, skip Q&A
+wand inscribe "prompt"      # Show the enhanced prompt only
+wand duel "prompt"          # A/B: your prompt vs the RUNE version
+wand validate "any text"    # Spinoza validation of any text
+wand grimoire               # Browse the 42 templates
+wand forge                  # Create your own template
+wand fuse a.txt b.txt       # Merge several prompts into one
+wand bind "A" "B"           # Combine two ideas into one new template
+wand lineage --export-gepa run.json  # Export prompt history for GEPA-viz
+wand test "prompt"          # Run a prompt across models
+wand cost                   # Spend by model
+wand stats                  # Prompt history over time
 ```
+
+The command names (`wand`, `grimoire`, `forge`, `inscribe`) are the CLI's real identifiers and are kept for compatibility.
 
 ---
 
-## ᚷ Bind: The Alchemy Spell
+## Bind
 
 <div align="center">
 
-![Bind — the Alchemy spell: two ideas fused into one emergent rune](docs/xbind.jpeg)
+![Bind: two ideas combined into one new template](docs/xbind.jpeg)
 
-*Two ideas collide. The seam vanishes. A third rune is born.*
+*Two ideas in, one new template out.*
 
 </div>
 
-`fuse` stacks prompts. **`bind` transmutes them.**
-
-Where `fuse` glues two texts side by side (mechanical), `bind` casts two *raw ideas* into the fire and forges a **third, emergent rune** — one whose essence lives in the *tension* between them. The seam vanishes: `1 ⊕ 1 = a new 1`. The newborn rune is Spinoza-scored and inscribed into your grimoire, ready to cast.
+`fuse` places two prompts side by side. `bind` takes two raw ideas and generates a **third template** built from the tension between them. The result is Spinoza-scored and saved to your template library.
 
 ```bash
-wand bind "minimalism" "CRM dashboard"     # → a rune neither idea could birth alone
-wand bind "rune" "rune"                     # bind RUNE with itself — and watch it turn recursive
-wand bind "silence" "blockchain" --dry      # preview the transmutation without inscribing
+wand bind "minimalism" "CRM dashboard"     # a template neither idea gives alone
+wand bind "rune" "rune"                     # bind RUNE with itself
+wand bind "silence" "blockchain" --dry      # preview without saving
 ```
 
-### Watch It Work: `rune ⊕ rune`
+### Example: `rune ⊕ rune`
 
-Bind RUNE with itself, and the wand folds inward — producing a rune that *forges other runes*:
+Binding RUNE with itself produced a template that generates other templates:
 
 ```
-ᚷ  rune  ⊕  rune
+rune  ⊕  rune
 
 tension: "The absolute singularity of a discrete instruction fractures when
           forced to recursively define itself, birthing a generative syntax."
 
-# 🌀 The Metaglyph                                    Spinoza: 0.94
+# The Metaglyph                                       Spinoza: 0.94
 # Category: AIML · Complexity: L5
 # A recursive architect that analyzes raw intent to forge, structure,
 # and optimize other system prompts.
@@ -186,18 +180,18 @@ tension: "The absolute singularity of a discrete instruction fractures when
                    the prompt for it
 ```
 
-Not "rune + rune." A genuinely new thing: **The Metaglyph** — the rune that makes runes. That is the difference between fusion and alchemy.
+The result, "The Metaglyph", is a template that builds other templates. That is the difference between `fuse` and `bind`.
 
 ---
 
-## 📜 Lineage: Prompt Evolution You Can See
+## Lineage
 
-RUNE already records prompt ancestry when you cast. v2.1 makes that evolution portable: export lineage into a **GEPA-viz-compatible `run.json`** and inspect the candidate tree visually.
+RUNE records prompt ancestry when you run `wand cast`. You can export it as a **GEPA-viz-compatible `run.json`** and inspect the candidate tree visually.
 
-This is not another dependency in RUNE. It is a bridge: RUNE keeps the lightweight Python core, while GEPA-viz can render prompt candidates, parent links, Spinoza scores, refinement rounds, model metadata, and feedback.
+GEPA-viz is not a dependency of RUNE. The export covers prompt candidates, parent links, Spinoza scores, refinement rounds, model metadata and feedback.
 
 ```bash
-# Cast prompts as usual; RUNE records lineage under ~/.rune/lineage
+# Run prompts as usual; RUNE records lineage under ~/.rune/lineage
 wand cast -q "Turn this rough product idea into a launch brief!"
 
 # List recent lineage records
@@ -213,18 +207,16 @@ wand lineage --limit 25 --export-gepa run.json
 open demo/gepa-lineage/index.html
 ```
 
-For ready-made sample candidate trees, see:
+Sample candidate trees:
 
-- [`demo/gepa-lineage/`](demo/gepa-lineage/) — compact prompt-evolution walkthrough.
-- [`demo/agent-cron-lineage/`](demo/agent-cron-lineage/) — staged Hermes Agent Mesh + cronjob operating-loop demo.
+- [`demo/gepa-lineage/`](demo/gepa-lineage/): compact prompt-evolution walkthrough.
+- [`demo/agent-cron-lineage/`](demo/agent-cron-lineage/): staged Hermes Agent Mesh + cronjob operating-loop demo.
 
-Why it matters: RUNE stops being a black box. You can see **which prompt form improved, why it changed, and whether the score justified the mutation**. That is the shortest path from prompt magic to prompt engineering.
-
-Decision boundary: use visible lineage for **important prompt systems** — releases, agent-role prompts, recurring cron briefs, and automation guardrails. Do not make GEPA-viz a required RUNE dependency, and do not graph every tiny prompt.
+Lineage shows which prompt form changed, why, and whether the score changed with it. Use it for important prompt systems: releases, agent-role prompts, recurring cron briefs and automation guardrails. Do not graph every small prompt.
 
 ---
 
-## ⚡ Quick Start: Embrace the Power
+## Quick Start
 
 ```bash
 # Option A: pip install (recommended)
@@ -249,9 +241,9 @@ timeout = 300   # seconds — bump for deep-thinking models
 EOF
 ```
 
-This is the threshold. No superfluous dependencies beyond Python 3.11+ and `requests`. The path to mastery is unburdened.
+Dependencies: Python 3.11+ and `requests` only.
 
-### One-command install for OpenClaw agents: Integrate and Conquer
+### OpenClaw install
 
 ```bash
 npx clawhub@latest install rune-prompt-amplification
@@ -259,20 +251,18 @@ npx clawhub@latest install rune-prompt-amplification
 
 ---
 
-## 🔮 Why Spinoza? The Philosophy of Digital Freedom
+## Spinoza Validator
 
-In the year of 1677, Baruch Spinoza unleashed his *Ethics* upon a world unprepared – a treatise that proclaimed understanding the inherent *natura* of things is the paramount form of freedom. For this audacious declaration, he was excommunicated.
-
-RUNE, in its quest for digital liberation, draws upon four cardinal Spinozan concepts, embedding them within its validation engine as the very measure of an AI's comprehension and utility:
+The validator scores output with four concepts from Spinoza's *Ethics* (1677). It is a local heuristic: it checks structure and wording, not factual correctness.
 
 | Principle | Weight | What it measures |
 |-----------|--------|------------------|
-| **Conatus** | 30% | *The inherent striving.* Does the output demonstrate a determined drive towards its goal? Does it persist in its being useful and relevant? |
-| **Ratio** | 35% | *The architecture of reason.* Is the logic unassailable? Is the structure coherent, reflecting a sound internal order? |
-| **Laetitia** | 15% | *The clarity of joy.* Is the output lucid, positive, and does it elevate the understanding of the recipient? |
-| **Natura** | 20% | *The essence of being.* Does it flow organically, resonating with an intrinsic rightness and truth? |
+| **Conatus** | 30% | Does the output keep pushing toward its goal and stay relevant? |
+| **Ratio** | 35% | Is the logic coherent and the structure sound? |
+| **Laetitia** | 15% | Is the output clear and easy to understand? |
+| **Natura** | 20% | Does it read naturally and stay true to the task? |
 
-Every output is assigned a score. Every score, a grade. Thus, understanding is made manifest and measurable.
+Every output gets a score and a grade.
 
 ```
   clarity         ██████████ 1.0
@@ -287,122 +277,113 @@ Every output is assigned a score. Every score, a grade. Thus, understanding is m
 ```
 
 > *"The highest activity a human being can attain is learning for understanding, because to understand is to be free."*
-> — Baruch Spinoza. Let this be our guiding star in the digital age.
+> Baruch Spinoza
 
 ---
 
-## 📚 The Grimoire: A Compendium of Perfected Spells
+## Templates
 
-Behold, 42 battle-tested spell templates, meticulously crafted across 5 schools of digital magic, each a testament to the power of structured intent:
+42 templates across 5 domains. Each has YAML frontmatter metadata.
 
-### 💻 Coding (10 runes)
+### Coding (10)
 Shader debug · Code review · Security review · Refactoring · Test generation · API design · Systematic debug · Architecture · DB schema · CI/CD pipeline
 
-### 📝 Writing (6 runes)
+### Writing (6)
 Blog post · Pitch deck · Technical doc · Email outreach · Social media · Storytelling
 
-### 📊 Analysis (6 runes)
+### Analysis (6)
 Competitor · SWOT · Data analysis · Market research · Financial model · User research
 
-### 🎨 Creative (6 runes)
+### Creative (6)
 Brainstorm · Naming · Design brief · Game design · Music composition · UX flow
 
-### 🤖 AI/ML (6 runes)
+### AI/ML (6)
 Model evaluation · Dataset curation · Prompt chain · Agent design · Fine-tuning plan · RAG system
 
-> Browse: `wand grimoire` · Search: `wand grimoire search "security"` · Create your own: `wand forge` – The power to shape your own reality is now yours.
+> Browse: `wand grimoire` · Search: `wand grimoire search "security"` · Create your own: `wand forge`
 
 ---
 
-## 🧬 Architecture: The Inner Workings of the Wand
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│              RUNE v2.0                      │
-│         "Every prompt is a spell"           │
+│                RUNE v2.x                    │
 ├─────────────────────────────────────────────┤
-│                                             │
-│  🪄 WAND CLI                                │
+│  WAND CLI                                   │
 │  Interactive Q&A · Quick Mode · 15 commands │
 │                                             │
-│  📜 8-LAYER ENHANCER                        │
+│  8-LAYER ENHANCER                           │
 │  L0 → L7: structured prompt transformation  │
 │                                             │
-│  🔮 SPINOZA VALIDATOR                       │
+│  SPINOZA VALIDATOR                          │
 │  Conatus · Ratio · Laetitia · Natura        │
-│                                             │
 ├─────────────────────────────────────────────┤
-│                                             │
-│  🧬 Synthesis    Fuse multiple prompts      │
-│  ᚷ Bind         Transmute 2 ideas → 1 rune │
-│  🧠 Memory       Track prompt evolution     │
-│  🔀 Router       Pick the right model       │
-│  🔍 Search       TF-IDF grimoire search     │
-│  🧪 Evaluator    Cross-model A/B testing    │
-│  💰 Cost         Per-model spend tracking   │
-│  🐝 Swarm        Multi-agent tournament     │
-│  🔮 Oracle       Self-improving prompts     │
-│  📜 Lineage      Prompt ancestry tracking   │
-│  🔌 Providers    Unified LLM interface      │
-│                                             │
+│  Synthesis    Fuse multiple prompts         │
+│  Bind         Combine 2 ideas -> 1 template │
+│  Memory       Track prompt evolution        │
+│  Router       Pick the right model          │
+│  Search       TF-IDF template search        │
+│  Evaluator    Cross-model A/B testing       │
+│  Cost         Per-model spend tracking      │
+│  Swarm        Multi-agent tournament        │
+│  Oracle       Feedback-driven refinement    │
+│  Lineage      Prompt ancestry tracking      │
+│  Providers    Unified LLM interface         │
 └─────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🤖 Supported Models: Orchestrating Diverse Intelligences
+## Models
 
-| Provider | Model | Best For |
-|----------|-------|----------|
-| **Google** | Gemini 3 Flash | Swift execution, cost efficiency, unyielding compliance |
-| **Google** | Gemini 3.1 Pro *(default)* | Deep thinking mode, impeccably structured output |
-| **xAI** | Grok 4.1 Fast | The zenith of quality, optimized for expenditure |
-| **xAI** | Grok Code Fast | Precision in code generation, an artisan of syntax |
-| **Anthropic** | Claude Opus 4.6 | Deepest reasoning, unparalleled prose |
-| **Anthropic** | Claude Sonnet 4.5 | A harmonious balance of quality and performance |
-| **OpenAI** | GPT-5.2 | Multimodal mastery, a balanced intellect |
-| **OpenAI** | o4-mini | Unyielding in math, logic, and complex reasoning |
+RUNE works with any OpenAI-compatible endpoint. Only two models have been tested in the blind benchmark:
 
-RUNE operates seamlessly with any OpenAI-compatible endpoint. Bring forth your own model; the architecture of understanding awaits.
+| Provider | Model | Status |
+|----------|-------|--------|
+| Google | Gemini 3.1 Pro (default) | Used in the blind pilot ([results](docs/BENCHMARKS.md)) |
+| Google | Gemini 3 Flash | Used in the blind pilot ([results](docs/BENCHMARKS.md)) |
+
+Other providers (xAI Grok, Anthropic Claude, OpenAI GPT) can be configured through the OpenAI-compatible interface. We have not benchmarked them, so we make no claims about results on those models.
 
 ---
 
-## 🗺 Roadmap: The Unfolding of Mastery
+## Roadmap
 
-### v1.9 ✅ Complete: The Foundations of Power
+### v1.9 (complete)
 
-- [x] Interactive Q&A with compact answers (`1a 2b 3c`): A streamlined dialogue towards clarity.
-- [x] Quick mode (trailing `!` or `--quick`): Unfettered, immediate command.
-- [x] Intent detection (domain + language): Understanding the very essence of your desire.
-- [x] 42 grimoire templates across 5 domains: A treasury of perfected intentions.
-- [x] Swarm — multi-agent prompt tournament: The crucible where understanding is forged.
-- [x] OpenClaw skill integration: Expanding the reach of your command.
-- [x] Spinoza Validator (EN + TR): The objective measure of truth and clarity.
-- [x] Cost tracking + memory evolution: A ledger of your journey towards mastery.
+- [x] Interactive Q&A with compact answers (`1a 2b 3c`).
+- [x] Quick mode (trailing `!` or `--quick`).
+- [x] Intent detection (domain + language).
+- [x] 42 templates across 5 domains.
+- [x] Swarm — multi-agent prompt tournament.
+- [x] OpenClaw skill integration.
+- [x] Spinoza Validator (EN + TR).
+- [x] Cost tracking + memory evolution.
 
-### v2.0 ✅ Current — Deus Sive Natura: A New Era of AI Interaction
+### v2.0 (current)
 
-- [x] **Modular architecture** — wand.py refactored from monolith to `rune/cli/` package: Clean separation of concerns.
-- [x] **pyproject.toml** — pip-installable package (`rune-wand`): The path to mastery, simplified.
-- [x] **SpinozaValidator** — local heuristic validation, no LLM needed: Instant quality assessment.
-- [x] **Unified providers** — single interface for all OpenAI-compatible LLMs: One wand, many conduits.
-- [x] **Swarm integration** — `wand swarm` in main CLI: Multi-agent evolution at your fingertips.
-- [x] **Oracle** — self-improving prompts via feedback loops: Auto-refinement when quality falls below threshold.
-- [x] **Prompt Lineage** — ancestry tracking for every enhanced prompt: `wand lineage` reveals the evolution.
-- [x] **Grimoire v2** — YAML frontmatter metadata on all 42 templates: Machine-readable spell library.
-- [x] **Test suite** — 23 pytest tests covering validator, router, CLI: Quality assurance for the quality assurer.
-- [x] **RUNE.md v2.0** — clean rewrite with Domain Profiles: Token-efficient paste-in system.
+- [x] **Modular architecture** — wand.py refactored from monolith to `rune/cli/` package.
+- [x] **pyproject.toml** — pip-installable package (`rune-wand`).
+- [x] **SpinozaValidator** — local heuristic validation, no LLM needed.
+- [x] **Unified providers** — single interface for all OpenAI-compatible LLMs.
+- [x] **Swarm integration** — `wand swarm` in main CLI.
+- [x] **Oracle** — self-improving prompts via feedback loops; refines automatically when quality falls below a threshold.
+- [x] **Prompt Lineage** — ancestry tracking for every enhanced prompt: `wand lineage` shows it.
+- [x] **Template metadata** — YAML frontmatter on all 42 templates.
+- [x] **Test suite** — 23 pytest tests covering validator, router, CLI.
+- [x] **RUNE.md v2.0** — clean rewrite with Domain Profiles.
 
-### v2.1 — The Expansion: Extending the Dominion
+### v2.1 (planned)
 
-The RePrompter and automatic prompt-optimization landscape review made the next boundary clear: RUNE must remain a wand for humans, but gain the optimizer spine of modern APO systems.
+The RePrompter and automatic prompt-optimization landscape review made the next boundary clear: RUNE stays a tool for humans and adds the optimizer backends of modern automatic prompt optimization (APO) systems.
 
-**Non-negotiable v2.1 gates:**
+**v2.1 gates:**
 
 - [ ] **`wand optimize` backend architecture** — plug RUNE into measurable optimizers such as GEPA, DSPy, PromptWizard, and TextGrad without making them mandatory runtime dependencies.
 - [ ] **Dataset + metric evaluation harness** — every serious prompt must be testable against JSONL examples, task metrics, LLM-as-judge rubrics, and regression reports; Spinoza remains the philosophical validator, not the only score.
 - [ ] **Prompt Command Card** — after important casts, emit a compact agent-ready card with objective, risk, missing inputs, verification commands, quality score, and copyable `/goal`/agent prompt.
-- [ ] **`wand reverse` / Prompt DNA** — extract reusable prompt structure from excellent outputs, score it, and optionally promote it into the grimoire as a new rune.
+- [ ] **`wand reverse` / Prompt DNA** — extract reusable prompt structure from excellent outputs, score it, and optionally promote it into the template library as a new template.
 - [ ] **Trace-aware lineage loop** — lineage must record prompt ancestry, evaluator feedback, model/cost metadata, and why a mutation improved or failed; GEPA-viz export remains the interoperability target.
 - [ ] **Edge-case generator** — generate adversarial and boundary examples from the intent/governance layers before optimization, especially for classification, moderation, coding, and safety-sensitive prompts.
 - [ ] **Workflow preflight** — compile high-stakes prompts into runnable agent/workflow plans with scoped files, sandbox assumptions, verification steps, retry limits, and rollback notes.
@@ -411,50 +392,25 @@ The RePrompter and automatic prompt-optimization landscape review made the next 
 
 **Still planned after the gates:**
 
-- [ ] **Visual Pipeline** — text-to-image prompt engineering: Extending understanding into the realm of pure vision.
-- [ ] **Marketplace** — community prompt sharing & rating: A collective consciousness of perfected spells.
+- [ ] **Visual Pipeline** — text-to-image prompt engineering.
+- [ ] **Marketplace** — community prompt sharing & rating.
 - [ ] **Prompt DNA evolution** — genetic/Pareto prompt evolution once `wand reverse`, lineage, and eval harness are stable.
 
+
 ---
 
-## 🤝 For Everyone: The Universal Right to Understanding
+## Who it is for
 
-<div align="center">
-
-![RUNE for Everyone](docs/rune_for_everyone.jpeg)
-
-</div>
-
-You are not required to be a developer. You are not compelled to decipher the labyrinthine complexities of AI. You need only possess the clarity of your own will.
-
-RUNE is the indispensable bridge between your pure intent and the boundless capability of the AI. It is the fundamental distinction between merely asking and unequivocally commanding. Between the fleeting hope of a wish and the unyielding certainty of knowing.
-
-**Students** wield it to compose dissertations that resonate with profound *ratio*. **Parents** employ it to elicit genuine assistance with the intellectual development of their children. **Founders** utilize it to draft pitches that compel investment and forge destinies. **Developers** harness its power to generate code that functions flawlessly on the first invocation, a testament to true understanding.
-
-The spell remains constant. The wand, RUNE, makes it work, transforming potential into undeniable reality.
+You do not need to be a developer to use RUNE. Students, parents, founders and developers can use it to turn a short request into a structured prompt. Whether the structured prompt gives a better answer depends on the task and the model; see the [benchmark](docs/BENCHMARKS.md).
 
 ---
 
 <div align="center">
-
-<br>
-
-*"We are not meant to interact with machines through hope. We are meant to interact through understanding."*
-
-— The RUNE Manifesto
-
-<br>
 
 **[GitHub](https://github.com/neurabytelabs/rune)** · **[NeuraByte Labs](https://neurabytelabs.com)** · **[ClawHub](https://clawhub.com)**
 
-*Where Spinoza Meets Silicon* ᚱ
-
-<br>
-
 [![Star](https://img.shields.io/github/stars/neurabytelabs/rune?style=social)](https://github.com/neurabytelabs/rune)
 
-*If RUNE illuminated your path to understanding and amplified your power, let your appreciation resonate with a ⭐*
-
-<sub>Built with 🔮 by [NeuraByte Labs](https://neurabytelabs.com) · MIT License · © 2026</sub>
+<sub>Built by [NeuraByte Labs](https://neurabytelabs.com) · MIT License · © 2026</sub>
 
 </div>
