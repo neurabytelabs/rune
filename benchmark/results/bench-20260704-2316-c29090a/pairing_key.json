@@ -1,0 +1,1307 @@
+{
+  "run_id": "bench-20260704-2316-c29090a",
+  "seed": 7,
+  "judges": 5,
+  "pairs": {
+    "pr-d16d44c4": {
+      "prompt_id": "p001",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-9e0793a8": {
+      "prompt_id": "p001",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-ca0a30f9": {
+      "prompt_id": "p002",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-2379d025": {
+      "prompt_id": "p002",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-3c5336dc": {
+      "prompt_id": "p003",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-20ffb869": {
+      "prompt_id": "p003",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-202347d7": {
+      "prompt_id": "p004",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-764cf96a": {
+      "prompt_id": "p004",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-d1f6c764": {
+      "prompt_id": "p005",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-4ff92bb5": {
+      "prompt_id": "p005",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-3d3328f5": {
+      "prompt_id": "p006",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-83663f71": {
+      "prompt_id": "p006",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-6fc6fbf9": {
+      "prompt_id": "p007",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-14a40698": {
+      "prompt_id": "p007",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-1f4ad05b": {
+      "prompt_id": "p008",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-62b467a1": {
+      "prompt_id": "p008",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-a4bd1830": {
+      "prompt_id": "p009",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-257dec32": {
+      "prompt_id": "p009",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-fcc1cbfb": {
+      "prompt_id": "p010",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-fdedd4c1": {
+      "prompt_id": "p010",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-0c4e8e1b": {
+      "prompt_id": "p011",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-b9b8ebb0": {
+      "prompt_id": "p011",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-fe7be9b3": {
+      "prompt_id": "p012",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-5a6fe8d0": {
+      "prompt_id": "p012",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-cfd5dd58": {
+      "prompt_id": "p013",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-29040d96": {
+      "prompt_id": "p013",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-aeadfe82": {
+      "prompt_id": "p014",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-a1d66704": {
+      "prompt_id": "p014",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-8891d589": {
+      "prompt_id": "p015",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-fe4bf118": {
+      "prompt_id": "p015",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-5dc08528": {
+      "prompt_id": "p016",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-8169991f": {
+      "prompt_id": "p016",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-d735d9d9": {
+      "prompt_id": "p017",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-328ba4d5": {
+      "prompt_id": "p017",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-61b21c53": {
+      "prompt_id": "p018",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-b7bf84db": {
+      "prompt_id": "p018",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-f86a412e": {
+      "prompt_id": "p019",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-7a3443e5": {
+      "prompt_id": "p019",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-0253622b": {
+      "prompt_id": "p020",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-7245b325": {
+      "prompt_id": "p020",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-cf7b5b1f": {
+      "prompt_id": "p021",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-0177e7a4": {
+      "prompt_id": "p021",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-6dbbacb5": {
+      "prompt_id": "p022",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-ad2b104e": {
+      "prompt_id": "p022",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-0840cb3d": {
+      "prompt_id": "p023",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-ff189433": {
+      "prompt_id": "p023",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-2f49d026": {
+      "prompt_id": "p024",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    },
+    "pr-24504296": {
+      "prompt_id": "p024",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-77375f81": {
+      "prompt_id": "p025",
+      "model": "gemini-3-flash-preview",
+      "assignments": {
+        "j1": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "treatment",
+          "B": "control"
+        }
+      }
+    },
+    "pr-4e23f023": {
+      "prompt_id": "p025",
+      "model": "gemini-3.1-pro-preview",
+      "assignments": {
+        "j1": {
+          "A": "control",
+          "B": "treatment"
+        },
+        "j2": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j3": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j4": {
+          "A": "treatment",
+          "B": "control"
+        },
+        "j5": {
+          "A": "control",
+          "B": "treatment"
+        }
+      }
+    }
+  }
+}

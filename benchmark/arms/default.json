@@ -1,0 +1,8 @@
+{
+  "name": "default",
+  "description": "The pair `wand bench` uses with no --arms flag: the raw prompt against the same prompt run through RUNE's 8-layer enhancement. This file exists so the default is readable, not because it is required.",
+  "arms": [
+    { "arm_id": "control", "kind": "raw" },
+    { "arm_id": "treatment", "kind": "rune_enhance" }
+  ]
+}
