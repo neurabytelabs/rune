@@ -32,6 +32,8 @@ GUARDED_FILES = (
     "docs/RUNE_V2_PLAN.md",
     "docs/ARCHITECTURE.md",
     "docs/QUICKSTART.md",
+    "demo/index.html",
+    "demo/rune-demo.html",
 )
 
 # Case-insensitive. Each entry is (pattern, why it is forbidden).

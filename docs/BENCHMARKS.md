@@ -75,6 +75,16 @@ full run report for the detailed spot-check.
   independently found control winning by a wide margin — see the run report for the
   per-panel breakdown.
 
+## Protocol deviation
+
+`benchmark/JUDGE_PROTOCOL.md` requires two adversarial verifiers on every non-unanimous
+pair. In this run 11 pairs were split (see the run report), but only 10 received the two
+extra verdicts. Pair `pr-14a40698` (prompt p007, `gemini-3.1-pro-preview`) was decided on
+its original 3 verdicts (2 to 1) and counted as a treatment win. It was not re-examined.
+
+Sensitivity: if that pair had flipped to a control win, the treatment preference would be
+8/46 = 17.4% instead of 9/46 = 19.6%. The direction of the result does not change.
+
 ## Run it yourself
 
 ```bash
